@@ -1,7 +1,7 @@
 import Dexie, { type Table } from 'dexie';
 import type { SetTarget } from '@/lib/set-plan';
 import type { PainReportRow, PainLoadHint } from './pain-tables';
-import type { DailyCheckRow, SupplementLogRow, SupplementRow } from './tables';
+import type { CheckInRow, DailyCheckRow, SupplementLogRow, SupplementRow } from './tables';
 import type { MealLogRow, SetLogRow, SyncTable, WorkoutSessionRow } from './tables';
 
 export interface SnapshotExercise {
@@ -71,14 +71,18 @@ export interface OutboxEntry {
 
 export interface MediaQueueEntry {
   id?: number;
-  kind: 'form_check';
+  kind: 'form_check' | 'checkin_photo';
   /** Server row id, fixed at enqueue so a retried insert hits 23505 instead of duplicating. */
-  form_check_id: string;
+  form_check_id?: string;
   blob: Blob;
   mime: string;
-  exercise_id: string;
+  exercise_id?: string;
   set_log_id: string | null;
   note: string | null;
+  /** Local check-in row this photo belongs to (checkin_photo only). */
+  checkin_id?: string;
+  /** Index into the check-in's photo_paths / photo_poses (checkin_photo only). */
+  position?: number;
   created_at: number;
   attempts: number;
   next_attempt_at: number;
@@ -136,6 +140,7 @@ export class KochivoDB extends Dexie {
   workout_sessions!: Table<WorkoutSessionRow, string>;
   set_logs!: Table<SetLogRow, string>;
   meal_logs!: Table<MealLogRow, string>;
+  check_ins!: Table<CheckInRow, string>;
   outbox!: Table<OutboxEntry, number>;
   program_snapshot!: Table<ProgramSnapshot, string>;
   nutrition_snapshot!: Table<NutritionSnapshot, string>;
@@ -159,6 +164,7 @@ export class KochivoDB extends Dexie {
     }).upgrade(tx => tx.table('set_logs').toCollection().modify({ drop_index: 0 }));
     this.version(8).stores({ pain_reports: 'id, session_id' });
     this.version(9).stores({ meal_logs: 'id, &[meal_id+log_date]' });
+    this.version(10).stores({ check_ins: 'id, week_start' });
   }
 }
 

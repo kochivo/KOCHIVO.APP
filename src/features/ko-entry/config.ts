@@ -7,13 +7,14 @@ export function koTeaserEnabled(): boolean {
 
 // Names only, never values: tells the owner which KO setting is off when KO stays unavailable.
 function koConfigProblems(): string[] {
-  const { KO_ENABLED, KO_GEMINI_PAID, KO_ORIGIN, KO_APPROVAL_SECRET, KO_PILOT_USER_IDS, GOOGLE_GENERATIVE_AI_API_KEY } = process.env;
+  const { KO_ENABLED, KO_GEMINI_PAID, KO_ORIGIN, KO_APPROVAL_SECRET, KO_PILOT_USER_IDS, GOOGLE_GENERATIVE_AI_API_KEY, KO_MEAL_RECEIPT_SECRET } = process.env;
   const problems = [
     KO_ENABLED !== '1' && 'KO_ENABLED must be 1',
     KO_GEMINI_PAID !== '1' && 'KO_GEMINI_PAID must be 1',
     (!KO_APPROVAL_SECRET || KO_APPROVAL_SECRET.length < 32) && 'KO_APPROVAL_SECRET must be at least 32 characters',
     !KO_PILOT_USER_IDS && 'KO_PILOT_USER_IDS is empty',
     !GOOGLE_GENERATIVE_AI_API_KEY && 'GOOGLE_GENERATIVE_AI_API_KEY is empty',
+    !KO_MEAL_RECEIPT_SECRET && 'KO_MEAL_RECEIPT_SECRET is empty',
   ].filter((problem): problem is string => typeof problem === 'string');
   try {
     const origin = new URL(KO_ORIGIN ?? '');

@@ -33,6 +33,7 @@ import { DayPreviewCard } from './day-preview-card';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { MorningRow } from './morning-row';
 import { CycleEntry } from './cycle-entry';
+import { CheckinEntry } from './checkin-entry';
 
 const readPending = () => pendingCount(localDb());
 const RamadanSlot = dynamic(() => import('./ramadan-slot').then(m => m.RamadanSlot));
@@ -117,9 +118,10 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
     {showError ? <ErrorState message={t('couldntLoadYourProgram')} retryLabel={t('tryAgain')} onRetry={retryProgram} /> : loading || !now ? <LoadingState variant="cards" /> : <>
       {v6 && <V3Home weightKg={weightKg} now={now} today={today} firstName={firstName} playerId={playerId} snapshot={snapshot} day={day}
         rest={rest} nutritionRest={nutritionRest} sessions={sessions ?? []} onPreview={date => setSelection({ today, date })} week={weekStrip} showToday={selectedDate === today}
-        readiness={<MorningRow playerId={playerId} today={today} rest={rest}><PlayerReadiness weightKg={weightKg} playerId={playerId} today={today} rest={rest} coachRest={decision === 'rest'}
+        readiness={<MorningRow playerId={playerId} today={today} rest={rest}><PlayerReadiness weightKg={weightKg} playerId={playerId} today={today} rest={rest} coachRest={decision === 'rest'} hideWaterStrip
           tomorrowRest={Boolean(tomorrowRest || (weekly && !tomorrow))}
           tomorrow={tomorrow && !tomorrowRest && !tomorrow.is_rest_day ? starterText(tomorrow.title, locale) : undefined} /></MorningRow>} />}
+      <CheckinEntry />
       <div hidden={selectedDate !== today} className="space-y-card-gap">
       {v6 ? <NextTaskSlot rest={rest} nutritionRest={nutritionRest} snapshot={snapshot ?? null} sessions={sessions ?? []} today={today} playerId={playerId}
         retryKey={retryKey} onRetry={() => setRetryKey(value => value + 1)} workoutInHero={!rest && Boolean(day?.exercises.length)} />

@@ -17,8 +17,9 @@ afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.unstubAllEnvs(
 const pack = '[workout_today] rest day\n[workout_tomorrow] no program\n[progress] lifetime points 28';
 
 function setup(status: number, calls: { name: string; args: object }[] = [], pending = false, role: KoActor['role'] = 'player') {
+  vi.stubEnv('KO_MEAL_RECEIPT_SECRET', 'm'.repeat(32));
   const rpc = vi.fn(async (name: string) => ({
-    data: name === 'ko_rate_take' ? true : name === 'ko_usage_tier' ? [{ captain_id: 'captain', tier: 'entry' }]
+    data: name === 'ko_rate_take' ? true : name === 'ko_secret_check' ? true : name === 'ko_usage_tier' ? [{ captain_id: 'captain', tier: 'entry' }]
       : name === 'my_captain_id' ? 'captain' : 'ok',
     error: null,
   }));
@@ -29,6 +30,7 @@ function setup(status: number, calls: { name: string; args: object }[] = [], pen
   const insert = vi.fn().mockResolvedValue({ error: null });
   const settings = vi.fn().mockResolvedValue({ data: null, error: null });
   const memoryQuery = { select: () => memoryQuery, eq: () => memoryQuery, order: () => memoryQuery,
+    is: () => memoryQuery,
     limit: async () => ({ data: [{ id: 'old', text: 'Prefers a morning workout' }], error: null }),
     maybeSingle: settings, insert };
   const from = vi.fn((table: string) => table.startsWith('ko_memor') ? memoryQuery : query);
@@ -92,6 +94,13 @@ it('returns the grounded model answer and its citations after one Gemini call', 
   const request = JSON.parse(String(fetcher.mock.calls[0]?.[1]?.body));
   expect(request.systemInstruction.parts[0].text).toContain(pack);
   expect(request.tools[0].functionDeclarations).toEqual(expect.arrayContaining([expect.objectContaining({ name: 'answer' })]));
+});
+
+it('answers a bare number normally when no swap is pending', async () => {
+  const args = { text: 'You have 28 lifetime points.', sources: ['progress'] };
+  const { fetcher } = setup(200, [{ name: 'answer', args }]);
+  expect(await (await post('30')).json()).toEqual({ kind: 'message', ...args, feedbackIntent: 'answer' });
+  expect(fetcher).toHaveBeenCalledTimes(1);
 });
 
 it.each(['captain', 'player'] as const)('uses the %s first name for an identity question', async role => {

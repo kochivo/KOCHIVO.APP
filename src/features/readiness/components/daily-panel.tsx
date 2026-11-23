@@ -17,8 +17,8 @@ const RestHero = dynamic(() => import('./rest-hero').then(module => module.RestH
 const MorningQuestions = dynamic(() => import('./morning-questions').then(module => module.MorningQuestions));
 const WaterGlass = dynamic(() => import('./water-glass').then(module => module.WaterGlass));
 
-export function DailyPanel({ playerId, today, rest, coachRest, tomorrow, tomorrowRest, weightKg }: {
-  playerId?: string; today: string; rest: boolean; coachRest?: boolean; tomorrow?: string; tomorrowRest?: boolean; weightKg?: number;
+export function DailyPanel({ playerId, today, rest, coachRest, tomorrow, tomorrowRest, weightKg, hideWaterStrip }: {
+  playerId?: string; today: string; rest: boolean; coachRest?: boolean; tomorrow?: string; tomorrowRest?: boolean; weightKg?: number; hideWaterStrip?: boolean;
 }) {
   const t = useT(messages);
   const check = useDailyCheck(playerId, today);
@@ -36,7 +36,7 @@ export function DailyPanel({ playerId, today, rest, coachRest, tomorrow, tomorro
         {tomorrowRest ? <p className="text-sm text-muted">{t('tomorrowRest')}</p> :
           tomorrow && <p className="text-sm text-muted">{t('tomorrow', { name: tomorrow })}</p>}
       </> : <>
-        <WaterStrip waterMl={check.row?.water_ml ?? 0} goal={goal} onAdd={() => void check.save({}, 250)} disabled={!playerId} />
+        {!hideWaterStrip && <WaterStrip waterMl={check.row?.water_ml ?? 0} goal={goal} onAdd={() => void check.save({}, 250)} disabled={!playerId} />}
         <ReadinessRow row={check.row} goal={goal} onChange={patch => void check.save(patch)} />
       </>}
       {check.saved && <p role="status" className="text-sm text-muted">{t(check.pending ? 'savedLocal' : 'sent')}</p>}

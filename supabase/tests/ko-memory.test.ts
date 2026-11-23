@@ -1,16 +1,23 @@
 import type { PGlite } from '@electric-sql/pglite';
 import { afterAll, beforeAll, expect, it } from 'vitest';
-import { TEST_NOW, asUser, createCaptainWithPlayer, createTestDb, createUser } from './harness';
+import { TEST_NOW, asUser, createCaptainWithPlayer, createTestDb, createUser, dayOffset } from './harness';
 
 let db: PGlite;
 let captain: string;
 let player: string;
+let player2: string;
 let outsider: string;
 const uuid = (n: number) => `00000000-0000-7000-8000-${String(n).padStart(12, '0')}`;
 
 beforeAll(async () => {
   db = await createTestDb();
   ({ captain, player } = await createCaptainWithPlayer(db));
+  player2 = await createUser(db, 'player');
+  const accessUntil = await dayOffset(db, 30);
+  await db.query(
+    `insert into public.coach_clients (captain_id, player_id, access_until, started_on) values ($1, $2, $3, $4)`,
+    [captain, player2, accessUntil, await dayOffset(db, 0)],
+  );
   outsider = await createUser(db, 'captain');
 });
 afterAll(async () => db?.close());
@@ -31,11 +38,16 @@ it('isolates owner reads, deletes and inserts and checks roster ownership', asyn
   await expect(insert(player, 2, 'different owner', null, captain)).rejects.toThrow(/row-level security/);
   await expect(insert(outsider, 2, 'unrelated player', player)).rejects.toThrow(/row-level security/);
   await expect(insert(player, 2, 'self attachment', player)).rejects.toThrow(/row-level security/);
+  // T-423: the same text is unique per (user, player), NULL included — a note
+  // for one player never collides with the same note for another player.
+  await expect(insert(captain, 2, 'eXAMPLE NOTE', player)).rejects.toThrow(/unique/);
+  await expect(insert(captain, 3, 'eXAMPLE NOTE', player2)).resolves.toBeDefined();
+  await expect(insert(captain, 4, 'Example note')).resolves.toBeDefined();
+  await expect(insert(captain, 5, 'example note')).rejects.toThrow(/unique/);
   await db.query('update public.coach_clients set archived_at=$1 where captain_id=$2', [TEST_NOW, captain]);
-  await expect(insert(captain, 2, 'archived player', player)).rejects.toThrow(/row-level security/);
-  await expect(insert(captain, 2, 'eXAMPLE NOTE')).rejects.toThrow(/unique/);
-  await expect(asUser(db, captain, tx => tx.query('select id from public.ko_memories')))
-    .resolves.toMatchObject({ rows: [{ id: uuid(1) }] });
+  await expect(insert(captain, 6, 'archived player', player)).rejects.toThrow(/row-level security/);
+  await expect(asUser(db, captain, tx => tx.query('select id from public.ko_memories order by id')))
+    .resolves.toMatchObject({ rows: [{ id: uuid(1) }, { id: uuid(3) }, { id: uuid(4) }] });
 });
 
 it('keeps the newest 30 rows', async () => {

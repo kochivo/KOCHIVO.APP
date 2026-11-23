@@ -24,7 +24,7 @@ export function HomeHeroView({ t, locale, onSelect, tasks, count, completed, adh
         {urgent && t('urgentLead', { tasks: urgent })}</> : t('emptyHero')}</p>
       {adherence !== undefined && <p className="text-sm text-muted">{t(teamStatus(adherence), { count: formatNumber(adherence, locale) })}</p>}
       {adherence !== undefined && adherence < 80 && <Link href="/captain/players" className={buttonClass({ variant: 'secondary', block: false })}>{t('viewPlayers')}</Link>}
-      <ProgressBar thin value={taskProgress(completed, count)} max={1} aria-label={t('progress')} className="mt-stack" />
+      {count > 0 && <ProgressBar thin value={taskProgress(completed, count)} max={1} aria-label={t('progress')} className="mt-stack" />}
     </div>
     {count > 0 && <Link prefetch={onSelect ? false : undefined} onClick={onSelect ? event => { event.preventDefault(); onSelect((event.currentTarget.getAttribute('href') ?? '').replace(/^#/, '')); } : undefined} href={onSelect ? '#/captain/tasks' : '/captain/tasks'} className={buttonClass({ variant: onSelect ? 'secondary' : 'primary', block: false })}><KoFollowup className="size-5" />{t('startTasks')}</Link>}
   </section>;

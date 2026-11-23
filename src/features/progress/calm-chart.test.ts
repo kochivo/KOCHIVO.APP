@@ -85,6 +85,21 @@ it('selects up to four real dates, including both ends', () => {
   expect(dateTicks(dates.slice(0, 2))).toEqual(dates.slice(0, 2));
 });
 
+it('keeps the weight period pills on one line at equal height', () => {
+  const html = render();
+  expect(html).toContain('>شهر</button>');
+  expect(html).toContain('>3 شهور</button>');
+  expect(html).toContain('>الكل</button>');
+  const buttons = html.match(/<button[^>]*role="radio"[^>]*>/g) ?? [];
+  expect(buttons).toHaveLength(3);
+  for (const button of buttons) {
+    expect(button).toContain('min-h-12');
+    expect(button).toContain('whitespace-nowrap');
+  }
+  expect(buttons.filter(button => button.includes('glass-raised'))).toHaveLength(1);
+  expect(html).toContain('overflow-x-auto');
+});
+
 it('filters on inclusive calendar-month boundaries and clamps month ends', () => {
   const readings = ['2026-01-30', '2026-01-31', '2026-02-28', '2026-03-31'].map(date => ({ date, value: 80 }));
   expect(filterPeriod(readings, 'month', '2026-03-31')).toEqual(readings.slice(2));

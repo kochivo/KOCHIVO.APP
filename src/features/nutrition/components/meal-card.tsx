@@ -110,6 +110,9 @@ export function MealCard({ meal, log, today, planTitle, primary = false }: { mea
       {meal.items.some(item => item.alternatives.length > 0) && <Button type="button" aria-expanded={open} variant="secondary" onClick={() => setOpen(value => !value)}>{v4t('swap')}</Button>}
       <Button type="button" block={false} className="min-w-0 flex-1" disabled={busy || !meal.items.length} onClick={() => void save(true, swaps, Date.now())}><Check aria-hidden className="size-5" />{t('mealEaten')}</Button>
     </div>}
+    {!featuredAction && !eaten && <div className="mt-stack flex flex-wrap gap-inline">
+      <Button type="button" variant="secondary" block={false} className="min-w-0 flex-1" disabled={busy || !meal.items.length} onClick={() => void save(true, swaps, Date.now())}>{t('mealEaten')}</Button>
+    </div>}
     {error && <p role="alert" className="text-sm text-danger">{t('saveFailedTryAgain')}</p>}
     {open && <div className="mt-stack">{details}</div>}
   </article>;

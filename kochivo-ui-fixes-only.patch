@@ -1,0 +1,1898 @@
+diff --git a/docs/tasks/T-427-sidebar-tasks-badge.md b/docs/tasks/T-427-sidebar-tasks-badge.md
+new file mode 100644
+index 00000000..ebe4da31
+--- /dev/null
++++ b/docs/tasks/T-427-sidebar-tasks-badge.md
+@@ -0,0 +1,55 @@
++# T-427 — Sidebar Tasks badge shows an error string while loading
++
++**Phase:** fix · **Depends on:** none · **Status:** ready
++
++## Goal
++The sidebar Tasks badge shows a number or nothing — never the error string "العدد مش متاح" (count unavailable). Live review (2026-11-22, kochivo.site, captain Ali Esmail, Arabic dark): during every page load the sidebar Tasks item reads "المهام — العدد مش متاح"; once loaded the badge vanishes entirely, unlike Inbox which correctly shows "2".
++
++## Design decisions (read first)
++1. **Number or nothing.** While the count is loading, or if its fetch fails, render no badge at all. Never render an error string in the badge slot, and never render it as visible text next to the item.
++2. **Zero is also nothing.** A loaded count of 0 renders no badge (today's loaded behaviour), so loading, failed and zero all look the same: no badge. Only a count > 0 shows a number.
++3. The string key `countUnavailable` in `captain-frame-messages.ts` must stop being used for visible UI. If a repo-wide grep shows no other use after the fix, remove the key from all three locales in that file (ar/arStd/en).
++
++## Files
++Create or modify only these:
++- `docs/tasks/T-427-sidebar-tasks-badge.md`: this card
++- `src/features/roster/components/captain-frame-nav.tsx`: the badge render path (`useTaskCount`, `useResource('captain:frame-counts', ...)`)
++- `src/features/roster/components/captain-nav-groups.tsx`: the sidebar row that renders the badge (see design-audit 02-captain-core.md, desktop shell)
++- `src/features/roster/hooks/use-task-count.ts`: the task-count loader, if the loading/error state it returns is what produces the string
++- `src/features/roster/components/captain-frame-messages.ts`: remove `countUnavailable` if it becomes unused (verify with a repo-wide grep first)
++- `src/features/roster/components/captain-frame-nav.test.ts`: update the test that currently expects "العدد مش متاح" (line ~38) and add the loading/error cases
++- `src/features/roster/hooks/use-task-count.test.ts`: create if missing, for the loader's loading/error/success states
++
++Do not edit any file outside this list. If the fix genuinely needs another file, implement everything else and report the file + lines + reason in your final message instead of editing it. Do not touch the staged log-cleanup entries, any T-421 file, any KO file (`src/features/ko-account/**`, `src/features/ko-entry/config.ts`, migrations 0164–0167, `src/types/app-database.ts`), and do not commit or push.
++
++## Requirements
++1. Loading state: the Tasks nav item renders with no badge and no error text (desktop sidebar and phone nav / More sheet, both render paths).
++2. Failed fetch: same as loading — no badge, no error text. A retry may exist behind the scenes (the existing `useResource` retry), but it must not surface text in the badge slot.
++3. Loaded count > 0: the badge shows the number (existing behaviour, keep it).
++4. Loaded count 0: no badge.
++5. Inbox badge behaviour is unchanged.
++6. Rules that still apply: files ≤ 250 lines, one component per file, kebab-case, import direction `app → features → (ui, core, lib)`, no `any`, no `console.log`, tokens only, logical RTL properties only, touch targets ≥ 48px, every user-facing string in `messages.ts` (ar/arStd/en), no emoji.
++
++## Acceptance
++- [ ] During load the sidebar Tasks item shows no badge and no "العدد مش متاح" anywhere on the page.
++- [ ] With a failed count fetch the same holds.
++- [ ] With 2 pending tasks the badge shows 2; with 0 it shows nothing.
++- [ ] Desktop sidebar and phone nav both behave this way.
++- [ ] `npm run check`, `npm run build` and `npx vitest run src/lib/perf-budget.test.ts` pass.
++
++## Tests (deterministic, inject `now`, no real timers, no network)
++- `captain-frame-nav.test.ts`: loading → no badge text; error → no badge text; count 2 → badge "2"; count 0 → no badge. Cover the desktop sidebar row and the phone nav path.
++- `use-task-count.test.ts` (new if missing): loader returns loading, then a number, then an error, and the component states above follow from it.
++
++## Out of scope
++- Changing what the task count counts (that is T-429).
++- The KO badge (T-429), the inbox badge, any other nav item.
++- A live re-check on kochivo.site (not possible until deploy).
++
++## Notes for reviewer
++- The design audit (`docs/design-audit/02-captain-core.md`, desktop shell) already flagged this area: "Failed sidebar counts disappear visually → a blank badge can be read as no work waiting → distinguish unavailable counts from zero for all users." This card deliberately chooses the opposite, simpler behaviour the live review asked for (number or nothing), because the error string leaking into the UI is worse than a temporarily missing badge. If the owner wants an unavailable indicator later, that is a follow-up with its own design.
++
++## References
++- `src/features/roster/components/captain-frame-messages.ts:10` (`countUnavailable`)
++- `src/features/roster/components/captain-frame-nav.tsx:18,36,39` (`useTaskCount`, frame-counts resource)
++- `docs/design-audit/02-captain-core.md` (desktop shell, `/captain/*`)
+diff --git a/docs/tasks/T-428-ko-button-overlap.md b/docs/tasks/T-428-ko-button-overlap.md
+new file mode 100644
+index 00000000..b6418b46
+--- /dev/null
++++ b/docs/tasks/T-428-ko-button-overlap.md
+@@ -0,0 +1,66 @@
++# T-428 — KO floating button overlaps page content
++
++**Phase:** fix · **Depends on:** none · **Status:** ready
++
++## Goal
++The KO assistant floating button never covers interactive page content. Live review (2026-11-22, kochivo.site, captain Ali Esmail, Arabic dark): the button is fixed at bottom-left and collides with whatever content sits there, moving with scroll — 6 verified spots:
++- `/captain` desktop: covers the "جمعة" (Friday) label of the "تمارين الفريق" weekly chart.
++- `/captain/inbox` desktop: covers about a third of the green Send button in the message composer.
++- `/captain` phone: covers the left end of the "دوّر على لاعب" search field.
++- Player file phone: covers the tail of the "اليوم الأول · 4 نوفمبر" date in "آخر تمرين", and covers the "الكل" pill of the weight-chart period selector.
++- `/captain/inbox` phone: covers the voice-record (microphone) button in the composer.
++- `/captain/billing` phone: covers the left part of Hesham's "حدد باقة" button.
++
++## Design decisions (read first — they are load-bearing)
++1. **Do not hide the button.** It stays visible and reachable on every captain screen, desktop and phone. Hiding it, making it appear only on hover, or moving it off-screen is not a fix.
++2. **Fix it in one shared place, not six.** The repo already has the clearance mechanism: `src/app/globals.css` defines `--nav-clearance`, `--page-bottom-clearance` and `--captain-content-clearance` (the last already accounts for nav height + the 3.25rem launcher + 3rem). Find where that clearance is — or is not — applied as bottom padding on captain screens, and make the captain shell apply it consistently so content can always scroll clear of the button. Prefer the shared captain layout (`src/app/[locale]/(captain)/captain/layout.tsx`) over editing each screen.
++3. **Find which launcher is actually rendered.** `ko-teaser.tsx:92` renders one branch fixed at `end-page-x bottom-page-y` (bottom-left in RTL) and another at `start-...`; `ko-widget.tsx:66` renders at `start-...`. Determine which component the captain screens actually mount (teaser vs widget) and fix the one in use; if both are in use, fix both the same way. The opened panel (`ko-panel.tsx`, `ko-teaser-panel.tsx`, `ko-teaser-corner.tsx`) must stay consistent with the button position.
++4. **The composer exception.** The inbox composer (Send button, mic button) sits at the bottom of its own scroll area; bottom padding on the page alone may not clear it. If the composer needs its own clearance, add it in the composer, not by moving the button.
++5. DESIGN.md already requires this: "The composer and floating buttons sit above the nav and never cover content." This card implements that sentence.
++
++## Files
++Create or modify only these:
++- `docs/tasks/T-428-ko-button-overlap.md`: this card
++- `src/features/ko-preview/components/ko-teaser.tsx`: the launcher in use on captain screens (position)
++- `src/features/ko-preview/components/ko-widget.tsx`: same, if it is the launcher in use
++- `src/features/ko-preview/components/ko-panel.tsx`: keep the opened panel consistent with the button (only if its position must move with the button)
++- `src/features/ko-preview/components/ko-teaser-panel.tsx` and `ko-teaser-corner.tsx`: same, only if the in-use launcher opens them
++- `src/app/[locale]/(captain)/captain/layout.tsx`: apply the shared bottom clearance for captain screens, if that is the one-place fix (read-only investigation first; edit only if the clearance is missing here)
++- `src/app/globals.css`: only if a clearance token itself is wrong or missing (report the exact lines if so; prefer not to touch it)
++- Tests for the touched launcher/panel components under `src/features/ko-preview/` (create if missing)
++
++Do not edit any file outside this list — in particular do not edit the dashboard, inbox, billing or progress screens, and do not touch the staged log-cleanup entries, any T-421 file, any KO file (`src/features/ko-account/**`, `src/features/ko-entry/config.ts`, migrations 0164–0167, `src/types/app-database.ts`). If the fix genuinely needs another file, implement everything else and report the file + lines + reason in your final message instead of editing it. Do not commit or push.
++
++## Requirements
++1. At desktop width the button does not cover the "جمعة" chart label on `/captain` or any part of the Send button in the inbox composer. Content scrolls clear of it.
++2. At phone width (~390 CSS px) the button does not cover the search field on `/captain`, the date or the "الكل" pill in the player file, the mic button in the inbox composer, or the "حدد باقة" button on billing.
++3. The button remains visible, ≥ 48px, and opens its panel on every captain screen, desktop and phone.
++4. The opened panel does not cover the button itself in a way that traps the user (existing behaviour, keep it).
++5. No new dependency; no change to KO behaviour, counts or badge (T-429); no change to the bottom nav.
++6. Rules that still apply: files ≤ 250 lines, one component per file, kebab-case, import direction `app → features → (ui, core, lib)`, no `any`, no `console.log`, tokens only, logical RTL properties only, touch targets ≥ 48px, every user-facing string in `messages.ts` (ar/arStd/en), no emoji.
++
++## Acceptance
++- [ ] All six spots from the Goal are clear of the button at their widths (verify by reasoning from the layout + a test that asserts the clearance; a live re-check is not possible until deploy).
++- [ ] The button is still reachable and opens the panel on desktop and phone.
++- [ ] No other captain screen regresses (the clearance is shared, so a change here must not push content off-screen elsewhere).
++- [ ] `npm run check`, `npm run build` and `npx vitest run src/lib/perf-budget.test.ts` pass.
++
++## Tests (deterministic, inject `now`, no real timers, no network)
++- A test for the launcher component(s) asserting the fixed position classes/clearance it renders (the in-use branch), and that the button keeps its accessible label and ≥ 48px target.
++- If the fix lands in the captain layout, a test asserting the layout renders the clearance class/token on its content wrapper.
++- Keep existing ko-preview tests green.
++
++## Out of scope
++- The KO badge count (T-429) and KO chat behaviour.
++- The inbox composer itself, except its bottom clearance if decision 4 requires it (report it if so).
++- Any per-screen padding edits (the fix must be shared, per decision 2).
++- A live re-check on kochivo.site (not possible until deploy).
++
++## Notes for reviewer
++- The clearance tokens already exist (`--captain-content-clearance` in `globals.css:183`), which suggests the intended design was "content padded clear of the launcher" and some screen(s) lost it. The most likely outcome is a one-place layout fix, not six screen fixes.
++- If investigation shows the launcher is `ko-widget.tsx` (bottom-start in RTL = bottom-right) while the live review saw it bottom-left, say so: the two launchers may be mounted on different screens, and both may need the same treatment.
++
++## References
++- `src/app/globals.css:180-183` (`--nav-clearance`, `--page-bottom-clearance`, `--captain-content-clearance`)
++- `src/features/ko-preview/components/ko-teaser.tsx:46,92-93`, `ko-widget.tsx:25,66`, `ko-panel.tsx:56-58`
++- `DESIGN.md` (Layout: captain phone — "floating buttons sit above the nav and never cover content")
+diff --git a/docs/tasks/T-429-task-count-truth.md b/docs/tasks/T-429-task-count-truth.md
+new file mode 100644
+index 00000000..69d3f9cd
+--- /dev/null
++++ b/docs/tasks/T-429-task-count-truth.md
+@@ -0,0 +1,54 @@
++# T-429 — Contradictory task counts (KO badge vs dashboard/queue)
++
++**Phase:** fix · **Depends on:** none · **Status:** ready
++
++## Goal
++One source of truth for the pending/urgent task count, shared by the KO button badge, the `/captain` dashboard and the `/captain/tasks` queue. Live review (2026-11-22, kochivo.site, captain Ali Esmail, Arabic dark): the KO button badge says "مهمتين مستعجلين" (two urgent tasks, badge 2) while the dashboard and the task queue both say 0 pending tasks ("مفيش مهام", "خلصت كل المهام").
++
++## Design decisions (read first)
++1. **The queue is the truth.** The dashboard and the queue already agree (0). Whatever the KO badge counts must become the same number the queue shows. Do not change the queue or dashboard count to match the badge.
++2. **Find the badge's source before changing anything.** The badge strings live in `src/features/ko-feed/messages.ts` (`badge.one/two/few/...`). The count itself is loaded somewhere in `src/features/ko-feed/` (see `data/`, `hooks/`, `digest.ts`, `rank.ts`) and rendered by the KO launcher. The most likely causes are: the badge counts a different set than the queue (e.g. digest items such as inactive players, not pending tasks), or it counts a stale/cached feed. Identify the exact source and say which it is in Notes for reviewer.
++3. **Empty means hidden.** When the shared count is 0, the badge must not render (no "0", no stale "2").
++
++## Files
++Create or modify only these:
++- `docs/tasks/T-429-task-count-truth.md`: this card
++- `src/features/ko-feed/ko-feed.tsx` and/or `src/features/ko-feed/data/*` and/or `src/features/ko-feed/hooks/*`: the loader that produces the badge count (edit only the file(s) that actually own it)
++- `src/features/ko-feed/digest.ts`: only if the badge count is derived from the digest (do NOT edit it — T-436 owns it; see below)
++- `src/features/ko-feed/messages.ts`: only if a badge string must change (the strings themselves are probably fine)
++- `src/features/captain-workspace/queue/tasks-model.ts`: read-only reference for what the queue counts, unless the unification must be implemented here (report first if so)
++- `src/features/dashboard/home/tasks.ts`: read-only reference for what the dashboard counts
++- Tests: `src/features/ko-feed/ko-feed.test.ts` and `src/features/captain-workspace/queue/tasks-model.test.ts` (extend for the shared-count cases)
++
++Do not edit any file outside this list. In particular: do NOT edit `src/features/ko-preview/components/ko-teaser.tsx` (T-428 owns it — read it only to find where the badge renders), do NOT edit `src/features/ko-feed/digest.ts` (T-436 owns it — if the badge count comes from the digest, report the exact file + lines + the fix needed and implement everything else), and do not touch the staged log-cleanup entries, any T-421 file, any KO file (`src/features/ko-account/**`, `src/features/ko-entry/config.ts`, migrations 0164–0167, `src/types/app-database.ts`). If the badge count comes from a KO file, report the exact file + lines instead of editing it. Do not commit or push.
++
++## Requirements
++1. With an empty task queue, the KO badge renders nothing (no count, no "مهمتين مستعجلين").
++2. With N pending tasks in the queue, the KO badge shows N — the same N the dashboard hero and the queue show.
++3. The badge count updates when the queue changes (no stale count surviving after tasks are done; the existing polling/refresh mechanism must cover it — if it cannot, say so in Notes for reviewer).
++4. No change to what counts as a task in the queue or on the dashboard.
++5. Rules that still apply: files ≤ 250 lines, one component per file, kebab-case, import direction `app → features → (ui, core, lib)`, no `any`, no `console.log`, tokens only, logical RTL properties only, touch targets ≥ 48px, every user-facing string in `messages.ts` (ar/arStd/en), no emoji.
++
++## Acceptance
++- [ ] Empty queue → dashboard 0, queue empty state, KO badge hidden. (This is the live-review case.)
++- [ ] Queue with 2 pending tasks → dashboard 2, queue 2, KO badge 2.
++- [ ] Completing all tasks clears the badge (no stale 2).
++- [ ] `npm run check`, `npm run build` and `npx vitest run src/lib/perf-budget.test.ts` pass.
++
++## Tests (deterministic, inject `now`, no real timers, no network)
++- `ko-feed.test.ts`: badge count is 0/hidden when the queue is empty; badge count equals the queue count when tasks exist; the badge count derives from the same source as the queue (mock the shared loader once and assert both consumers see it).
++- `tasks-model.test.ts`: keep the queue-count cases green.
++
++## Out of scope
++- The sidebar Tasks badge (T-427) — different badge, different loader.
++- Changing the definition of an urgent task.
++- The KO chat, KO memory, KO usage (T-422–T-426).
++- A live re-check on kochivo.site (not possible until deploy).
++
++## Notes for reviewer
++- State here which source the badge was counting before the fix (digest items? stale feed? a different query?) and which source it counts now.
++
++## References
++- `src/features/ko-feed/messages.ts:20,25,45` (badge strings)
++- `src/features/ko-feed/` (`data/`, `hooks/`, `digest.ts`, `rank.ts` — count loader lives here)
++- `src/features/captain-workspace/queue/tasks-model.ts`, `src/features/dashboard/home/tasks.ts` (queue/dashboard counts)
+diff --git a/docs/tasks/T-430-empty-state-100-percent.md b/docs/tasks/T-430-empty-state-100-percent.md
+new file mode 100644
+index 00000000..bc08b001
+--- /dev/null
++++ b/docs/tasks/T-430-empty-state-100-percent.md
+@@ -0,0 +1,53 @@
++# T-430 — Empty state claims 100% completion with zero tasks
++
++**Phase:** fix · **Depends on:** none · **Status:** ready
++
++## Goal
++With zero tasks, `/captain` must not claim 100% completion. Live review (2026-11-22, kochivo.site, captain Ali Esmail, Arabic dark, desktop): the hero says "خلصت مهام النهارده" and the progress ring/bar reports 100% completion ("تقدم مهام النهارده: 100"), while weekly adherence is 0% with a -25% badge. A vacuous 100% next to a 0% adherence warning sends opposite signals.
++
++## Design decisions (read first)
++1. **Zero tasks is not 100% done, it is nothing to do.** When `count === 0`, do not render the progress bar/percentage at all. The hero already has the neutral empty copy (`t('emptyHero')`) — let that carry the state, with no percentage beside it.
++2. **The likely culprit is `taskProgress(completed, count)`.** `home-hero-view.tsx` renders `<ProgressBar value={taskProgress(completed, count)} max={1}>` unconditionally. A 0/0 division (or a "no tasks means done" default) producing 1 is the vacuous 100%. Fix the call site (do not render when count is 0); fix `taskProgress` itself too if 0/0 returns 1, so no other caller can show a vacuous 100%.
++3. **Check the phone hero too.** `phone-home-hero.tsx` / `home-ring.tsx` render the same hero on phone. If they show the same vacuous percentage, apply the same rule there.
++4. **Adherence badge.** The weekly adherence line (`teamStatus(adherence)`, 0% with a -25% badge) is a separate signal. If the -25% is also vacuous (a delta against a previous week with no data), neutralise it for the empty case as well and note it. If it is a real delta, leave it alone.
++
++## Files
++Create or modify only these:
++- `docs/tasks/T-430-empty-state-100-percent.md`: this card
++- `src/features/dashboard/home/home-hero-view.tsx`: do not render the progress bar/percentage when `count === 0`
++- `src/features/dashboard/home/tasks.ts`: `taskProgress` — 0/0 must not return 1 (if it does today)
++- `src/features/dashboard/home/phone-home-hero.tsx` and `src/features/dashboard/home/home-ring.tsx`: same rule on the phone hero, if they render a percentage/ring for the empty case
++- `src/features/dashboard/home/messages.ts` and `standard-messages.ts`: only if a string must change or a new empty-state string is needed (ar/arStd/en)
++- Tests under `src/features/dashboard/home/` for the hero (`phone-home.test.ts`, `adherence.test.ts`, `live-fixes.test.ts` — extend the ones that cover the hero; create a focused test if none covers the empty case)
++
++Do not edit any file outside this list. Do not touch the staged log-cleanup entries, any T-421 file, any KO file (`src/features/ko-account/**`, `src/features/ko-entry/config.ts`, migrations 0164–0167, `src/types/app-database.ts`). If the fix genuinely needs another file, implement everything else and report the file + lines + reason in your final message instead of editing it. Do not commit or push.
++
++## Requirements
++1. `count === 0` → hero shows the empty copy and no progress bar, no percentage, no ring value claiming completion (desktop and phone).
++2. `count > 0` → behaviour unchanged: the progress bar shows `completed / count`.
++3. `taskProgress(0, 0)` returns 0 (or is never called with count 0 — state which in Notes).
++4. Adherence: 0% adherence still shows honestly; the -25% badge is neutralised only if it is vacuous (state the finding in Notes).
++5. Rules that still apply: files ≤ 250 lines, one component per file, kebab-case, import direction `app → features → (ui, core, lib)`, no `any`, no `console.log`, tokens only, logical RTL properties only, touch targets ≥ 48px, every user-facing string in `messages.ts` (ar/arStd/en), no emoji.
++
++## Acceptance
++- [ ] Zero tasks, desktop: hero reads as "nothing to do", no 100%, no progress bar.
++- [ ] Zero tasks, phone: same.
++- [ ] Two tasks, one done: progress shows 50%.
++- [ ] `npm run check`, `npm run build` and `npx vitest run src/lib/perf-budget.test.ts` pass.
++
++## Tests (deterministic, inject `now`, no real timers, no network)
++- Hero tests: count 0 → no progress element/percentage in the output; count 2 completed 1 → progress 0.5; `taskProgress(0, 0)` → 0.
++- Adherence tests: keep existing cases green; add the empty-case expectation if the badge is neutralised.
++
++## Out of scope
++- The contradictory KO badge count (T-429) and the sidebar badge (T-427).
++- Redesigning the hero or the adherence metric.
++- A live re-check on kochivo.site (not possible until deploy).
++
++## Notes for reviewer
++- State whether `taskProgress(0, 0)` returned 1, and whether the -25% adherence badge was vacuous or real.
++
++## References
++- `src/features/dashboard/home/home-hero-view.tsx` (ProgressBar, `taskProgress(completed, count)`, `teamStatus(adherence)`)
++- `src/features/dashboard/home/tasks.ts` (`taskProgress`)
++- `src/features/dashboard/home/phone-home-hero.tsx`, `home-ring.tsx` (phone hero)
+diff --git a/docs/tasks/T-431-weight-chart-pills.md b/docs/tasks/T-431-weight-chart-pills.md
+new file mode 100644
+index 00000000..6d3f2f54
+--- /dev/null
++++ b/docs/tasks/T-431-weight-chart-pills.md
+@@ -0,0 +1,48 @@
++# T-431 — Weight-chart period pills wrap mid-word on desktop
++
++**Phase:** fix · **Depends on:** none · **Status:** ready
++
++## Goal
++The weight-chart period selector pills never break mid-word and stay equal height. Live review (2026-11-22, kochivo.site, captain Ali Esmail, Arabic dark, player file, desktop): the selected "3 شهور" pill breaks onto two lines ("3 شهو" / "ر") and grows taller than its "شهر" and "الكل" siblings. At phone width the same selector fits on one line.
++
++## Design decisions (read first)
++1. **Pills are one line, always.** Add `whitespace-nowrap` (and `shrink-0` where the row can squeeze) to the period pills so no label can break mid-word at any width.
++2. **Equal height.** The pills must share one height; the selected pill must not grow taller than its siblings. If the height difference comes from the selected state adding padding/border, make the selected state use the same box (e.g. outline/border inside the same height, not extra padding).
++3. **Overflow, not wrap.** If the three pills do not fit their container at some width, let the row scroll horizontally (the component already accepts `phoneScroll`) rather than wrapping or shrinking a pill. Do not shorten the labels.
++
++## Files
++Create or modify only these:
++- `docs/tasks/T-431-weight-chart-pills.md`: this card
++- `src/features/progress/components/chart/calm-chart.tsx`: the period selector (`Segmented options`, `phoneScroll`, `chartQuarter` "3 شهور")
++- The shared `Segmented` component the chart renders (find it from the chart's import; name the file in Notes for reviewer) — edit it only if the wrap comes from the shared component rather than the chart
++- Tests for the chart/segmented component under `src/features/progress/` (extend the existing chart tests if any; create a focused test if none covers the pills)
++
++Do not edit any file outside this list. Do not touch the staged log-cleanup entries, any T-421 file (`src/features/progress/data/checkins.ts`, `components/checkin-sheet.tsx`, `components/checkin-history.tsx`, `messages.ts`, `standard/messages.ts`, `src/core/offline/*`, migration 0164, `src/types/app-database.ts`), any KO file (`src/features/ko-account/**`, `src/features/ko-entry/config.ts`, migrations 0165–0167). If the fix genuinely needs another file, implement everything else and report the file + lines + reason in your final message instead of editing it. Do not commit or push.
++
++## Requirements
++1. "شهر", "3 شهور", "الكل" each render on one line at desktop width, with equal height.
++2. Same at phone width (~390 CSS px).
++3. The selected pill is visually distinct but the same height as the others.
++4. No label text changes.
++5. Rules that still apply: files ≤ 250 lines, one component per file, kebab-case, import direction `app → features → (ui, core, lib)`, no `any`, no `console.log`, tokens only, logical RTL properties only, touch targets ≥ 48px, every user-facing string in `messages.ts` (ar/arStd/en), no emoji.
++
++## Acceptance
++- [ ] Desktop player file: the three pills are one line each, equal height, "3 شهور" intact.
++- [ ] Phone player file: same.
++- [ ] Selecting each period still switches the chart.
++- [ ] `npm run check`, `npm run build` and `npx vitest run src/lib/perf-budget.test.ts` pass.
++
++## Tests (deterministic, inject `now`, no real timers, no network)
++- Chart/segmented test: the pill elements carry the non-wrapping class and equal-height styling; all three period labels render intact (assert the full "3 شهور" string is present in one element, not split across lines/elements).
++
++## Out of scope
++- The weight chart data, the KO button covering the "الكل" pill on phone (T-428), any other chart.
++- A live re-check on kochivo.site (not possible until deploy).
++
++## Notes for reviewer
++- State whether the wrap came from the chart or the shared Segmented component.
++- Implemented 2026-11-22 (T-431): the wrap came from the shared `Segmented` component (`src/ui/segmented.tsx`), not the chart. On desktop its buttons were `min-w-0 flex-1` with no `whitespace-nowrap` (that class only existed as `max-md:` under `phoneScroll`), so the row squeezed "3 شهور" until it wrapped. Fix, all in `segmented.tsx`: buttons are now `min-w-fit shrink-0 flex-1 whitespace-nowrap` (still grow equally when space allows, never shrink below the label), and the row is `max-w-full overflow-x-auto` at every width so it scrolls instead of wrapping. Equal height needs no extra rule: every pill is `min-h-12` with no vertical padding, so all are exactly 48px; the selected `glass-raised` border sits inside that height (border-box) — the taller selected pill in the live review was purely the two-line wrap. `calm-chart.tsx` needed no change. Tests: new pill test in `src/features/progress/calm-chart.test.ts`; pre-existing `src/ui/segmented-phone.test.ts` still passes unmodified.
++
++## References
++- `src/features/progress/components/chart/calm-chart.tsx:56,70` (options, `Segmented`, `phoneScroll`)
++- `src/features/progress/messages.ts:36` (`chartMonth`, `chartQuarter` "3 شهور", `chartAll`)
+diff --git a/docs/tasks/T-432-billing-receipts-vanish.md b/docs/tasks/T-432-billing-receipts-vanish.md
+new file mode 100644
+index 00000000..a3a97ab3
+--- /dev/null
++++ b/docs/tasks/T-432-billing-receipts-vanish.md
+@@ -0,0 +1,52 @@
++# T-432 — Receipts section vanishes after loading on billing
++
++**Phase:** fix · **Depends on:** none · **Status:** ready
++
++## Goal
++The "الإيصالات" (receipts) section stays visible on `/captain/billing` after loading, with its receipts or an honest empty state. Live review (2026-11-22, kochivo.site, captain Ali Esmail, Arabic dark, both widths): the page first shows an "الإيصالات" card with a "بنحمّل الإيصالات" skeleton, then the section disappears entirely from the loaded page even though payments exist (a player paid 500 EGP via InstaPay); the loaded page text contains no "الإيصالات" at all.
++
++## Design decisions (read first — the cause is already visible in code)
++1. **The workspace branch drops the section when the list is empty.** In `src/features/billing/receipts/captain-receipts.tsx`, the workspace branch renders `{rows.length > 0 && <WorkspaceBillingTask label={t('title')} ...>}` — when `rows` loads as an empty array, nothing renders at all. The non-workspace branch in the same file already does the right thing: it renders `t('empty')` ("No receipts awaiting review" / ar equivalent) when `rows.length` is 0. Make the workspace branch match: render the section with the empty state when there is nothing awaiting review.
++2. **Check the loader before assuming the list is wrong.** `listPaymentReceipts()` (via `receipt-actions.ts` / `receipt-read.ts`) lists receipts *awaiting review*. A payment that was already reviewed and decided correctly does not appear here — that is not a bug. Before changing the loader, verify what it filters: if it wrongly excludes pending receipts (e.g. a player paid 500 EGP via InstaPay and the receipt is still undecided but missing), fix the filter; if it correctly returns only undecided receipts, leave the loader alone and fix only the empty rendering (decision 1).
++3. **The section title stays.** The section must keep its "الإيصالات" heading and count badge area in the loaded state, empty or not, so the skeleton-to-content transition never removes a section the captain just saw.
++
++## Files
++Create or modify only these:
++- `docs/tasks/T-432-billing-receipts-vanish.md`: this card
++- `src/features/billing/receipts/captain-receipts.tsx`: workspace branch renders the section + empty state when `rows` is empty
++- `src/features/billing/components/workspace-billing.tsx`: read how `CaptainReceipts` is mounted (workspace prop); edit only if the mounting is what drops the section
++- `src/features/billing/data/receipt-actions.ts` and `src/features/billing/data/receipt-read.ts`: read-only investigation of the loader filter; edit only if the filter wrongly excludes undecided receipts (state the finding in Notes either way)
++- `src/features/billing/receipts/messages.ts`: only if the empty string needs adding for the workspace branch (the `empty` key already exists — reuse it)
++- Tests: `src/features/billing/receipts/review.test.ts` and `src/features/billing/payments-screen.test.ts` (extend for the empty-list workspace case)
++
++Do not edit any file outside this list. Do not touch the staged log-cleanup entries, any T-421 file, any KO file (`src/features/ko-account/**`, `src/features/ko-entry/config.ts`, migrations 0164–0167, `src/types/app-database.ts`). If the fix genuinely needs another file, implement everything else and report the file + lines + reason in your final message instead of editing it. Do not commit or push.
++
++## Requirements
++1. Workspace billing page, receipts list empty: the "الإيصالات" section is present with the empty copy (not absent).
++2. Workspace billing page, receipts pending: the section lists them (existing behaviour, keep it).
++3. Loading skeleton still shows while loading; load error still shows the error + retry (existing behaviour, keep it).
++4. The non-workspace rendering is unchanged.
++5. If the loader filter is found wrong, it is fixed and covered by a test; if it is correct, no loader change.
++6. Rules that still apply: files ≤ 250 lines, one component per file, kebab-case, import direction `app → features → (ui, core, lib)`, no `any`, no `console.log`, tokens only, logical RTL properties only, touch targets ≥ 48px, every user-facing string in `messages.ts` (ar/arStd/en), no emoji.
++
++## Acceptance
++- [ ] Billing page with no receipts awaiting review shows the "الإيصالات" section with its empty state (desktop and phone).
++- [ ] Billing page with pending receipts lists them.
++- [ ] The section no longer appears-then-vanishes on load.
++- [ ] `npm run check`, `npm run build` and `npx vitest run src/lib/perf-budget.test.ts` pass.
++
++## Tests (deterministic, inject `now`, no real timers, no network)
++- `review.test.ts` / `payments-screen.test.ts`: workspace `CaptainReceipts` with `rows: []` renders the section title and the empty copy; with rows it renders the list; loading renders the skeleton text; error renders the error + retry. Mock `useResource` as the existing tests do.
++
++## Out of scope
++- Changing which receipts count as "awaiting review" beyond fixing a wrong filter (decision 2).
++- The billing status pills (T-433) and the receipts review flow itself.
++- A live re-check on kochivo.site (not possible until deploy).
++
++## Notes for reviewer
++- State whether the loader filter was correct or wrong, and what the 500 EGP InstaPay payment's receipt status is expected to be (awaiting review vs already decided) under the fixed code.
++
++## References
++- `src/features/billing/receipts/captain-receipts.tsx` (workspace branch: `rows.length > 0 && <WorkspaceBillingTask ...>`; non-workspace branch renders `t('empty')`)
++- `src/features/billing/receipts/messages.ts:15-16` (`loading: 'بنحمّل الإيصالات'`, `empty`, `loadError`)
++- `src/features/billing/data/receipt-actions.ts`, `receipt-read.ts` (`listPaymentReceipts`)
+diff --git a/docs/tasks/T-433-billing-status-pills.md b/docs/tasks/T-433-billing-status-pills.md
+new file mode 100644
+index 00000000..2f7b40d1
+--- /dev/null
++++ b/docs/tasks/T-433-billing-status-pills.md
+@@ -0,0 +1,47 @@
++# T-433 — Billing status pills wrap to two lines on desktop
++
++**Phase:** fix · **Depends on:** none · **Status:** ready
++
++## Goal
++Billing status pills fit on one line. Live review (2026-11-22, kochivo.site, captain Ali Esmail, Arabic dark, desktop): "مدفوعة كاملة" and "من غير باقة" break mid-phrase in the narrow status column. Readable but untidy.
++
++## Design decisions (read first)
++1. **The pill never wraps.** The status span in `workspace-billing-payment-row.tsx` is `<span className="inline-flex rounded-md px-inline text-micro font-semibold ...">` with no `whitespace-nowrap`. Add `whitespace-nowrap` (and `shrink-0` where the row can squeeze it) so the phrase stays on one line.
++2. **Widen the column if the pill still does not fit.** The desktop row is a table row at `min-[1024px]`; if the status column is too narrow for the longest status ("مدفوعة كاملة", "من غير باقة", "مدفوعة جزئيًا"), give the status cell room (e.g. let the table size that column to content) rather than letting the pill wrap. Do not shorten the labels.
++3. **Check the phone row too.** `workspace-billing-phone-player.tsx` renders the same status for the same players; apply the same non-wrapping there if it uses the same pill.
++
++## Files
++Create or modify only these:
++- `docs/tasks/T-433-billing-status-pills.md`: this card
++- `src/features/billing/components/workspace-billing-payment-row.tsx`: the desktop status pill
++- `src/features/billing/components/workspace-billing-phone-player.tsx`: the phone status, if it renders the same pill
++- `src/features/billing/components/workspace-billing-summary.tsx`: only if the desktop table/column widths live there and the column must be widened (it defines the `PaymentRow` type the row imports — check where the table is)
++- Tests: `src/features/billing/payments-screen.test.ts` (extend for the non-wrapping status)
++
++Do not edit any file outside this list. Do not touch the staged log-cleanup entries, any T-421 file, any KO file (`src/features/ko-account/**`, `src/features/ko-entry/config.ts`, migrations 0164–0167, `src/types/app-database.ts`). If the fix genuinely needs another file, implement everything else and report the file + lines + reason in your final message instead of editing it. Do not commit or push.
++
++## Requirements
++1. Desktop billing table: every status pill ("مدفوعة كاملة", "من غير باقة", "مدفوعة جزئيًا", and the other statuses in the same span) renders on one line.
++2. Phone billing rows: same, if the same pill is used there.
++3. No label text changes; no column content removed to make room.
++4. Rules that still apply: files ≤ 250 lines, one component per file, kebab-case, import direction `app → features → (ui, core, lib)`, no `any`, no `console.log`, tokens only, logical RTL properties only, touch targets ≥ 48px, every user-facing string in `messages.ts` (ar/arStd/en), no emoji.
++
++## Acceptance
++- [ ] Desktop: "مدفوعة كاملة" and "من غير باقة" each on one line.
++- [ ] Phone: same where the pill appears.
++- [ ] No other billing column is broken by the widening.
++- [ ] `npm run check`, `npm run build` and `npx vitest run src/lib/perf-budget.test.ts` pass.
++
++## Tests (deterministic, inject `now`, no real timers, no network)
++- `payments-screen.test.ts`: the rendered status pill carries the non-wrapping class for the fully-paid and no-package rows.
++
++## Out of scope
++- The receipts section (T-432), payment amounts, the progress bar in the same row.
++- A live re-check on kochivo.site (not possible until deploy).
++
++## Notes for reviewer
++- State whether the column needed widening or the pill class alone fixed it.
++
++## References
++- `src/features/billing/components/workspace-billing-payment-row.tsx:30-41` (status selection) and the status `<span>` (no `whitespace-nowrap`)
++- `src/features/billing/messages.ts:16` (`fullyPaid: 'مدفوعة كاملة'`, `noPackage: 'من غير باقة'`)
+diff --git a/docs/tasks/T-434-hero-ring-cut-off-phone.md b/docs/tasks/T-434-hero-ring-cut-off-phone.md
+new file mode 100644
+index 00000000..f07684f3
+--- /dev/null
++++ b/docs/tasks/T-434-hero-ring-cut-off-phone.md
+@@ -0,0 +1,48 @@
++# T-434 — Hero progress ring cut off on phone
++
++**Phase:** fix · **Depends on:** none · **Status:** ready
++
++## Goal
++The "مهام النهارده" progress ring on `/captain` fits inside the viewport at phone width. Live review (2026-11-22, kochivo.site, captain Ali Esmail, Arabic dark, phone ~382 CSS px): the ring is sliced by the left edge of the viewport; only its right half is visible, and the page does not scroll horizontally to reveal it. No other horizontal scrolling was found on any screen at either width.
++
++## Design decisions (read first)
++1. **The ring must fit, not be revealed by scrolling.** The page correctly has no horizontal scroll; the fix is to make the ring fit within the phone viewport (shrink the ring, fix the grid/flex sizing that pushes it past the edge, or reflow the hero at phone width) — never by enabling horizontal scrolling.
++2. **Find what pushes it out.** The phone hero is `src/features/dashboard/home/phone-home-hero.tsx` with the ring in `src/features/dashboard/home/home-ring.tsx`. Likely causes: a fixed-width grid column, a `min-w` that exceeds the viewport, a negative margin, or the ring's size plus its side content exceeding 100vw minus page padding. Measure from the code (grid/flex widths, ring size, `page-x` padding) and fix the sizing, not the symptom.
++3. **Desktop is fine — keep it that way.** The desktop hero (`home-hero-view.tsx`) is not cut off; do not change its layout.
++
++## Files
++Create or modify only these:
++- `docs/tasks/T-434-hero-ring-cut-off-phone.md`: this card
++- `src/features/dashboard/home/phone-home-hero.tsx`: the phone hero layout
++- `src/features/dashboard/home/home-ring.tsx`: the ring component (size/sizing, only if the ring itself must shrink or become responsive)
++- `src/features/dashboard/home/home-hero-view.tsx`: read-only reference for the desktop hero; edit only if the phone hero shares sizing with it (report first if so)
++- Tests under `src/features/dashboard/home/` for the phone hero (`phone-home.test.ts` — extend; create a focused test if none covers the ring)
++
++Do not edit any file outside this list. Do not touch the staged log-cleanup entries, any T-421 file, any KO file (`src/features/ko-account/**`, `src/features/ko-entry/config.ts`, migrations 0164–0167, `src/types/app-database.ts`). If the fix genuinely needs another file, implement everything else and report the file + lines + reason in your final message instead of editing it. Do not commit or push.
++
++## Requirements
++1. At ~390 CSS px the full ring is visible inside the viewport (no slice at the left edge, no horizontal scroll).
++2. The ring keeps its number/label readable at phone width.
++3. Desktop hero unchanged; no other phone screen gains horizontal scrolling.
++4. Rules that still apply: files ≤ 250 lines, one component per file, kebab-case, import direction `app → features → (ui, core, lib)`, no `any`, no `console.log`, tokens only, logical RTL properties only, touch targets ≥ 48px, every user-facing string in `messages.ts` (ar/arStd/en), no emoji.
++
++## Acceptance
++- [ ] Phone hero: the ring is fully visible within the viewport (verify by reasoning from the layout widths + a test; a live re-check is not possible until deploy).
++- [ ] The page still has no horizontal scrolling at phone width.
++- [ ] Desktop hero unchanged.
++- [ ] `npm run check`, `npm run build` and `npx vitest run src/lib/perf-budget.test.ts` pass.
++
++## Tests (deterministic, inject `now`, no real timers, no network)
++- Phone hero test: the hero/ring renders with the fitting layout classes/widths at phone width (assert the container constrains the ring within the viewport: no fixed width wider than the viewport, no negative offset pushing it out). Keep existing phone hero tests green.
++
++## Out of scope
++- The empty-state 100% contradiction (T-430) — same hero, different bug; do not mix the fixes.
++- Any other phone layout issue.
++- A live re-check on kochivo.site (not possible until deploy).
++
++## Notes for reviewer
++- State what pushed the ring out (fixed width / grid / margin) and what the fix changes.
++
++## References
++- `src/features/dashboard/home/phone-home-hero.tsx`, `src/features/dashboard/home/home-ring.tsx`
++- `DESIGN.md` (Spacing: `page-x` 16/24; Layout: captain phone bottom nav)
+diff --git a/docs/tasks/T-435-minor-polish-bundle.md b/docs/tasks/T-435-minor-polish-bundle.md
+new file mode 100644
+index 00000000..a447495c
+--- /dev/null
++++ b/docs/tasks/T-435-minor-polish-bundle.md
+@@ -0,0 +1,56 @@
++# T-435 — Minor polish bundle: dead void, slow player-file open, late thumbnails
++
++**Phase:** fix · **Depends on:** none · **Status:** ready
++
++## Goal
++Three small live-review findings, one card: (a) `/captain` desktop leaves a large dead black void in the middle column below "دوّر على لاعب" when scrolled; (b) opening a player file from the roster is slow (~4 s before navigation starts, both widths); (c) exercise thumbnails in the player file show as dark placeholders for several seconds before loading.
++
++## Design decisions (read first)
++1. **(a) Void.** The home layout is `src/features/dashboard/components/workspace-home.tsx` (middle column). Find what is supposed to fill that column space: if a panel is missing, collapsed, or only renders under a condition that is false on this account, restore/rebalance it; if the column is intentionally sparse, reduce the void by letting a neighbouring panel span or by tightening the column. Do not add a new feature to fill it.
++2. **(b) Slow navigation — investigate honestly.** ~4 s before navigation *starts* points at the tap handler or the prefetch, not the destination page. Note that roster rows and nav links all use `prefetch={false}` (`src/features/roster/components/roster-row-view.tsx:42`, `captain-frame-nav-view.tsx:24`, `captain-nav-groups.tsx:23,42`). Investigate: is the delay the disabled prefetch, a blocking load in the tap handler, or the player-file server load itself? Improve it if it is a code issue (e.g. enable prefetch for roster row links where safe). If the 4 s is server/data-bound rather than fixable here, say so plainly in Notes for reviewer with the evidence, and do NOT fake a fix. A measured statement beats a hopeful one.
++3. **(c) Thumbnails.** Exercise thumbnails in the player file (`src/features/captain-workspace/player-file/overview-activity.tsx` and the thumbnail component it uses) show dark placeholders for seconds. Improve the loading state: a skeleton shaped like the image (per DESIGN.md states), eager loading for visible images, or a lighter placeholder — whichever the code supports. Do not change the images themselves or their source.
++
++## Files
++Create or modify only these:
++- `docs/tasks/T-435-minor-polish-bundle.md`: this card
++- (a) `src/features/dashboard/components/workspace-home.tsx` (middle column layout; the home views it composes only if the void comes from one of them — report the file if so)
++- (b) `src/features/roster/components/roster-row-view.tsx` (prefetch on the player-file link, if that is the fix) and the player-file route loader `src/app/[locale]/(captain)/captain/players/[playerId]/page.tsx` (read-only investigation; edit only if the load itself must be split/lazy)
++- (c) `src/features/captain-workspace/player-file/overview-activity.tsx` and the exercise thumbnail component it renders (name the file in Notes for reviewer)
++- Tests for the touched areas (extend existing tests under `src/features/dashboard/`, `src/features/roster/`, `src/features/captain-workspace/player-file/`; create focused tests where none cover the change)
++
++Do not edit any file outside this list. Do not touch the staged log-cleanup entries, any T-421 file, any KO file (`src/features/ko-account/**`, `src/features/ko-entry/config.ts`, migrations 0164–0167, `src/types/app-database.ts`). If a fix genuinely needs another file, implement everything else and report the file + lines + reason in your final message instead of editing it. Do not commit or push.
++
++## Requirements
++1. (a) The middle column below "دوّر على لاعب" no longer shows a large dead black void on `/captain` desktop when scrolled (or the void is materially reduced with a stated reason if it cannot be removed).
++2. (b) Player-file navigation from the roster is faster if the cause is in code; if it is server/data-bound, Notes for reviewer says so with evidence and no code change pretends otherwise.
++3. (c) Exercise thumbnails in the player file show a proper loading state and appear faster (or the placeholder no longer reads as a broken dark box).
++4. Rules that still apply: files ≤ 250 lines, one component per file, kebab-case, import direction `app → features → (ui, core, lib)`, no `any`, no `console.log`, tokens only, logical RTL properties only, touch targets ≥ 48px, every user-facing string in `messages.ts` (ar/arStd/en), no emoji.
++
++## Acceptance
++- [ ] (a) Desktop `/captain` scrolled: middle column void gone or reduced, stated which.
++- [ ] (b) Navigation delay investigated with a stated cause; fixed in code if fixable, stated as server-bound with evidence if not.
++- [ ] (c) Thumbnails load with a proper loading state.
++- [ ] `npm run check`, `npm run build` and `npx vitest run src/lib/perf-budget.test.ts` pass.
++
++## Tests (deterministic, inject `now`, no real timers, no network)
++- (a) Home layout test asserting the middle column renders its panel(s) in the scrolled state, if the fix is structural.
++- (b) If prefetch is enabled, a test asserting the roster row link carries prefetch; if the cause is server-bound, no test pretends otherwise — record the finding in Notes.
++- (c) Thumbnail test asserting the loading state renders (skeleton, not a bare dark box) before the image loads.
++
++## Out of scope
++- The hero ring (T-434), the empty-state 100% (T-430), the KO button overlap (T-428) — same screens, different bugs.
++- Adding new panels or features to fill the void.
++- A live re-check on kochivo.site (not possible until deploy).
++
++## Notes for reviewer
++- State for (b) the measured cause (prefetch off / handler blocking / server load) and what, if anything, changed it.
++- Follow-up done by the coordinator after the worker's report (2026-11-22): the worker found (b) server/data-bound and named the fix — start `loadActivity` concurrently in `src/features/captain-workspace/player-file/file-content.tsx:50-62`. Done: `loadActivity(playerId, today)` now starts in the same `Promise.all` as `loadSummary`/`unreadCounts` (it only needs `playerId` + `today`), gated by `needsActivity` for overview/nutrition tabs; error semantics unchanged (the `try/catch` still renders `FileState` on any failure; `Promise.all` swallows later settlements, so no unhandled rejection). New test `src/features/captain-workspace/player-file/file-content-load.test.ts` asserts the shared `Promise.all` (source assertion, the repo's usual pattern for server-load ordering). Targeted tests 7/7, ESLint exit 0, `tsc --noEmit` exit 0. The remaining sequential stages (profile → timezones → claims → summary) are unchanged; a live timing re-check still needs a real device after deploy.
++- (a) Done: `WorkspaceActivity` moved from the 330px side column into the middle (1fr) column, below `SmartAlerts`, in `workspace-home.tsx`. The middle column only held the task list (a one-line empty state at 0 tasks) plus alerts, while the side column held finder + money + activity (capped at 5 events, ~380px) + week chart + confirmations — a ~600–1000px void below the middle column once scrolled. Moving the activity panel rebalances both columns to within ~one panel height on 0-task and busy accounts alike. No new panel, no new strings. Layout test `src/features/dashboard/workspace-home-layout.test.ts` pins the order (activity renders after alerts, before the finder).
++- (b) Measured cause: **server/data-bound, not the tap handler and not prefetch.** Evidence: the real roster row is a plain `<Link prefetch={false}>` — `RosterRow` never passes `onSelect`, so there is no blocking tap handler (`onSelect` only exists for the demo shell path). Prefetch is deliberately off: `src/features/roster/list-prefetch.test.ts` asserts `prefetch={false}` on all 6 roster-row links because prefetching every row trips the host's per-IP rate limit (429) — enabling it is not a fix. The player-file route already has `loading.tsx` and streams through `<Suspense fallback={<FileState/>}>`, but the overview content needs ~5 sequential server stages before first paint: `readPlayerProfile` → timezone lookups → `currentClaims()` → `Promise.all([loadSummary, unreadCounts])` → `loadActivity`, with `loadSummary` itself doing 9 parallel queries plus a dependent form query (`src/features/captain-workspace/player-file/load-summary.ts`, `load-activity.ts`). No code change was made here: nothing in the allowed files can shorten that chain, and no change here should pretend otherwise.
++- (b) Fix needing a file outside this card's list: split/lazy the player-file overview load in `src/features/captain-workspace/player-file/file-content.tsx:50-62` — start `loadActivity(playerId, today)` concurrently with `loadSummary`/`unreadCounts` instead of awaiting it after them, or give the overview sections their own `<Suspense>` boundaries so the header paints before the activity feed resolves. Not edited (outside this card's Files list).
++- (c) implemented 2026-11-22, thumbnail component is `src/ui/exercise-image.tsx` (used by `overview-activity.tsx`): the last-workout thumbnails now pass `eager`, so the real GIF URL renders server-side with `loading="eager"` instead of waiting for the IntersectionObserver + lazy load; the placeholder is now a pulsing skeleton (`animate-pulse bg-surface-raised`, shaped by the reserved aspect-ratio box) that clears to transparent once the image loads. Also fixed in the same component: with `prefers-reduced-motion` the observer setup returned early without ever showing the image, so those users kept the dark box forever — it now loads immediately. Other `ExerciseImage` callers keep the lazy + observer behaviour. No image or image source changed. Tests: new `src/features/captain-workspace/player-file/exercise-thumbnail.test.ts` (3 tests, incl. rendering `OverviewActivity` itself). Items (a) and (b) were not touched by this worker.
++
++## References
++- `src/features/dashboard/components/workspace-home.tsx`
++- `src/features/roster/components/roster-row-view.tsx:42` (`prefetch={false}` on the player-file link)
++- `src/features/captain-workspace/player-file/overview-activity.tsx` (exercise thumbnails)
+diff --git a/docs/tasks/T-436-notifications-invite-label.md b/docs/tasks/T-436-notifications-invite-label.md
+new file mode 100644
+index 00000000..cbcdbcc6
+--- /dev/null
++++ b/docs/tasks/T-436-notifications-invite-label.md
+@@ -0,0 +1,56 @@
++# T-436 — Incidental live findings: notifications duplication/garble, invite label
++
++**Phase:** fix · **Depends on:** none · **Status:** ready
++
++## Goal
++Two incidental findings from the live review (2026-11-22, kochivo.site, captain Ali Esmail, Arabic dark), outside the six assigned screens: (a) the Notifications page repeats the same pain report several times and has a garbled line "متمرّنش بقاله 3 أيام أو أكتر من 5 ساعات"; (b) the invite form's package option reads "0 شهر 500 ج" while its summary spans a month (22 Nov → 21 Dec).
++
++## Design decisions (read first)
++1. **(a) The garbled line is a composition bug, not a typo.** Two real strings exist: `src/features/notifications/messages.ts:52` `player_inactive: '{name} متمرّنش بقاله 3 أيام أو أكتر'` and `src/features/ko-feed/messages.ts:4` `digestInactive: 'لاعب واحد متمرّنش من 5 أيام'`. The live line "متمرّنش بقاله 3 أيام أو أكتر من 5 ساعات" reads like two different alerts stitched together (a 3-days inactivity line + a "5 ..." fragment from another alert). Find where the notifications page composes its lines (`src/features/notifications/components/captain-notification-format.ts`, `captain-notifications-entry.tsx`, and the ko-feed digest if the page renders it) and fix the composition so each notification renders exactly one complete, correct sentence.
++2. **(a) Dedup identical notifications.** The same pain report appears several times. Deduplicate identical notifications (same type + same player + same underlying event) keeping the latest, at the point where the list is built — not by hiding rows in CSS. If the duplicates are genuinely distinct events, say so in Notes for reviewer with the evidence and fix only the garbling.
++3. **(b) The option label must match the real duration.** The invite form's package option says "0 شهر 500 ج" while the summary spans a month (22 Nov → 21 Dec). The duration formatter is `src/features/billing/package-choice.ts:14-19` (`durationLabel`: `days === 30` → `t('month')`, else months/days). Find where the option label is composed (invite form / package choice) and fix the month count so a 30-day package reads as one month, not "0 شهر". The summary is already right; make the option agree with it.
++
++## Files
++Create or modify only these:
++- `docs/tasks/T-436-notifications-invite-label.md`: this card
++- (a) `src/features/notifications/components/captain-notification-format.ts` and `src/features/notifications/components/captain-notifications-entry.tsx` (line composition + list dedup)
++- (a) `src/features/notifications/messages.ts` (only if a string must change; ar/arStd/en)
++- (a) `src/features/ko-feed/digest.ts` — ONLY if the garbled line comes from the digest (this card owns digest.ts; T-429 must not edit it)
++- (b) `src/features/roster/components/invite-form.tsx` (option label composition)
++- (b) `src/features/billing/package-choice.ts` (duration label, if the month count is wrong here) and `src/features/billing/pricing.ts` (only if the price/days input to the label is wrong here)
++- Tests: notification tests under `src/features/notifications/` and ko-feed `digest.test.ts` (extend for the garbled line + dedup); invite-form/package-choice tests if any exist (create a focused test for the label if none does)
++
++Do not edit any file outside this list. Do not touch the staged log-cleanup entries, any T-421 file, any KO file (`src/features/ko-account/**`, `src/features/ko-entry/config.ts`, migrations 0164–0167, `src/types/app-database.ts`). If a fix genuinely needs another file, implement everything else and report the file + lines + reason in your final message instead of editing it. Do not commit or push.
++
++## Requirements
++1. (a) Every notification on the Notifications page renders one complete, correct sentence; the "3 أيام أو أكتر من 5 ساعات" stitching is gone.
++2. (a) Identical notifications (same type + player + event) appear once, latest first.
++3. (b) A 30-day package option reads as one month (e.g. "شهر واحد 500 ج" / "1 شهر 500 ج" per the existing label format), matching the summary's month span.
++4. Rules that still apply: files ≤ 250 lines, one component per file, kebab-case, import direction `app → features → (ui, core, lib)`, no `any`, no `console.log`, tokens only, logical RTL properties only, touch targets ≥ 48px, every user-facing string in `messages.ts` (ar/arStd/en), no emoji.
++
++## Acceptance
++- [ ] Notifications page: no repeated identical pain report; no garbled inactivity line.
++- [ ] Invite form: the package option label duration matches the summary (30 days = one month).
++- [ ] `npm run check`, `npm run build` and `npx vitest run src/lib/perf-budget.test.ts` pass.
++
++## Tests (deterministic, inject `now`, no real timers, no network)
++- Notification format/digest tests: the inactivity line renders exactly once, complete, for one player; two identical pain reports collapse to one (latest kept).
++- Package label test: a 30-day package option renders the one-month label; the summary span and the option agree.
++
++## Out of scope
++- The KO badge count (T-429) — if the badge count turns out to come from the digest, report it; do not change the count here.
++- Notification read/unread behaviour, mark-as-read.
++- A live re-check on kochivo.site (not possible until deploy).
++
++## Notes for reviewer
++- State what stitched the garbled line together, and whether the duplicates were identical events or distinct ones.
++- (a) What stitched the line together: **not the digest and not two alerts.** The Notifications page never renders the ko-feed digest (its inactive line says "5 أيام", not "5 ساعات"), so `digest.ts` was left untouched. The garble is the `player_inactive` sentence ending in the dangling comparator "أو أكتر" rendered directly above its own relative timestamp "من 5 ساعات" in the same row (`captain-notifications-entry.tsx`): "[name] متمرّنش بقاله 3 أيام أو أكتر" + "من 5 ساعات" reads as one false sentence, "...3 أيام أو أكتر من 5 ساعات". Fixed by closing the sentence — `player_inactive` is now "{name} متمرّنش من 3 أيام" (arStd "لم يتمرّن {name} منذ 3 أيام", en "{name} has not trained for 3 days") — and by giving the timestamp top margin in the entry, matching the dropdown.
++- (a) Duplicates: the repeated pain rows are **distinct pain reports that render identically**, not same-event duplicates. Evidence: the `notify_pain()` trigger (`supabase/migrations/0123_pain_reports.sql`) inserts exactly one notification per `pain_reports` row with a distinct `report_id`; writes are deduplicated by `stableId('pain', session, exercise, set)` (`src/features/workout/data/save-pain.ts`) and `sync_pain_reports` uses `on conflict(id) do nothing`, so a retry/double-submit cannot re-fire the trigger for the same event. They look identical because the text ("{name} بلّغ عن وجع") carries no area/severity. The list now collapses them anyway — `deduplicateNotifications` in `captain-notification-format.ts`, applied in the entry, keeps the latest `player_pain` / `player_inactive` row per player. Every other type is left alone: their payloads identify distinct events (form requests, check-ins, receipts) and collapsing those would hide real work. All reports stay reachable via the player file's `#pain-reports` link.
++- (a) Out-of-scope note: the notification dropdown (`notification-dropdown.tsx`) renders the same `useNotifications` rows and was not in this card's Files list, so it still shows un-deduped rows; the exported helper can be applied there by a follow-up.
++- (b) The "0 شهر" shape is exactly what `durationLabel` produced for a 0-day duration: `months.other` ("{n} شهر") with count 0. A saved 30-day package rendered "شهر" in HEAD (verified by rendering `InviteForm`); the summary was already right. `durationLabel` now routes 30 days through the plural months form with n=1 ("شهر واحد" / "1 month") and labels a zero/missing duration as days ("٠ يوم"), so a 0 month-count can never render again. The `month` dictionary entries are now unused by `durationLabel` (only by it) and were left in place.
++
++## References
++- `src/features/notifications/messages.ts:52` (`player_inactive`)
++- `src/features/ko-feed/messages.ts:4,22` (`digestInactive`, `inactive`)
++- `src/features/billing/package-choice.ts:14-19` (`durationLabel`)
++- `src/features/notifications/components/captain-notification-format.ts`
+diff --git a/src/app/[locale]/(captain)/captain/layout.test.ts b/src/app/[locale]/(captain)/captain/layout.test.ts
+index b0064109..52dd9781 100644
+--- a/src/app/[locale]/(captain)/captain/layout.test.ts
++++ b/src/app/[locale]/(captain)/captain/layout.test.ts
+@@ -1,7 +1,7 @@
+ import { createElement, Suspense, use } from 'react';
+ import type { ReactNode } from 'react';
+ import { renderToString } from 'react-dom/server';
+-import { expect, it, vi } from 'vitest';
++import { afterEach, expect, it, vi } from 'vitest';
+ import CaptainLayout from './layout';
+ 
+ const pending = vi.hoisted(() => new Promise<void>(() => {}));
+@@ -22,9 +22,28 @@ vi.mock('@/features/billing/server', () => ({ fetchPlanSummary: async () => null
+ vi.mock('@/core/i18n/server', () => ({ getLocale: async () => 'ar' }));
+ vi.mock('@/core/timezone/boundary', () => ({ TimezoneBoundary: ({ children }: { children: ReactNode }) => children }));
+ 
++afterEach(() => vi.unstubAllEnvs());
++
+ it('renders captain page content while optional tour and sidebar reads are pending', async () => {
+   const page = createElement('h1', null, 'captain-page-content');
+   const html = renderToString(await CaptainLayout({ children: page }));
+   expect(html).toContain('<h1>captain-page-content</h1>');
+   expect(html).not.toContain('demo-loading');
+ });
++
++// T-428: the legacy shell pads its main with page-bottom clearance only
++// (and none on desktop), so the layout supplies the shared launcher
++// clearance there; the workspace frame already pads its own main.
++it('pads legacy captain pages with the shared launcher clearance', async () => {
++  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '');
++  const html = renderToString(await CaptainLayout({ children: createElement('h1', null, 'captain-page-content') }));
++  expect(html).toContain('class="captain-content"');
++  expect(html).toContain('<h1>captain-page-content</h1>');
++});
++
++it('does not double-pad workspace captain pages', async () => {
++  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
++  const html = renderToString(await CaptainLayout({ children: createElement('h1', null, 'captain-page-content') }));
++  expect(html).not.toContain('captain-content');
++  expect(html).toContain('<h1>captain-page-content</h1>');
++});
+diff --git a/src/app/[locale]/(captain)/captain/layout.tsx b/src/app/[locale]/(captain)/captain/layout.tsx
+index 71137313..84b26f25 100644
+--- a/src/app/[locale]/(captain)/captain/layout.tsx
++++ b/src/app/[locale]/(captain)/captain/layout.tsx
+@@ -7,10 +7,16 @@ import { PlanSidebar } from '@/features/billing';
+ import { fetchPlanSummary } from '@/features/billing/server';
+ import { getLocale } from '@/core/i18n/server';
+ import { TimezoneBoundary } from '@/core/timezone/boundary';
++import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+ 
+ export default async function CaptainLayout({ children }: { children: ReactNode }) {
+   const status = await captainApproval();
+   if (status) return children;
+   const plan = Promise.all([fetchPlanSummary(), getLocale()]);
+-  return <TimezoneBoundary><div data-area="captain" className="bg-glow min-h-dvh"><PageContainer variant="captain"><CaptainShell sidebarFooter={<Suspense fallback={null}><PlanSidebar data={plan} /></Suspense>}><DemoMode>{children}<Suspense fallback={null}><ProductTour role="captain" /></Suspense></DemoMode></CaptainShell></PageContainer></div></TimezoneBoundary>;
++  // T-428: the workspace frame pads its main with the shared launcher
++  // clearance (.captain-content); the legacy shell does not, so the layout
++  // supplies it here, and only here, so captain pages scroll clear of the
++  // fixed KO launcher instead of sliding under it.
++  const page = captainWorkspaceEnabled() ? children : <div className="captain-content">{children}</div>;
++  return <TimezoneBoundary><div data-area="captain" className="bg-glow min-h-dvh"><PageContainer variant="captain"><CaptainShell sidebarFooter={<Suspense fallback={null}><PlanSidebar data={plan} /></Suspense>}><DemoMode>{page}<Suspense fallback={null}><ProductTour role="captain" /></Suspense></DemoMode></CaptainShell></PageContainer></div></TimezoneBoundary>;
+ }
+diff --git a/src/features/billing/components/workspace-billing-payment-row.tsx b/src/features/billing/components/workspace-billing-payment-row.tsx
+index bcb0049d..e31b925f 100644
+--- a/src/features/billing/components/workspace-billing-payment-row.tsx
++++ b/src/features/billing/components/workspace-billing-payment-row.tsx
+@@ -57,7 +57,7 @@ export function WorkspaceBillingPaymentRow({ row, onOpen }: { row: PaymentRow; o
+           className={fullyPaid ? 'mt-inline' : 'mt-inline [&>div]:bg-warn [&>div]:bg-none'} />
+       </>}
+     </td>
+-    <td className={cell}><span className={`inline-flex rounded-md px-inline text-micro font-semibold ${tone}`}>{status}</span>
++    <td className={cell}><span className={`inline-flex shrink-0 whitespace-nowrap rounded-md px-inline text-micro font-semibold ${tone}`}>{status}</span>
+       {player.sessionsLeft === 0 && player.due > 0 && !player.frozenAt && !player.pending &&
+         <small className="block text-xs text-faint">{paymentT('sessionsEnded')}</small>}</td>
+     <td className={`${cell} text-xs text-faint`}>{hasPackage
+diff --git a/src/features/billing/components/workspace-billing-phone-player.tsx b/src/features/billing/components/workspace-billing-phone-player.tsx
+index a818b54d..2b9a4931 100644
+--- a/src/features/billing/components/workspace-billing-phone-player.tsx
++++ b/src/features/billing/components/workspace-billing-phone-player.tsx
+@@ -58,7 +58,7 @@ export function WorkspaceBillingPhonePlayer({ row, today, onOpen }: {
+     {reminder ? <a href={reminder} target="_blank" rel="noopener noreferrer"
+       className={buttonClass({ variant: 'secondary', block: false, className: 'min-w-12 shrink-0 px-stack text-row' })}>{t('remind')}</a>
+       : showPaid ? <Button variant="ghost" block={false} className="min-w-12 shrink-0 px-0" onClick={onOpen}>
+-        <span className="tone-lime rounded-md px-inline text-micro font-semibold">{t('paidTag')}</span>
++        <span className="tone-lime shrink-0 whitespace-nowrap rounded-md px-inline text-micro font-semibold">{t('paidTag')}</span>
+       </Button>
+       : <Button variant="secondary" block={false} className="min-w-12 shrink-0 px-stack text-row"
+         onClick={onOpen}>{actionLabel}</Button>}
+diff --git a/src/features/billing/components/workspace-payments-table.tsx b/src/features/billing/components/workspace-payments-table.tsx
+index 71e15bb6..ec8b894e 100644
+--- a/src/features/billing/components/workspace-payments-table.tsx
++++ b/src/features/billing/components/workspace-payments-table.tsx
+@@ -61,7 +61,7 @@ export function WorkspacePaymentsTable({ players, packages, today, rows = paymen
+     <div className={`glass overflow-hidden rounded-card${phone ? ' max-md:hidden' : ''}`}>
+       {filtered.length ? <table aria-label={t('title')} className="block w-full text-start text-row min-[1024px]:table min-[1280px]:table-fixed">
+         <colgroup className="hidden min-[1280px]:table-column-group">
+-          <col className="w-[23%]" /><col className="w-[18%]" /><col className="w-[12%]" />
++          <col className="w-[23%]" /><col className="w-[16%]" /><col className="w-[14%]" />
+           <col className="w-[15%]" /><col className="w-[17%]" /><col className="w-[15%]" />
+         </colgroup>
+         <thead className="sr-only min-[1024px]:not-sr-only min-[1024px]:table-header-group"><tr className="text-xs text-faint">
+diff --git a/src/features/billing/duration-editor.test.ts b/src/features/billing/duration-editor.test.ts
+index a6d8ace5..d24a80eb 100644
+--- a/src/features/billing/duration-editor.test.ts
++++ b/src/features/billing/duration-editor.test.ts
+@@ -38,7 +38,7 @@ it('preselects quarter after month and explains disabled presets', () => {
+   expect(html).not.toContain('value="90"');
+ });
+ it('keeps saved presets and custom numeric durations when editing', () => {
+-  expect(editor([month], month)).toMatch(/aria-pressed="true"[^>]*>شهر<\/button>/);
++  expect(editor([month], month)).toMatch(/aria-pressed="true"[^>]*>شهر واحد<\/button>/);
+   expect(editor([month], { ...month, days: 45 })).toContain('value="45"');
+ });
+ it('blocks the existing duplicate in the editor and marks every duplicate row in both cards', () => {
+diff --git a/src/features/billing/package-choice.test.ts b/src/features/billing/package-choice.test.ts
+index 97891a56..d4c9d5b2 100644
+--- a/src/features/billing/package-choice.test.ts
++++ b/src/features/billing/package-choice.test.ts
+@@ -16,7 +16,10 @@ it('chooses the first unused preset in the selected tier, excluding the edited r
+ });
+ it('labels real durations consistently', () => {
+   const t = createT(messages, 'ar');
+-  expect([30, 90, 180, 365, 45].map(days => durationLabel(days, t, 'ar'))).toEqual(['شهر', '٣ شهور', '٦ شهور', 'سنة', '٤٥ يوم']);
++  expect([30, 60, 90, 180, 365, 45].map(days => durationLabel(days, t, 'ar'))).toEqual(['شهر واحد', 'شهرين', '٣ شهور', '٦ شهور', 'سنة', '٤٥ يوم']);
++  expect(durationLabel(30, createT(messages, 'en'), 'en')).toBe('1 month');
++  // A zero duration never reads as "0 months".
++  expect(durationLabel(0, t, 'ar')).toBe('٠ يوم');
+ });
+ it('detects same-kind lengths only within the selected tier and excludes itself', () => {
+   const item = catalogFixture.packages[0];
+diff --git a/src/features/billing/package-choice.ts b/src/features/billing/package-choice.ts
+index f1cb7808..226e6fdf 100644
+--- a/src/features/billing/package-choice.ts
++++ b/src/features/billing/package-choice.ts
+@@ -11,12 +11,16 @@ export function duplicateDuration(packages: CatalogPackage[], item: Duration) {
+ export function firstUnusedDuration(packages: CatalogPackage[], tierId: string, id?: string) {
+   return durationPresets.find(days => !duplicateDuration(packages, { id, tier_id: tierId || null, kind: 'days', days, sessions: null })) ?? null;
+ }
+-export function durationLabel(days: number, t: (key: 'month' | 'months' | 'days' | 'year', values?: Record<string, string | number>, count?: number) => string, locale: Locale) {
+-  if (days === 30) return t('month');
++export function durationLabel(days: number, t: (key: 'months' | 'days' | 'year', values?: Record<string, string | number>, count?: number) => string, locale: Locale) {
+   if (days === 365) return t('year');
+-  const n = days % 30 === 0 ? days / 30 : days;
++  // A 30-day package is one month: route it through the plural months form so the
++  // label carries the count ("شهر واحد" / "1 month") instead of a bare unit.
++  // A zero or missing duration must never read as "0 months": the plural fallback
++  // renders a 0 month-count as "{n} شهر", so label it as days instead.
++  const months = Number.isFinite(days) && days > 0 && days % 30 === 0 ? days / 30 : null;
++  const n = months ?? Math.max(0, Number.isFinite(days) ? days : 0);
+   const count = n.toLocaleString(locale === 'en' ? 'en-US' : 'ar-EG');
+-  return t(days % 30 === 0 ? 'months' : 'days', { n: count, count }, n);
++  return t(months === null ? 'days' : 'months', { n: count, count }, n);
+ }
+ export type PricingCatalog = { tiers: Tier[]; packages: CatalogPackage[]; offers: CatalogOffer[] };
+ export function pricingBanner(catalog: PricingCatalog, isRenewal: boolean, now: Date) {
+diff --git a/src/features/billing/payments-screen.test.ts b/src/features/billing/payments-screen.test.ts
+index 61333288..d27c18a2 100644
+--- a/src/features/billing/payments-screen.test.ts
++++ b/src/features/billing/payments-screen.test.ts
+@@ -6,7 +6,9 @@ import { beforeEach, expect, it, vi } from 'vitest';
+ import { LocaleProvider } from '@/core/i18n/client';
+ import { WorkspaceBilling } from './components/workspace-billing';
+ import { WorkspaceBillingRow } from './components/workspace-billing-row';
++import { WorkspaceBillingPhonePlayer } from './components/workspace-billing-phone-player';
+ import { WorkspacePaymentsTable } from './components/workspace-payments-table';
++import { paymentRows } from './components/workspace-billing-summary';
+ import type { BillingResult } from './types';
+ import type { ReceiptReview } from './receipts/types';
+ 
+@@ -42,14 +44,16 @@ it('shows a single invite action with the exact empty copy', () => {
+   expect(html).not.toContain('كبّر الباقة');
+   expect(html).not.toContain('رقّي باقتك');
+ });
+-it('renders the four tiles and hides attention when all four lists are empty', () => {
++it('keeps the receipts section visible with its empty state when all four lists are empty', () => {
+   if (!state.result.data) throw new Error('Missing fixture');
+   state.result.data.players = [{ playerId: 'p', fullName: 'Ali', accessUntil: '2026-12-01', status: 'active',
+     phone: null, lastPayment: null, due: 0, startedOn: '2026-10-01', lastTrainingDate: null, programTitle: null, openTasks: 0 }];
+   const html = render();
+   for (const label of ['الاشتراكات', 'دخل نوفمبر', 'بيخلص خلال 7 أيام', 'اشتراكات شغالة', 'بيخلص قريب', 'دوّر على لاعب', 'من 4,500 متوقعة']) expect(html).toContain(label);
+   expect(html).toContain('group hidden has-[[data-billing-task]]:block');
+-  expect(html).not.toContain('<details data-billing-task');
++  expect(html.match(/<details data-billing-task/g)).toHaveLength(1);
++  expect(html).toContain('إيصالات مستنية مراجعة');
++  expect(html).toContain('مفيش إيصالات مستنية مراجعة');
+   expect(html).not.toContain('بعد 19 يوم');
+   expect(html).toContain('4,500');
+   expect(html).not.toContain('ج.م');
+@@ -104,3 +108,26 @@ it.each(['instapay', null] as const)('shows a recorded payment method or the leg
+   expect(html).toContain('Last payment');
+   expect(html.includes('InstaPay')).toBe(Boolean(method));
+ });
++
++it('keeps the fully-paid and no-package status pills on one line', () => {
++  const paid = { playerId: 'paid', fullName: 'Paid player', accessUntil: '2026-12-01', status: 'active' as const,
++    phone: null, due: 0, startedOn: '2026-10-01', lastTrainingDate: null, programTitle: null, openTasks: 0,
++    lastPayment: { id: 'payment', captain_id: 'captain', player_id: 'paid', period_start: '2026-11-13', period_end: '2026-12-13',
++      package_id: 'pkg', days: 30, price_egp: 800, amount_egp: 800, created_at: '2026-11-13T12:00:00Z' } };
++  const unpackaged = { playerId: 'free', fullName: 'Free player', accessUntil: '2026-12-01', status: 'active' as const,
++    phone: null, due: 0, startedOn: '2026-10-01', lastTrainingDate: null, programTitle: null, openTasks: 0, lastPayment: null };
++  const packages = [{ id: 'pkg', name: 'Monthly', price_egp: 800, days: 30 }];
++  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' },
++    createElement(WorkspacePaymentsTable, { players: [paid, unpackaged], packages, today: '2026-11-14' })));
++  expect(html).toMatch(/<span class="[^"]*whitespace-nowrap[^"]*">مدفوعة كاملة<\/span>/);
++  expect(html).toMatch(/<span class="[^"]*whitespace-nowrap[^"]*">من غير باقة<\/span>/);
++  // The fixed-layout desktop table gives the status column 14% (paid column 16%),
++  // so the non-wrapping pill fits at ~1288px instead of overflowing into the next column.
++  expect(html).toMatch(/<col class="w-\[16%\]" ?\/><col class="w-\[14%\]" ?\/>/);
++  const rows = paymentRows([paid], packages, '2026-11-14');
++  const row = rows[0];
++  if (!row) throw new Error('Missing fixture');
++  const phone = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' },
++    createElement(WorkspaceBillingPhonePlayer, { row, today: '2026-11-14', onOpen: () => {} })));
++  expect(phone).toMatch(/<span class="[^"]*whitespace-nowrap[^"]*">مدفوع<\/span>/);
++});
+diff --git a/src/features/billing/receipts/captain-receipts.tsx b/src/features/billing/receipts/captain-receipts.tsx
+index 351e7ecb..a12c8869 100644
+--- a/src/features/billing/receipts/captain-receipts.tsx
++++ b/src/features/billing/receipts/captain-receipts.tsx
+@@ -52,8 +52,10 @@ export function CaptainReceipts({ workspace = false }: { workspace?: boolean })
+     {resource.error || resource.data?.error ? <div data-billing-feedback role="alert" className="px-card text-sm">
+       {t('loadError')}<button type="button" className="min-h-12 px-page-x underline" onClick={() => void resource.retry()}>{t('retry')}</button>
+     </div> : !rows ? <p data-billing-feedback role="status" className="px-card text-sm text-muted">{t('loading')}</p>
+-      : rows.length > 0 && <WorkspaceBillingTask label={t('title')} count={formatNumber(rows.length, locale)}>
+-        <ul aria-busy={busy}>{rows.map(receipt => <ReceiptReviewRow key={receipt.id} receipt={receipt} first={false} busy={busy} onDecide={decide} />)}</ul>
++      : <WorkspaceBillingTask label={t('title')} count={formatNumber(rows.length, locale)}>
++        {rows.length > 0
++          ? <ul aria-busy={busy}>{rows.map(receipt => <ReceiptReviewRow key={receipt.id} receipt={receipt} first={false} busy={busy} onDecide={decide} />)}</ul>
++          : <p className="py-page-y text-sm text-faint">{t('empty')}</p>}
+       </WorkspaceBillingTask>}
+   </>;
+   return <section className="glass rounded-card border border-line-soft p-card" aria-busy={busy}>
+diff --git a/src/features/billing/receipts/review.test.ts b/src/features/billing/receipts/review.test.ts
+index 53604e61..eaee64b8 100644
+--- a/src/features/billing/receipts/review.test.ts
++++ b/src/features/billing/receipts/review.test.ts
+@@ -65,3 +65,19 @@ it('provides loading, error and empty states without invented receipt rows', ()
+   state.error = undefined; state.data = { data: [] };
+   expect(render(createElement(CaptainReceipts))).toContain('No receipts awaiting review');
+ });
++it('keeps the workspace receipts section visible through loading, error, empty and listed states', () => {
++  expect(render(createElement(CaptainReceipts, { workspace: true }))).toContain('Loading receipts');
++  state.error = new Error('offline');
++  const error = render(createElement(CaptainReceipts, { workspace: true }));
++  expect(error).toContain('Could not load receipts');
++  expect(error).toContain('Try again');
++  state.error = undefined; state.data = { data: [] };
++  const empty = render(createElement(CaptainReceipts, { workspace: true }));
++  expect(empty).toContain('Receipts awaiting review');
++  expect(empty).toContain('No receipts awaiting review');
++  state.data = { data: [{ ...receipt, debt: 900 }] };
++  const listed = render(createElement(CaptainReceipts, { workspace: true }));
++  expect(listed).toContain('Receipts awaiting review');
++  expect(listed).toContain('Player name');
++  expect(listed).not.toContain('No receipts awaiting review');
++});
+diff --git a/src/features/captain-workspace/player-file/exercise-thumbnail.test.ts b/src/features/captain-workspace/player-file/exercise-thumbnail.test.ts
+new file mode 100644
+index 00000000..f737773b
+--- /dev/null
++++ b/src/features/captain-workspace/player-file/exercise-thumbnail.test.ts
+@@ -0,0 +1,48 @@
++import { createElement } from 'react';
++import { renderToStaticMarkup } from 'react-dom/server';
++import { afterEach, expect, it, vi } from 'vitest';
++import { ExerciseImage } from '@/ui/exercise-image';
++import { OverviewActivity } from './overview-activity';
++import type { FileActivity } from './load-activity';
++import type { Profile } from './types';
++
++afterEach(() => vi.unstubAllEnvs());
++
++it('loads a visible player-file thumbnail eagerly instead of a dark placeholder', () => {
++  const html = renderToStaticMarkup(createElement(ExerciseImage, {
++    src: 'https://example.test/exercise.gif', alt: '', width: 44, height: 44, eager: true,
++  }));
++  expect(html).toContain('exercise.gif');
++  expect(html).toContain('loading="eager"');
++  expect(html).not.toContain('data:image/svg+xml,');
++  expect(html).toContain('animate-pulse');
++});
++
++it('keeps offscreen thumbnails lazy but shows a skeleton while they load', () => {
++  const html = renderToStaticMarkup(createElement(ExerciseImage, {
++    src: 'https://example.test/exercise.gif', alt: 'Squat', width: 84, height: 84,
++  }));
++  expect(html).toContain('data:image/svg+xml,');
++  expect(html).toContain('loading="lazy"');
++  expect(html).not.toContain('exercise.gif');
++  expect(html).toContain('animate-pulse');
++});
++
++it('renders last-workout thumbnails eagerly in the player file', () => {
++  vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://example.test');
++  vi.stubEnv('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY', 'a'.repeat(20));
++  const profile = { checkIns: [] } as unknown as Profile;
++  const activity = {
++    scans: [], last: null, nutrition: null,
++    sets: [{
++      exercise_id: 'ex-1', program_exercise_id: 'pe-1', set_index: 0, drop_index: 0, reps: 10, weight_kg: 20,
++      exercises: { name_ar: 'سكوات', name_en: 'Squat', media_path: 'exercise-media/0001.gif' },
++    }],
++  } as unknown as FileActivity;
++  const html = renderToStaticMarkup(createElement(OverviewActivity, {
++    profile, activity, playerId: 'player-1', locale: 'ar', overview: null, training: null,
++  }));
++  expect(html).toContain('0001.gif');
++  expect(html).toContain('loading="eager"');
++  expect(html).not.toContain('data:image/svg+xml,');
++});
+diff --git a/src/features/captain-workspace/player-file/file-content-load.test.ts b/src/features/captain-workspace/player-file/file-content-load.test.ts
+new file mode 100644
+index 00000000..6c007900
+--- /dev/null
++++ b/src/features/captain-workspace/player-file/file-content-load.test.ts
+@@ -0,0 +1,13 @@
++import { readFileSync } from 'node:fs';
++import { expect, it } from 'vitest';
++
++const source = readFileSync(new URL('./file-content.tsx', import.meta.url), 'utf8');
++
++it('starts the activity load with the summary instead of after it (T-435b)', () => {
++  const start = source.indexOf('[summary, counts, activity] = await Promise.all(');
++  expect(start).toBeGreaterThan(-1);
++  const block = source.slice(start, source.indexOf(']);', start));
++  expect(block).toContain('loadSummary(playerId, today)');
++  expect(block).toContain('loadActivity(playerId, today)');
++  expect(source).not.toContain('activity = await loadActivity');
++});
+diff --git a/src/features/captain-workspace/player-file/file-content.tsx b/src/features/captain-workspace/player-file/file-content.tsx
+index 4dbd3a58..6f5f9168 100644
+--- a/src/features/captain-workspace/player-file/file-content.tsx
++++ b/src/features/captain-workspace/player-file/file-content.tsx
+@@ -51,10 +51,14 @@ export async function FileContent({ playerId, tab, locale, children }: {
+     const claims = await currentClaims();
+     if (claims.error || !claims.data?.claims.sub) throw new Error('Unauthenticated');
+     captainId = claims.data.claims.sub;
+-    [summary, counts] = await Promise.all([loadSummary(playerId, today), unreadCounts(await supabaseServer(), captainId)
++    // Activity starts with the summary instead of after it: it only needs
++    // (playerId, today), so awaiting it after the summary added a whole
++    // sequential stage to every overview/nutrition open (T-435b).
++    const needsActivity = tab === 'overview' || tab === 'nutrition';
++    [summary, counts, activity] = await Promise.all([loadSummary(playerId, today), unreadCounts(await supabaseServer(), captainId)
+       // The tab count is secondary; a chat failure must not hide the whole player file.
+-      .catch((error: unknown) => { console.warn('Chat counts unavailable', error); return {}; })]);
+-    if (tab === 'overview' || tab === 'nutrition') activity = await loadActivity(playerId, today);
++      .catch((error: unknown) => { console.warn('Chat counts unavailable', error); return {}; }),
++      needsActivity ? loadActivity(playerId, today) : Promise.resolve(undefined)]);
+     if (tab === 'assessments') {
+       const client = await supabaseServer();
+       const [requests, pending] = await Promise.all([loadPlayerRequests(client, playerId),
+diff --git a/src/features/captain-workspace/player-file/overview-activity.tsx b/src/features/captain-workspace/player-file/overview-activity.tsx
+index 719bb01c..b32e6e46 100644
+--- a/src/features/captain-workspace/player-file/overview-activity.tsx
++++ b/src/features/captain-workspace/player-file/overview-activity.tsx
+@@ -45,7 +45,7 @@ export function OverviewActivity({ profile, activity, playerId, locale, overview
+           {activity.last && <span className="text-xs text-lime">{activity.last.program_days?.title} · {formatDateAr(activity.last.training_date, { day: 'numeric', month: 'long' }, locale)}</span>}
+         </div>
+         {exercises.size ? [...exercises].map(([id, sets]) => <div key={id} className="flex min-h-12 items-center gap-stack border-t border-line-soft py-stack">
+-          {sets[0]?.exercises?.media_path && <ExerciseImage src={exerciseMediaUrl(sets[0].exercises.media_path)} alt="" width={44} height={44} />}
++          {sets[0]?.exercises?.media_path && <ExerciseImage src={exerciseMediaUrl(sets[0].exercises.media_path)} alt="" width={44} height={44} eager />}
+           <div className="min-w-0 flex-1"><h3 className="text-sm">{locale === 'en' ? sets[0]?.exercises?.name_en : sets[0]?.exercises?.name_ar}</h3>
+             {sets.filter(set => (set.drop_index ?? 0) === 0).map((set, index) => <div key={index} className="mt-inline text-xs text-muted">
+               <p><bdi>{setPerformance(set.weight_kg, set.reps, ft('kg'), locale)}</bdi></p>
+diff --git a/src/features/dashboard/components/workspace-home.tsx b/src/features/dashboard/components/workspace-home.tsx
+index 60353934..7a5b8ca3 100644
+--- a/src/features/dashboard/components/workspace-home.tsx
++++ b/src/features/dashboard/components/workspace-home.tsx
+@@ -76,11 +76,11 @@ export async function WorkspaceHome({ data, now = new Date() }: {
+         <div className="min-w-0 space-y-card-gap">
+           <HomeTaskList tasks={tasks} count={count} contacts={contacts ?? new Map()} today={today} />
+           <SmartAlerts alerts={buildAlerts(players, dues, today)} hideEmptyOnPhone={captainWorkspaceEnabled()} />
++          <WorkspaceActivity events={summary.activity} now={now} />
+         </div>
+         <div className="min-w-0 space-y-card-gap">
+           <PlayerFinder players={finder(players)} recent={finder(recentActivity(players))} />
+           <MoneyOwedEntry mode="home" />
+-          <WorkspaceActivity events={summary.activity} now={now} />
+           {players.length === 0 && <HomeStart phonePrimary={!count && captainWorkspaceEnabled()} />}
+           <HomeWeekChart sessions={summary.sessions.filter(session => players.some(player => player.playerId === session.playerId))} today={today} />
+           <HomeConfirmations requests={followup?.requests ?? null} retryRequests={retryFollowup} payments={renewals?.data ?? []} paymentsFailed={!renewals || Boolean(renewals.error)} /></div>
+diff --git a/src/features/dashboard/home-v11.test.ts b/src/features/dashboard/home-v11.test.ts
+index 0caa63f0..a86416ac 100644
+--- a/src/features/dashboard/home-v11.test.ts
++++ b/src/features/dashboard/home-v11.test.ts
+@@ -19,7 +19,7 @@ it('estimates three minutes for each pending task, including an empty day', () =
+ });
+ it('uses completed reviews and pending work for progress without a sample daily target', () => {
+   expect(taskProgress(3, 7)).toBe(0.3);
+-  expect(taskProgress(0, 0)).toBe(1);
++  expect(taskProgress(0, 0)).toBe(0);
+   expect(taskProgress(0, 20)).toBe(0);
+ });
+ it('charts all sessions Saturday to Friday, keeps zero days, and distinguishes future days', () => {
+diff --git a/src/features/dashboard/home/adherence.test.ts b/src/features/dashboard/home/adherence.test.ts
+index cbd8044b..6573cf48 100644
+--- a/src/features/dashboard/home/adherence.test.ts
++++ b/src/features/dashboard/home/adherence.test.ts
+@@ -32,6 +32,15 @@ it('returns zero for no plans, empty intake and rest-only rotation', () => {
+     [], '2026-11-17')).toEqual({ current: 0, previous: 0 });
+ });
+ 
++it('keeps a real previous-week delta when this week is empty, so a -25% badge is not vacuous', () => {
++  expect(weekComparison([{ playerId: 'p', days: [
++    { id: 'a', weekday: 0, isRestDay: false }, { id: 'b', weekday: 1, isRestDay: false },
++    { id: 'c', weekday: 2, isRestDay: false }, { id: 'd', weekday: 3, isRestDay: false },
++  ], trainingDays: [0, 1, 2, 3] }], [
++    { playerId: 'p', dayId: 'a', date: '2026-11-07' },
++  ], '2026-11-17')).toEqual({ current: 0, previous: 25 });
++});
++
+ it('weights players by planned dates and deduplicates overlapping programs and weekdays', () => {
+   const rotation = { playerId: 'p', days: [{ id: 'a', weekday: null, isRestDay: false }], trainingDays: [0, 0, 2, 4] };
+   expect(weekComparison([rotation, rotation, { playerId: 'q', days: [{ id: 'b', weekday: 0, isRestDay: false }], trainingDays: [] }], [
+diff --git a/src/features/dashboard/home/home-hero-view.tsx b/src/features/dashboard/home/home-hero-view.tsx
+index c99e700b..9cc329cb 100644
+--- a/src/features/dashboard/home/home-hero-view.tsx
++++ b/src/features/dashboard/home/home-hero-view.tsx
+@@ -24,7 +24,7 @@ export function HomeHeroView({ t, locale, onSelect, tasks, count, completed, adh
+         {urgent && t('urgentLead', { tasks: urgent })}</> : t('emptyHero')}</p>
+       {adherence !== undefined && <p className="text-sm text-muted">{t(teamStatus(adherence), { count: formatNumber(adherence, locale) })}</p>}
+       {adherence !== undefined && adherence < 80 && <Link href="/captain/players" className={buttonClass({ variant: 'secondary', block: false })}>{t('viewPlayers')}</Link>}
+-      <ProgressBar thin value={taskProgress(completed, count)} max={1} aria-label={t('progress')} className="mt-stack" />
++      {count > 0 && <ProgressBar thin value={taskProgress(completed, count)} max={1} aria-label={t('progress')} className="mt-stack" />}
+     </div>
+     {count > 0 && <Link prefetch={onSelect ? false : undefined} onClick={onSelect ? event => { event.preventDefault(); onSelect((event.currentTarget.getAttribute('href') ?? '').replace(/^#/, '')); } : undefined} href={onSelect ? '#/captain/tasks' : '/captain/tasks'} className={buttonClass({ variant: onSelect ? 'secondary' : 'primary', block: false })}><KoFollowup className="size-5" />{t('startTasks')}</Link>}
+   </section>;
+diff --git a/src/features/dashboard/home/live-fixes.test.ts b/src/features/dashboard/home/live-fixes.test.ts
+index e1643f5f..de98502d 100644
+--- a/src/features/dashboard/home/live-fixes.test.ts
++++ b/src/features/dashboard/home/live-fixes.test.ts
+@@ -6,6 +6,14 @@ vi.mock('@/core/i18n/server', () => ({ getLocale: async () => 'en', getT: async
+ import { HomeTiles } from './home-tiles';
+ import { HomeInvite } from './home-invite';
+ import { HomeWeekChart } from './home-week-chart';
++import { taskProgress } from './tasks';
++
++it('never claims 100% progress from an empty day', () => {
++  expect(taskProgress(0, 0)).toBe(0);
++  expect(taskProgress(3, 7)).toBe(0.3);
++  expect(taskProgress(1, 1)).toBe(0.5);
++  expect(taskProgress(0, 20)).toBe(0);
++});
+ 
+ it.each([[undefined, null], [0, null], [2000, 25], [100, 100]] as const)(
+   'renders thin revenue progress only with a real positive goal %s', async (incomeGoal, percent) => {
+diff --git a/src/features/dashboard/home/phone-home-hero.tsx b/src/features/dashboard/home/phone-home-hero.tsx
+index 9ef7aa66..52af742c 100644
+--- a/src/features/dashboard/home/phone-home-hero.tsx
++++ b/src/features/dashboard/home/phone-home-hero.tsx
+@@ -21,7 +21,7 @@ export function PhoneHomeHero({ tasks, count, locale, style }: { tasks: HomeTask
+     { key: 'other', count: count - reviews - payments, tone: 'tone-danger' },
+   ] as const;
+   return <section className="glass-strong ko-strip cut-corner relative overflow-hidden rounded-card p-card md:hidden">
+-    <span aria-hidden className="engraved pointer-events-none absolute end-0 top-0 origin-top scale-150 font-display text-stat-large-wide leading-none opacity-50">{number(count)}</span>
++    <span aria-hidden className="engraved pointer-events-none absolute end-0 top-0 font-display text-stat-large-wide leading-none opacity-50">{number(count)}</span>
+     <div className="relative space-y-stack">
+       <p className="text-xs font-bold text-lime">{home('todayTasks')}</p>
+       <h2 className="text-h font-bold">{count ? t('waiting', { n: count, count: number(count) }) : home('emptyHero')}</h2>
+diff --git a/src/features/dashboard/home/phone-home.test.ts b/src/features/dashboard/home/phone-home.test.ts
+index 58977890..45510b4b 100644
+--- a/src/features/dashboard/home/phone-home.test.ts
++++ b/src/features/dashboard/home/phone-home.test.ts
+@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
+ import { expect, it } from 'vitest';
+ import { createT } from '@/core/i18n/messages';
+ import { HomeHeroView } from './home-hero-view';
++import { PhoneHomeHero } from './phone-home-hero';
+ import { HomeTilesView } from './home-tiles-view';
+ import { PhoneHomeNeeds } from './phone-home-needs';
+ import { PhoneHomeStats } from './phone-home-stats';
+@@ -50,6 +51,37 @@ it('keeps one visible phone empty state when tasks and alerts are both empty', (
+   expect(tasks).toMatch(/^<section class="[^"]*md:hidden/);
+   expect(alerts).toMatch(/^<div[^>]*class="[^"]*max-md:hidden/);
+ });
++it('shows the empty hero with no progress bar or percentage when there are zero tasks', () => {
++  const props = { t: createT(homeV11Messages, 'en'), locale: 'en' as const, tasks: [], count: 0, completed: 0, adherence: 0 };
++  const desktop = renderToStaticMarkup(createElement(HomeHeroView, props));
++  expect(desktop).toContain('Today’s tasks are done.');
++  expect(desktop).not.toContain('role="progressbar"');
++  expect(desktop).not.toContain('aria-valuenow="100"');
++  const phone = renderToStaticMarkup(createElement(HomeHeroView, { ...props, phone: true }));
++  expect(phone).toContain('Today’s tasks are done.');
++  expect(phone).not.toContain('role="progressbar"');
++  const phoneSection = phone.slice(phone.indexOf('md:hidden'));
++  expect(phoneSection).not.toContain('%');
++});
++
++it('shows 50% progress for one done task and one still pending', () => {
++  const html = renderToStaticMarkup(createElement(HomeHeroView, { t: createT(homeV11Messages, 'en'), locale: 'en' as const,
++    tasks: [{ id: 'checkin:1', playerId: 'p', name: 'Sara', kind: 'checkin' as const, href: '/captain/tasks', urgent: false }],
++    count: 1, completed: 1, adherence: 78 }));
++  expect(html).toContain('role="progressbar"');
++  expect(html).toContain('aria-valuenow="50"');
++});
++
++it('keeps the phone hero watermark inside the section instead of scaling it past the edge', () => {
++  for (const count of [0, 12]) {
++    const html = renderToStaticMarkup(createElement(PhoneHomeHero, { tasks: [], count, locale: 'en' as const }));
++    expect(html).toMatch(/^<section class="glass-strong ko-strip cut-corner relative overflow-hidden rounded-card p-card md:hidden">/);
++    expect(html).toContain('class="engraved pointer-events-none absolute end-0 top-0 font-display text-stat-large-wide leading-none opacity-50"');
++    expect(html).not.toContain('scale-150');
++    expect(html).not.toContain('role="progressbar"');
++  }
++});
++
+ it('opens the selected review, an absent player’s chat and the payment workflow', () => {
+   const html = renderToStaticMarkup(createElement(PhoneHomeNeeds, { locale: 'en', contacts: new Map(),
+     tasks: [
+diff --git a/src/features/dashboard/home/tasks.ts b/src/features/dashboard/home/tasks.ts
+index eff06a45..3811f3cd 100644
+--- a/src/features/dashboard/home/tasks.ts
++++ b/src/features/dashboard/home/tasks.ts
+@@ -8,7 +8,7 @@ export type HomeTask = {
+   title?: string; days?: number; urgent: boolean;
+ };
+ export const taskEstimate = (count: number) => count * 3;
+-export const taskProgress = (completed: number, pending: number) => completed + pending ? completed / (completed + pending) : 1;
++export const taskProgress = (completed: number, pending: number) => completed + pending ? completed / (completed + pending) : 0;
+ 
+ export function buildHomeTasks(tasks: CaptainTask[]): HomeTask[] {
+   return tasks.map(task => ({ id: task.id, playerId: task.playerId, name: task.name,
+diff --git a/src/features/dashboard/workspace-home-layout.test.ts b/src/features/dashboard/workspace-home-layout.test.ts
+new file mode 100644
+index 00000000..780cf70a
+--- /dev/null
++++ b/src/features/dashboard/workspace-home-layout.test.ts
+@@ -0,0 +1,52 @@
++import { createElement } from 'react';
++import { renderToReadableStream } from 'react-dom/server';
++import { expect, it, vi } from 'vitest';
++import { LocaleProvider } from '@/core/i18n/client';
++import { createT } from '@/core/i18n/messages';
++import type { RosterPlayer } from '@/features/roster';
++import { WorkspaceHome } from './components/workspace-home';
++
++vi.mock('server-only', () => ({}));
++vi.mock('@/core/i18n/server', () => ({ getLocale: async () => 'ar',
++  getT: async (dictionary: Parameters<typeof createT>[0]) => createT(dictionary, 'ar') }));
++vi.mock('@/core/timezone/server', () => ({ getTimezone: async () => 'Africa/Cairo' }));
++vi.mock('@/features/billing', () => ({ listRenewalRequests: async () => ({ data: [] }) }));
++vi.mock('@/features/roster', () => ({ lastSeenLabel: () => 'recently', playerStatus: () => 'active' }));
++vi.mock('@/features/captain-workspace/server', () => ({ MoneyOwedEntry: () => null, loadTasks: async () => ({ tasks: [] }) }));
++vi.mock('@/features/captain-workspace', () => ({ LightDayEntry: () => null }));
++vi.mock('@/features/inbox/server', () => ({ ageLabel: () => 'recently' }));
++vi.mock('./data/workspace', () => ({ loadHomeSummary: async () => ({
++  completedTasks: 0, adherence: 0, previousAdherence: 0, sessions: [], paid: 0,
++  activity: [
++    { id: 'e1', playerId: 'p1', name: 'Ali', kind: 'workout', at: '2026-11-12T09:00:00Z', title: 'Day 1', sets: 3 },
++    { id: 'e2', playerId: 'p2', name: 'Mona', kind: 'weight', at: '2026-11-11T09:00:00Z', value: 70 },
++  ],
++}) }));
++vi.mock('./data/home-followup', () => ({ loadHomeFollowup: async () => ({ requests: [] }) }));
++vi.mock('./data/home-contacts', () => ({ loadHomeContacts: async () => new Map() }));
++vi.mock('next/dynamic', () => ({ default: () => () => null }));
++
++const players: RosterPlayer[] = [
++  { playerId: 'p1', fullName: 'Ali', programTitle: 'Program', lastTrainingDate: '2026-11-12',
++    accessUntil: '2026-12-05', startedOn: '2026-11-01', timezone: 'Africa/Cairo', openTasks: 0 },
++  { playerId: 'p2', fullName: 'Mona', programTitle: 'Program', lastTrainingDate: '2026-11-11',
++    accessUntil: '2026-12-05', startedOn: '2026-11-01', timezone: 'Africa/Cairo', openTasks: 0 },
++];
++
++it('keeps the middle column filled: recent activity sits with tasks and alerts, ahead of the player finder', async () => {
++  const element = await WorkspaceHome({ data: Promise.resolve([{ players }, 'Ali', new Map()]), today: '2026-11-12',
++    now: new Date('2026-11-12T10:00:00Z') });
++  const html = await new Response(await renderToReadableStream(createElement(LocaleProvider, { locale: 'ar' }, element))).text();
++  const activity = html.indexOf('آخر حاجات حصلت');
++  const finder = html.indexOf('دوّر على لاعب');
++  const alerts = html.indexOf('تنبيهات ذكية');
++  expect(activity).toBeGreaterThan(-1);
++  expect(finder).toBeGreaterThan(-1);
++  expect(alerts).toBeGreaterThan(-1);
++  // Middle column (tasks, alerts, activity) is the first grid child, so its panels
++  // render before the side column's player finder in the document.
++  expect(activity).toBeGreaterThan(alerts);
++  expect(activity).toBeLessThan(finder);
++  // The activity rows themselves travel with the panel.
++  expect(html).toContain('Day 1');
++});
+diff --git a/src/features/ko-feed/data/load-task-count.ts b/src/features/ko-feed/data/load-task-count.ts
+new file mode 100644
+index 00000000..9333c8ed
+--- /dev/null
++++ b/src/features/ko-feed/data/load-task-count.ts
+@@ -0,0 +1,21 @@
++/**
++ * The pending-task count the KO launcher badge shows (T-429). This is the same
++ * count the queue, the dashboard and the sidebar show: `loadTasks()` on the
++ * server, exposed to the client by `GET /[locale]/api/captain/task-count`.
++ * The KO feed counts a different set (today's workout, the captain's own
++ * expiry, inactive players without the queue's contacted filter) and misses
++ * queue kinds entirely, so the badge must not derive from feed rows.
++ * Returns null when the count is unknown; callers keep their last good count.
++ */
++export async function loadTaskCount(locale: string, fetcher: typeof fetch = fetch): Promise<number | null> {
++  try {
++    const response = await fetcher(`/${locale}/api/captain/task-count`, { cache: 'no-store' });
++    if (!response.ok) return null;
++    const data: unknown = await response.json();
++    if (typeof data !== 'object' || data === null || !('count' in data)) return null;
++    const count = (data as { count: unknown }).count;
++    return typeof count === 'number' && Number.isSafeInteger(count) && count >= 0 ? count : null;
++  } catch {
++    return null;
++  }
++}
+diff --git a/src/features/ko-feed/hooks/use-ko-feed.ts b/src/features/ko-feed/hooks/use-ko-feed.ts
+index 96225ea5..2c4792bb 100644
+--- a/src/features/ko-feed/hooks/use-ko-feed.ts
++++ b/src/features/ko-feed/hooks/use-ko-feed.ts
+@@ -1,10 +1,11 @@
+ 'use client';
+ 
+ import { useCallback, useEffect, useSyncExternalStore } from 'react';
++import { useLocale } from '@/core/i18n/client';
+ import { dismissFeedItem, snoozeOptimistically } from '../data/dismiss';
+ import { loadFeed } from '../data/load-feed';
++import { loadTaskCount } from '../data/load-task-count';
+ import type { KoFeedItem } from '../types';
+-import { urgentCount } from '../rank';
+ import type { DigestExtras } from '../digest';
+ 
+ type State = { rows: KoFeedItem[]; status: 'loading' | 'ready' | 'error'; saveError: boolean; extras: DigestExtras | null };
+@@ -92,6 +93,61 @@ export function useKoFeed(open = true, enabled = true, digest = false) {
+   return { ...data, refresh: refreshFeed, dismiss };
+ }
+ export function useKoFeedCount(enabled = true) {
+-  const { rows } = useKoFeed(false, enabled);
+-  return enabled ? urgentCount(rows) : 0;
++  const locale = useLocale();
++  const count = useSyncExternalStore(subscribeTaskCount, getTaskCountState, serverTaskCountSnapshot);
++  useEffect(() => {
++    if (!enabled) return undefined;
++    return watchTaskCount(locale);
++  }, [enabled, locale]);
++  // Unknown while loading (null) shows no badge, same as zero: the launcher
++  // renders the count only when it is greater than zero.
++  return enabled ? count ?? 0 : 0;
++}
++
++// The KO launcher badge counts pending queue tasks (T-429), not urgent feed
++// rows: the feed and the queue count different sets, so the badge disagreed
++// with the dashboard and the queue. This store polls the same task-count
++// endpoint the sidebar badge reads, on the same 120s cadence as the feed.
++type TaskCountState = { count: number | null };
++const initialTaskCount: TaskCountState = { count: null };
++let taskCountState = initialTaskCount;
++let taskCountVersion = 0;
++let taskCountUsers = 0;
++let stopTaskCountPolling: (() => void) | undefined;
++const taskCountListeners = new Set<() => void>();
++function publishTaskCount(next: number | null) {
++  taskCountState = { count: next };
++  taskCountListeners.forEach(listener => listener());
++}
++function subscribeTaskCount(listener: () => void) {
++  taskCountListeners.add(listener);
++  return () => { taskCountListeners.delete(listener); };
++}
++export const getTaskCountState = () => taskCountState.count;
++const serverTaskCountSnapshot = () => null;
++export async function refreshTaskCount(locale: string, fetcher: typeof fetch = fetch) {
++  const current = taskCountVersion;
++  const count = await loadTaskCount(locale, fetcher);
++  if (count !== null && current === taskCountVersion) publishTaskCount(count);
++}
++export function watchTaskCount(locale: string, fetcher: typeof fetch = fetch) {
++  taskCountUsers++;
++  const update = () => { if (document.visibilityState === 'visible') void refreshTaskCount(locale, fetcher); };
++  update();
++  if (!stopTaskCountPolling) {
++    const timer = window.setInterval(update, 120_000);
++    window.addEventListener('focus', update);
++    document.addEventListener('visibilitychange', update);
++    stopTaskCountPolling = () => {
++      window.clearInterval(timer);
++      window.removeEventListener('focus', update);
++      document.removeEventListener('visibilitychange', update);
++    };
++  }
++  return () => {
++    if (--taskCountUsers === 0) {
++      stopTaskCountPolling?.(); stopTaskCountPolling = undefined;
++      taskCountVersion++; taskCountState = initialTaskCount;
++    }
++  };
+ }
+diff --git a/src/features/ko-feed/ko-feed.test.ts b/src/features/ko-feed/ko-feed.test.ts
+index f164592b..1b85bbd4 100644
+--- a/src/features/ko-feed/ko-feed.test.ts
++++ b/src/features/ko-feed/ko-feed.test.ts
+@@ -10,13 +10,15 @@ import type { GenerateKind, KoFeedItem, UrgentKind } from './types';
+ import { snoozeOptimistically } from './data/dismiss';
+ import { messages } from './messages';
+ import { KoFeed } from '../ko-preview/components/ko-feed';
++import { KoWidget } from '../ko-preview/components/ko-widget';
+ import { FeedCard, feedHref } from '../ko-preview/components/feed-card';
+ import type * as FeedStore from './hooks/use-ko-feed';
++import type * as TaskCountLoader from './data/load-task-count';
+ import { decideSwap, decideSwapOptimistically } from './data/decide-swap';
+ import type * as FeedLoader from './data/load-feed';
+ 
+-const state = vi.hoisted(() => ({ rows: [] as KoFeedItem[], status: 'ready' as 'ready' | 'error' | 'loading', saveError: false }));
+-const loads = vi.hoisted(() => ({ load: vi.fn() }));
++const state = vi.hoisted(() => ({ rows: [] as KoFeedItem[], status: 'ready' as 'ready' | 'error' | 'loading', saveError: false, taskCount: 0 }));
++const loads = vi.hoisted(() => ({ load: vi.fn(), count: vi.fn() }));
+ const swapRpc = vi.hoisted(() => vi.fn());
+ const clicks = vi.hoisted(() => ({ capture: false, handlers: new Map<string, () => void>() }));
+ vi.mock('react/jsx-dev-runtime', async original => {
+@@ -40,12 +42,13 @@ vi.mock('react', async original => {
+   } };
+ });
+ vi.mock('./data/load-feed', () => ({ loadFeed: loads.load }));
++vi.mock('./data/load-task-count', () => ({ loadTaskCount: loads.count }));
+ vi.mock('./hooks/use-ko-feed', () => ({
+   refreshFeed: vi.fn(),
+   useKoFeed: () => ({ ...state, refresh: vi.fn(), dismiss: vi.fn() }),
+-  useKoFeedCount: () => state.rows.filter(row => row.severity === 'urgent').length,
++  useKoFeedCount: () => state.taskCount,
+ }));
+-beforeEach(() => { state.rows = []; state.status = 'ready'; state.saveError = false; previewView.enabled = false; swapRpc.mockReset(); });
++beforeEach(() => { state.rows = []; state.status = 'ready'; state.saveError = false; state.taskCount = 0; previewView.enabled = false; swapRpc.mockReset(); loads.count.mockReset(); });
+ 
+ const item = (variant: { kind: UrgentKind; severity: 'urgent' } | { kind: GenerateKind; severity: 'generate' }): KoFeedItem => ({
+   key: `${variant.kind}:p:2026-11-03`, ...variant, player_id: 'p', player_name: 'Ali', data: {},
+@@ -200,6 +203,75 @@ it.each(['ar', 'en'] as const)('offers a fresh preview after clarification or an
+   previewView.enabled = false;
+ });
+ 
++it('reads the KO badge count from the shared task-count endpoint, not the feed', async () => {
++  const loader = await vi.importActual<typeof TaskCountLoader>('./data/load-task-count');
++  const fetcher = vi.fn<typeof fetch>(async () => Response.json({ count: 2 }));
++  expect(await loader.loadTaskCount('ar', fetcher)).toBe(2);
++  // The same endpoint the sidebar badge reads (`useTaskCount`): one loader,
++  // one number for the queue, the dashboard and the KO badge.
++  expect(fetcher).toHaveBeenCalledWith('/ar/api/captain/task-count', { cache: 'no-store' });
++});
++
++it.each([500, 401])('reports an unknown badge count on HTTP %s', async status => {
++  const loader = await vi.importActual<typeof TaskCountLoader>('./data/load-task-count');
++  const fetcher = vi.fn<typeof fetch>(async () => Response.json({ count: 2 }, { status }));
++  expect(await loader.loadTaskCount('ar', fetcher)).toBeNull();
++});
++
++it.each([null, -1, 1.5, '2', {}, Number.MAX_SAFE_INTEGER + 1])('reports an unknown badge count for invalid payloads: %j', async count => {
++  const loader = await vi.importActual<typeof TaskCountLoader>('./data/load-task-count');
++  const fetcher = vi.fn<typeof fetch>(async () => Response.json({ count }));
++  expect(await loader.loadTaskCount('ar', fetcher)).toBeNull();
++});
++
++it('reports an unknown badge count on network and parse failures', async () => {
++  const loader = await vi.importActual<typeof TaskCountLoader>('./data/load-task-count');
++  const failing = vi.fn<typeof fetch>(async () => { throw new Error('offline'); });
++  expect(await loader.loadTaskCount('ar', failing)).toBeNull();
++  const malformed = vi.fn<typeof fetch>(async () => new Response('invalid JSON'));
++  expect(await loader.loadTaskCount('ar', malformed)).toBeNull();
++});
++
++it('derives the badge from the shared task-count loader and clears it when the queue empties', async () => {
++  const store = await vi.importActual<typeof FeedStore>('./hooks/use-ko-feed');
++  vi.stubGlobal('document', { visibilityState: 'visible', addEventListener: vi.fn(), removeEventListener: vi.fn() });
++  vi.stubGlobal('window', { setInterval: vi.fn(), clearInterval: vi.fn(), addEventListener: vi.fn(), removeEventListener: vi.fn() });
++  loads.count.mockResolvedValue(0);
++  const stop = store.watchTaskCount('ar');
++  await store.refreshTaskCount('ar');
++  expect(store.getTaskCountState()).toBe(0);
++  expect(loads.count).toHaveBeenCalledWith('ar', expect.any(Function));
++  loads.count.mockResolvedValue(2);
++  await store.refreshTaskCount('ar');
++  expect(store.getTaskCountState()).toBe(2);
++  // Completing every task clears the badge instead of leaving a stale 2.
++  loads.count.mockResolvedValue(0);
++  await store.refreshTaskCount('ar');
++  expect(store.getTaskCountState()).toBe(0);
++  loads.count.mockResolvedValue(2);
++  await store.refreshTaskCount('ar');
++  loads.count.mockResolvedValue(null);
++  await store.refreshTaskCount('ar');
++  expect(store.getTaskCountState()).toBe(2);
++  stop();
++  expect(store.getTaskCountState()).toBeNull();
++  vi.unstubAllGlobals();
++});
++
++it.each(['ar', 'en'] as const)('hides the KO badge with an empty queue and shows the queue count otherwise in %s', locale => {
++  const render = () => renderToStaticMarkup(createElement(LocaleProvider, { locale },
++    createElement(KoWidget, { role: 'captain' })));
++  state.taskCount = 0;
++  const empty = render();
++  expect(empty).not.toContain('مهمتين مستعجلين');
++  expect(empty).not.toContain('2 urgent tasks');
++  expect(empty).not.toMatch(/>2<\/span>/);
++  state.taskCount = 2;
++  const html = render();
++  expect(html).toContain('>2</span>');
++  expect(html).toContain(locale === 'ar' ? 'مهمتين مستعجلين' : '2 urgent tasks');
++});
++
+ it('starts a fresh load after remount and ignores obsolete request cleanup', async () => {
+   const store = await vi.importActual<typeof FeedStore>('./hooks/use-ko-feed');
+   vi.stubGlobal('document', { visibilityState: 'visible', addEventListener: vi.fn(), removeEventListener: vi.fn() });
+diff --git a/src/features/ko-preview/ko-launcher-clearance.test.ts b/src/features/ko-preview/ko-launcher-clearance.test.ts
+new file mode 100644
+index 00000000..81a121c2
+--- /dev/null
++++ b/src/features/ko-preview/ko-launcher-clearance.test.ts
+@@ -0,0 +1,94 @@
++import { readFileSync } from 'node:fs';
++import { createElement } from 'react';
++import { renderToStaticMarkup } from 'react-dom/server';
++import { afterEach, beforeEach, expect, it, vi } from 'vitest';
++import { LocaleProvider } from '@/core/i18n/client';
++import { createT } from '@/core/i18n/messages';
++import { KoTeaser } from './components/ko-teaser';
++import { KoWidget } from './components/ko-widget';
++import { messages as previewMessages } from './messages';
++import { koEntryMessages } from '@/features/ko-entry';
++
++vi.mock('next/navigation', () => ({ usePathname: () => '/captain' }));
++
++beforeEach(() => vi.unstubAllEnvs());
++afterEach(() => vi.unstubAllEnvs());
++
++const render = (child: ReturnType<typeof createElement>, locale: 'ar' | 'en' = 'ar') =>
++  renderToStaticMarkup(createElement(LocaleProvider, { locale }, child));
++
++function launcherButton(html: string) {
++  const button = html.split('<button').find(tag => tag.includes('data-floating-fab'));
++  expect(button).toBeDefined();
++  return button as string;
++}
++
++it.each(['ar', 'en'] as const)('keeps the captain widget launcher fixed above the nav, labelled and at least 48px in %s', locale => {
++  const html = render(createElement(KoWidget, { role: 'captain', account: true }), locale);
++  const button = launcherButton(html);
++  expect(button).toContain('fixed');
++  expect(button).toContain('start-[max(1rem,var(--safe-start))]');
++  expect(button).toContain('bottom-[calc(var(--nav-clearance)+0.5rem)]');
++  expect(button).toContain('min-[760px]:end-20');
++  expect(button).toContain('lg:bottom-6');
++  expect(button).toContain('size-13');
++  expect(button).toContain('min-h-12');
++  expect(button).toContain('min-w-12');
++  expect(button).toContain('aria-haspopup="dialog"');
++  expect(button).toContain(`aria-label="${createT(previewMessages, locale)('accountChatTitle')}"`);
++  expect(button).not.toMatch(/left-|right-/);
++});
++
++it.each(['ar', 'en'] as const)('keeps the captain teaser launcher fixed above the nav, labelled and at least 48px in %s', locale => {
++  const html = render(createElement(KoTeaser, { role: 'captain', userId: 'user', joined: false }), locale);
++  const button = launcherButton(html);
++  expect(button).toContain('fixed');
++  expect(button).toContain('start-[max(1rem,var(--safe-start))]');
++  expect(button).toContain('bottom-[calc(var(--nav-clearance)+0.5rem)]');
++  expect(button).toContain('min-[760px]:end-20');
++  expect(button).toContain('size-13');
++  expect(button).toContain('min-h-12');
++  expect(button).toContain('min-w-12');
++  expect(button).toContain('aria-haspopup="dialog"');
++  expect(button).toContain(`aria-label="${createT(koEntryMessages, locale)('teaserOpen')}"`);
++  expect(button).not.toMatch(/left-|right-/);
++});
++
++it('moves both captain launchers to the end side at nav clearance on workspace phones', () => {
++  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
++  for (const html of [
++    render(createElement(KoWidget, { role: 'captain', account: true })),
++    render(createElement(KoTeaser, { role: 'captain', userId: 'user', joined: false })),
++  ]) {
++    const button = launcherButton(html);
++    expect(button).toContain('max-md:start-auto!');
++    expect(button).toContain('max-md:end-[max(var(--spacing-page-x),var(--safe-end))]!');
++    expect(button).toContain('max-md:bottom-[var(--nav-clearance)]!');
++    expect(button).toContain('max-md:size-12');
++  }
++});
++
++it('keeps the shared captain clearance taller than the launcher in every position', () => {
++  const css = readFileSync(new URL('../../app/globals.css', import.meta.url), 'utf8');
++  // The token accounts for the nav, the gap under it, the 3.25rem (size-13)
++  // launcher, the tooltip above it and a card gap, so page content padded
++  // with it can always scroll clear of the fixed launcher.
++  expect(css).toContain('calc(var(--nav-clearance) + 0.5rem + 3.25rem + 3rem + var(--spacing-card-gap))');
++  expect(css).toContain('.captain-content { padding-block-end: var(--captain-content-clearance); }');
++  expect(css).toContain('--captain-content-clearance: calc(1.5rem + 3.25rem + 3rem + var(--spacing-card-gap));');
++});
++
++// The desktop branch is client-only (the server snapshot is 'phone', see
++// use-teaser-desktop), so no SSR render can reach it; assert on the source
++// instead. On workspace desktop the teaser button sits at the end side
++// (bottom-left in RTL) above the page edge, and its opened corner panel
++// sits in exactly the same spot, so the panel never traps the user away
++// from the button that opened it.
++it('keeps the teaser desktop branch fixed at the end side, labelled and at least 48px', () => {
++  const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
++  const teaser = read('./components/ko-teaser.tsx');
++  expect(teaser).toContain("'fixed end-page-x bottom-page-y z-30 grid size-13 min-h-12 min-w-12");
++  expect(teaser).not.toMatch(/fixed end-page-x bottom-page-y[^']*(?:left-|right-)/);
++  const corner = read('./components/ko-teaser-corner.tsx');
++  expect(corner).toContain('fixed end-page-x bottom-page-y z-50');
++});
+diff --git a/src/features/notifications/captain-notifications-view.test.ts b/src/features/notifications/captain-notifications-view.test.ts
+index 4807b29a..93a0e89e 100644
+--- a/src/features/notifications/captain-notifications-view.test.ts
++++ b/src/features/notifications/captain-notifications-view.test.ts
+@@ -47,6 +47,29 @@ describe('captain notification list', () => {
+     expect(html.match(/>Unread<\/span>/g)).toHaveLength(1);
+   });
+ 
++  it('collapses repeated pain and inactivity alerts to the latest and never stitches the inactivity line to its timestamp', () => {
++    vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-11-14T10:00:00Z'));
++    state.current = {
++      rows: [
++        { id: 'pain-new', type: 'player_pain', payload: { player_id: 'p', display_name: 'Mariam' }, created_at: '2026-11-14T09:00:00Z', is_read: false },
++        { id: 'pain-old', type: 'player_pain', payload: { player_id: 'p', display_name: 'Mariam' }, created_at: '2026-11-13T09:00:00Z', is_read: true },
++        { id: 'inactive-new', type: 'player_inactive', payload: { player_id: 'p', name: 'Mariam' }, created_at: '2026-11-14T05:00:00Z', is_read: false },
++        { id: 'inactive-old', type: 'player_inactive', payload: { player_id: 'p', name: 'Mariam' }, created_at: '2026-11-11T05:00:00Z', is_read: true },
++        { id: 'checkin-new', type: 'checkin_submitted', payload: { player_id: 'p', display_name: 'Mariam' }, created_at: '2026-11-14T08:00:00Z', is_read: false },
++        { id: 'checkin-old', type: 'checkin_submitted', payload: { player_id: 'p', display_name: 'Mariam' }, created_at: '2026-11-13T08:00:00Z', is_read: false },
++      ],
++      count: 4, status: 'ready', pending: false, saveError: false,
++      refresh: async () => {}, read: async () => true,
++    };
++    const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, createElement(CaptainNotificationsEntry)));
++    expect(html.match(/بلّغ عن وجع/g)).toHaveLength(1);
++    expect(html.match(/متمرّنش من 3 أيام/g)).toHaveLength(1);
++    expect(html).not.toContain('أو أكتر');
++    expect(html).not.toContain('متمرّنش من 3 أيام من 5 ساعات');
++    expect(html).toContain('من 5 ساعات');
++    expect(html.match(/بعت المتابعة/g)).toHaveLength(2);
++  });
++
+   it('reports read failures without hiding the list', () => {
+     const html = render({ saveError: true });
+     expect(html).toContain('role="alert"');
+diff --git a/src/features/notifications/captain-notifications.test.ts b/src/features/notifications/captain-notifications.test.ts
+index da9a8714..20b3ef14 100644
+--- a/src/features/notifications/captain-notifications.test.ts
++++ b/src/features/notifications/captain-notifications.test.ts
+@@ -1,6 +1,32 @@
+ import { describe, expect, it } from 'vitest';
+ import { Banknote, ClipboardList, Play, Trophy, UserPlus } from 'lucide-react';
+-import { captainNotification } from './components/captain-notification-format';
++import { captainNotification, deduplicateNotifications } from './components/captain-notification-format';
++import type { Notification } from './types';
++
++const row = (overrides: Partial<Notification> & Pick<Notification, 'id' | 'type'>): Notification => ({
++  payload: {}, is_read: false, created_at: '2026-11-14T09:00:00Z', ...overrides,
++});
++
++describe('deduplicateNotifications', () => {
++  it('keeps the latest pain and inactivity alert per player', () => {
++    const rows = [
++      row({ id: 'pain-new', type: 'player_pain', payload: { player_id: 'p', display_name: 'Mariam' }, created_at: '2026-11-14T09:00:00Z' }),
++      row({ id: 'pain-old', type: 'player_pain', payload: { player_id: 'p', display_name: 'Mariam' }, created_at: '2026-11-13T09:00:00Z' }),
++      row({ id: 'inactive-new', type: 'player_inactive', payload: { player_id: 'p', name: 'Mariam' }, created_at: '2026-11-14T05:00:00Z' }),
++      row({ id: 'inactive-old', type: 'player_inactive', payload: { player_id: 'p', name: 'Mariam' }, created_at: '2026-11-11T05:00:00Z' }),
++      row({ id: 'pain-other', type: 'player_pain', payload: { player_id: 'q', display_name: 'Ahmed' } }),
++    ];
++    expect(deduplicateNotifications(rows).map(item => item.id)).toEqual(['pain-new', 'inactive-new', 'pain-other']);
++  });
++  it('leaves every other event alone, even repeated ones for the same player', () => {
++    const rows = [
++      row({ id: 'checkin-new', type: 'checkin_submitted', payload: { player_id: 'p', display_name: 'Mariam' } }),
++      row({ id: 'checkin-old', type: 'checkin_submitted', payload: { player_id: 'p', display_name: 'Mariam' }, created_at: '2026-11-13T09:00:00Z' }),
++      row({ id: 'form', type: 'form_answered', payload: { player_id: 'p', request_id: 'r' } }),
++    ];
++    expect(deduplicateNotifications(rows).map(item => item.id)).toEqual(['checkin-new', 'checkin-old', 'form']);
++  });
++});
+ 
+ describe('captain notification destinations and icons', () => {
+   it.each([
+diff --git a/src/features/notifications/components/captain-notification-format.ts b/src/features/notifications/components/captain-notification-format.ts
+index 20a87ddf..b3650d45 100644
+--- a/src/features/notifications/components/captain-notification-format.ts
++++ b/src/features/notifications/components/captain-notification-format.ts
+@@ -1,5 +1,24 @@
+ import { Banknote, Bell, CalendarClock, ClipboardList, Play, Trophy, UserPlus } from 'lucide-react';
+-import type { NotificationType } from '../types';
++import type { Notification, NotificationType } from '../types';
++
++// Pain and inactivity alerts carry no event detail in the list and both link to the
++// same aggregate view (the player file / its pain reports), so repeated rows for one
++// player read as the same alert several times. Keep the latest per player and drop
++// the rest. Every other type stays one row per event: its payload identifies the
++// event (a form request, a check-in, a receipt) and hiding it would hide real work.
++const DEDUPED_TYPES: ReadonlySet<NotificationType> = new Set(['player_pain', 'player_inactive']);
++
++export function deduplicateNotifications(rows: Notification[]): Notification[] {
++  // Rows arrive newest first, so the first row kept per key is the latest one.
++  const seen = new Set<string>();
++  return rows.filter(row => {
++    if (!DEDUPED_TYPES.has(row.type)) return true;
++    const key = `${row.type}:${row.payload.player_id ?? row.payload.name ?? ''}`;
++    if (seen.has(key)) return false;
++    seen.add(key);
++    return true;
++  });
++}
+ 
+ export function captainNotification(kind: NotificationType) {
+   if (kind === 'ramadan_soon') return { Icon: CalendarClock, href: '/captain/settings#ramadan' };
+diff --git a/src/features/notifications/components/captain-notifications-entry.tsx b/src/features/notifications/components/captain-notifications-entry.tsx
+index 80085817..0777d98e 100644
+--- a/src/features/notifications/components/captain-notifications-entry.tsx
++++ b/src/features/notifications/components/captain-notifications-entry.tsx
+@@ -8,7 +8,7 @@ import { PageBarActions } from '@/ui/page-bar-actions';
+ import { messages } from '../messages';
+ import { useNotifications } from '../hooks/use-notifications';
+ import { importantNotificationHref, medalKey, notificationHref, notificationTextKey, relativeTime } from '../format';
+-import { captainNotification } from './captain-notification-format';
++import { captainNotification, deduplicateNotifications } from './captain-notification-format';
+ import { CaptainNotificationsStateEntry } from './captain-notifications-state-entry';
+ import { Button } from '@/ui/button';
+ 
+@@ -28,7 +28,7 @@ export function CaptainNotificationsEntry() {
+     {n.saveError && <p role="alert" className="mb-stack text-sm text-danger">{t('saveError')}</p>}
+     <section className="glass rounded-[18px] p-card">
+       {n.rows.length === 0 ? <p className="p-card text-sm text-muted">{t('empty')}</p> :
+-        <ul>{n.rows.map(row => {
++        <ul>{deduplicateNotifications(n.rows).map(row => {
+           const { Icon, href: baseHref } = captainNotification(row.type);
+           const href = importantNotificationHref(row) ?? (row.type === 'player_rank_up' || row.type === 'player_pain' || row.type === 'pain_answered' ? notificationHref(row) : baseHref);
+           const time = relativeTime(row.created_at, now);
+@@ -46,7 +46,7 @@ export function CaptainNotificationsEntry() {
+                   rank: t(medalKey(row.payload.medal) ?? 'iron'),
+                   n: row.payload.needs_workouts ?? 0, gap: row.payload.gap ?? 0,
+                 }, row.payload.gap ?? 0)}</p>
+-                <time dateTime={row.created_at} className="block truncate text-micro text-muted">{t(time.key, { n: time.n })}</time>
++                <time dateTime={row.created_at} className="mt-inline block truncate text-micro text-muted">{t(time.key, { n: time.n })}</time>
+               </div>
+               {!row.is_read && <><span className="text-micro text-muted">{t('unread')}</span><span aria-hidden className="size-2 shrink-0 rounded-full bg-lime" /></>}
+             </Link>
+diff --git a/src/features/notifications/messages.ts b/src/features/notifications/messages.ts
+index 8bed388c..537962d4 100644
+--- a/src/features/notifications/messages.ts
++++ b/src/features/notifications/messages.ts
+@@ -49,7 +49,7 @@ export const messages = defineMessages({
+     error: 'مش قادرين نحمّل الإشعارات، جرّب تاني', titleWithUnread: 'الإشعارات، فيه إشعارات مش مقروءة', unread: 'مش مقروء', retry: 'جرّب تاني',
+     saveError: 'مقدرناش نعلّم الإشعار كمقروء، جرّب تاني',
+     plan_assigned: 'اتعيّنلك برنامج {name}', nutrition_updated: 'اتحدّث نظامك الغذائي {name}',
+-    player_joined: '{name} انضم ليك', player_inactive: '{name} متمرّنش بقاله 3 أيام أو أكتر',
++    player_joined: '{name} انضم ليك', player_inactive: '{name} متمرّنش من 3 أيام',
+     now: 'دلوقتي', 'minutes.one': "من دقيقة واحدة",
+     'minutes.two': "من دقيقتين",
+     'minutes.few': "من {n} دقايق",
+@@ -106,7 +106,7 @@ export const messages = defineMessages({
+     error: 'Could not load notifications. Try again', titleWithUnread: 'Notifications, unread alerts', unread: 'Unread', retry: 'Try again',
+     saveError: 'Could not mark as read. Try again',
+     plan_assigned: 'Program assigned: {name}', nutrition_updated: 'Nutrition updated: {name}',
+-    player_joined: '{name} joined you', player_inactive: '{name} has not trained for 3 or more days',
++    player_joined: '{name} joined you', player_inactive: '{name} has not trained for 3 days',
+     now: 'Just now', 'minutes.one': "{n} minute ago",
+     'minutes.other': "{n} minutes ago", 'hours.one': "{n} hour ago",
+     'hours.other': "{n} hours ago", 'days.one': "Yesterday",
+diff --git a/src/features/notifications/standard/messages.ts b/src/features/notifications/standard/messages.ts
+index e4d0ae43..7b5d7f8a 100644
+--- a/src/features/notifications/standard/messages.ts
++++ b/src/features/notifications/standard/messages.ts
+@@ -27,5 +27,5 @@ export const arStd = {
+   empty: 'لا توجد إشعارات بعد', error: 'تعذّر تحميل الإشعارات. حاول مجدداً', titleWithUnread: 'الإشعارات، توجد إشعارات غير مقروءة', unread: 'غير مقروء', retry: 'حاول مجدداً',
+   saveError: 'تعذّر تعليم الإشعار كمقروء. حاول مجدداً', plan_assigned: 'تم تعيين برنامج {name} لك',
+   nutrition_updated: 'تم تحديث خطتك الغذائية {name}', player_joined: 'انضم إليك {name}',
+-  player_inactive: 'لم يتمرّن {name} منذ 3 أيام أو أكثر', now: 'الآن', 'minutes.one': "منذ دقيقة واحدة", 'minutes.two': "منذ دقيقتين", 'minutes.few': "منذ {n} دقائق", 'minutes.many': "منذ {n} دقيقة", 'minutes.other': "منذ {n} دقيقة", 'hours.one': "منذ ساعة واحدة", 'hours.two': "منذ ساعتين", 'hours.few': "منذ {n} ساعات", 'hours.many': "منذ {n} ساعة", 'hours.other': "منذ {n} ساعة", 'days.one': "أمس", 'days.two': "منذ يومين", 'days.few': "منذ {n} أيام", 'days.many': "منذ {n} يومًا", 'days.other': "منذ {n} يوم",
++  player_inactive: 'لم يتمرّن {name} منذ 3 أيام', now: 'الآن', 'minutes.one': "منذ دقيقة واحدة", 'minutes.two': "منذ دقيقتين", 'minutes.few': "منذ {n} دقائق", 'minutes.many': "منذ {n} دقيقة", 'minutes.other': "منذ {n} دقيقة", 'hours.one': "منذ ساعة واحدة", 'hours.two': "منذ ساعتين", 'hours.few': "منذ {n} ساعات", 'hours.many': "منذ {n} ساعة", 'hours.other': "منذ {n} ساعة", 'days.one': "أمس", 'days.two': "منذ يومين", 'days.few': "منذ {n} أيام", 'days.many': "منذ {n} يومًا", 'days.other': "منذ {n} يوم",
+ } as const;
+diff --git a/src/features/progress/calm-chart.test.ts b/src/features/progress/calm-chart.test.ts
+index 85f57d07..b4768457 100644
+--- a/src/features/progress/calm-chart.test.ts
++++ b/src/features/progress/calm-chart.test.ts
+@@ -85,6 +85,21 @@ it('selects up to four real dates, including both ends', () => {
+   expect(dateTicks(dates.slice(0, 2))).toEqual(dates.slice(0, 2));
+ });
+ 
++it('keeps the weight period pills on one line at equal height', () => {
++  const html = render();
++  expect(html).toContain('>شهر</button>');
++  expect(html).toContain('>3 شهور</button>');
++  expect(html).toContain('>الكل</button>');
++  const buttons = html.match(/<button[^>]*role="radio"[^>]*>/g) ?? [];
++  expect(buttons).toHaveLength(3);
++  for (const button of buttons) {
++    expect(button).toContain('min-h-12');
++    expect(button).toContain('whitespace-nowrap');
++  }
++  expect(buttons.filter(button => button.includes('glass-raised'))).toHaveLength(1);
++  expect(html).toContain('overflow-x-auto');
++});
++
+ it('filters on inclusive calendar-month boundaries and clamps month ends', () => {
+   const readings = ['2026-01-30', '2026-01-31', '2026-02-28', '2026-03-31'].map(date => ({ date, value: 80 }));
+   expect(filterPeriod(readings, 'month', '2026-03-31')).toEqual(readings.slice(2));
+diff --git a/src/features/roster/components/captain-frame-messages.ts b/src/features/roster/components/captain-frame-messages.ts
+index 83959143..55dd8f9c 100644
+--- a/src/features/roster/components/captain-frame-messages.ts
++++ b/src/features/roster/components/captain-frame-messages.ts
+@@ -7,7 +7,7 @@ export const frameMessages = defineMessages({
+     exercises: 'التمارين', plans: 'الأنظمة الغذائية', foods: 'الأكلات', forms: 'التقييمات', settings: 'الإعدادات',
+     work: 'شغلي', team: 'فريقي', library: 'مكتبتي', money: 'فلوسي', account: 'حسابي', more: 'المزيد', close: 'اقفل',
+     search: 'دور على لاعب أو صفحة', shortcut: 'Ctrl K', notifications: 'الإشعارات', empty: 'مفيش نتايج',
+-    countUnavailable: 'العدد مش متاح', unavailable: 'البيانات مش متاحة دلوقتي', retry: 'جرّب تاني', loading: 'بنحمّل', 'playerCount.one': "لاعب واحد", 'playerCount.two': "لاعبين", 'playerCount.few': "{count} لاعبين", 'playerCount.many': "{count} لاعب", 'playerCount.other': "{count} لاعب",
++    unavailable: 'البيانات مش متاحة دلوقتي', retry: 'جرّب تاني', loading: 'بنحمّل', 'playerCount.one': "لاعب واحد", 'playerCount.two': "لاعبين", 'playerCount.few': "{count} لاعبين", 'playerCount.many': "{count} لاعب", 'playerCount.other': "{count} لاعب",
+     brand: 'KOCHIVO', player: 'ملف اللاعب', packages: 'الباقات', settingsAccount: 'الإعدادات والحساب',
+   },
+   arStd: {
+@@ -16,7 +16,7 @@ export const frameMessages = defineMessages({
+     exercises: 'التمارين', plans: 'الأنظمة الغذائية', foods: 'الأطعمة', forms: 'التقييمات', settings: 'الإعدادات',
+     work: 'عملي', team: 'فريقي', library: 'مكتبتي', money: 'أموالي', account: 'حسابي', more: 'المزيد', close: 'إغلاق',
+     search: 'ابحث عن لاعب أو صفحة', shortcut: 'Ctrl K', notifications: 'الإشعارات', empty: 'لا توجد نتائج',
+-    countUnavailable: 'العدد غير متاح', unavailable: 'البيانات غير متاحة الآن', retry: 'حاول مرة أخرى', loading: 'جارٍ التحميل', 'playerCount.one': "لاعب واحد", 'playerCount.two': "لاعبين", 'playerCount.few': "{count} لاعبين", 'playerCount.many': "{count} لاعبًا", 'playerCount.other': "{count} لاعب",
++    unavailable: 'البيانات غير متاحة الآن', retry: 'حاول مرة أخرى', loading: 'جارٍ التحميل', 'playerCount.one': "لاعب واحد", 'playerCount.two': "لاعبين", 'playerCount.few': "{count} لاعبين", 'playerCount.many': "{count} لاعبًا", 'playerCount.other': "{count} لاعب",
+     brand: 'KOCHIVO', player: 'ملف اللاعب', packages: 'الباقات', settingsAccount: 'الإعدادات والحساب',
+   },
+   en: {
+@@ -25,7 +25,7 @@ export const frameMessages = defineMessages({
+     exercises: 'Exercises', plans: 'Meal plans', foods: 'Foods', forms: 'Assessments', settings: 'Settings',
+     work: 'My work', team: 'My team', library: 'My library', money: 'My money', account: 'My account', more: 'More', close: 'Close',
+     search: 'Find a player or page', shortcut: 'Ctrl K', notifications: 'Notifications', empty: 'No results',
+-    countUnavailable: 'Count unavailable', unavailable: 'Data is unavailable', retry: 'Try again', loading: 'Loading', 'playerCount.one': "{count} player", 'playerCount.other': "{count} players",
++    unavailable: 'Data is unavailable', retry: 'Try again', loading: 'Loading', 'playerCount.one': "{count} player", 'playerCount.other': "{count} players",
+     brand: 'KOCHIVO', player: 'Player file', packages: 'Packages', settingsAccount: 'Settings and account',
+   },
+ });
+diff --git a/src/features/roster/components/captain-frame-nav.test.ts b/src/features/roster/components/captain-frame-nav.test.ts
+index c7761809..9e28c8ac 100644
+--- a/src/features/roster/components/captain-frame-nav.test.ts
++++ b/src/features/roster/components/captain-frame-nav.test.ts
+@@ -35,14 +35,22 @@ it('keeps desktop groups and exposes the five phone controls in order', () => {
+ });
+ it('retains tasks when polling fails and accepts a fresh endpoint count', () => {
+   state.error = true;
+-  expect(render(7)).toContain('العدد مش متاح');
++  expect(render(7)).not.toContain('العدد مش متاح');
+   for (const link of taskLinks(render(7))) expect(link).toContain('>7</span>');
+   state.error = false;
+   state.tasks = 9;
+   for (const link of taskLinks(render(99))) expect(link).toContain('>9</span>');
+ });
++it('shows the badge for two pending tasks and hides it for zero', () => {
++  state.tasks = 2;
++  for (const link of taskLinks(render(99))) expect(link).toContain('>2</span>');
++  state.tasks = 0;
++  expect(render(99)).not.toContain('العدد مش متاح');
++  for (const link of taskLinks(render(99))) expect(link).not.toMatch(/>\d+<\/span>/);
++});
+ it('keeps the badge unknown before the first successful endpoint read', () => {
+   state.tasks = null;
++  expect(render(99)).not.toContain('العدد مش متاح');
+   for (const link of taskLinks(render(99))) expect(link).not.toMatch(/>\d+<\/span>/);
+ });
+ 
+diff --git a/src/features/roster/components/captain-nav-groups.tsx b/src/features/roster/components/captain-nav-groups.tsx
+index bd3cb36c..ce2dd991 100644
+--- a/src/features/roster/components/captain-nav-groups.tsx
++++ b/src/features/roster/components/captain-nav-groups.tsx
+@@ -46,7 +46,7 @@ export function CaptainNavGroups({ active, counts, libraryCounts, tiles = false,
+               className={`relative flex min-h-12 rounded-control text-row ${tiles ? `glass min-h-[72px] flex-col items-center justify-center gap-stack px-stack py-stack text-center ${active === id ? 'glass-strong font-semibold text-ink' : 'text-muted'}` : `items-center gap-stack px-stack ${active === id ? 'nav-slash bg-ink/5 font-semibold text-ink' : 'text-muted hover:bg-ink/5 hover:text-ink'}`}`}>
+               <Icon active={active === id} className={`size-5 shrink-0 ${tiles ? 'text-lime' : ''}`} aria-hidden />
+               <span className={tiles ? undefined : 'min-w-0 flex-1 truncate'}>{t(id)}</span>
+-              {count === null && id !== 'billing' ? <span className="text-micro text-muted">{t('countUnavailable')}</span> : count != null && count > 0
++              {count != null && count > 0
+                 ? <span className={tiles ? 'absolute end-2 top-1 text-xs font-bold text-lime' : `min-w-5 rounded-md px-inline text-center text-micro font-bold tabular-nums ${id === 'billing' ? 'tone-warn' : 'tone-lime'}`}>{count}</span> : null}
+             </Link>;
+           })}
+diff --git a/src/features/roster/hooks/use-task-count.test.ts b/src/features/roster/hooks/use-task-count.test.ts
+index 72d6d019..49ded1cf 100644
+--- a/src/features/roster/hooks/use-task-count.test.ts
++++ b/src/features/roster/hooks/use-task-count.test.ts
+@@ -42,6 +42,14 @@ it('reads on mount, focus and visibility return without a timer or polling', asy
+   expect(f.fetcher).toHaveBeenCalledTimes(3);
+ });
+ 
++it('publishes nothing while the first read is pending or fails', async () => {
++  const f = fixture();
++  f.fetcher.mockRejectedValueOnce(new Error('offline'));
++  await f.subscription.refresh();
++  expect(f.counts).toEqual([]);
++  f.subscription.dispose();
++});
++
+ it.each([401, 500])('keeps the last good value on HTTP %s', async status => {
+   const f = fixture();
+   f.fetcher.mockResolvedValueOnce(Response.json({ count: 5 }));
+diff --git a/src/features/roster/invite-render.test.ts b/src/features/roster/invite-render.test.ts
+index 5679062a..46e7ae41 100644
+--- a/src/features/roster/invite-render.test.ts
++++ b/src/features/roster/invite-render.test.ts
+@@ -24,6 +24,21 @@ it.each(['ar', 'en'] as const)('renders package cards and custom empty state in
+     else { expect(html).toContain('href="/captain/billing'); expect(html).toContain(locale === 'en' ? 'No packages yet' : 'لسه معندكش باقات'); }
+   }
+ });
++it.each(['ar', 'en'] as const)('labels a 30-day package as one month and agrees with the summary span in %s', locale => {
++  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale }, createElement(InviteForm,
++    { packages: [pkg], today: '2026-11-22', onSave() {} })));
++  if (locale === 'ar') {
++    expect(html).toContain('شهر واحد');
++    expect(html).not.toContain('٠ شهر');
++    expect(html).toContain('22 نوفمبر');
++    expect(html).toContain('21 ديسمبر');
++  } else {
++    expect(html).toContain('1 month');
++    expect(html).toContain('22 November');
++    expect(html).toContain('21 December');
++  }
++  expect(html).toContain(locale === 'ar' ? '500 ج' : 'EGP 500');
++});
+ it.each(['ar', 'en'] as const)('renders summary and correct share destinations in %s', locale => {
+   for (const whatsapp of ['', '01001234567']) {
+     const html = renderToStaticMarkup(createElement(LocaleProvider, { locale }, createElement(InviteResult,
+diff --git a/src/features/settings/__snapshots__/v6-legacy.test.ts.snap b/src/features/settings/__snapshots__/v6-legacy.test.ts.snap
+index 4884c603..6d5aab50 100644
+--- a/src/features/settings/__snapshots__/v6-legacy.test.ts.snap
++++ b/src/features/settings/__snapshots__/v6-legacy.test.ts.snap
+@@ -3,14 +3,14 @@
+ exports[`preserves original account, notifications, assessment, supplements and intake option markup 1`] = `
+ [
+   [
+-    "57a71c3d64a08d6428841d1dfd7c0bb4d02bd27929b4f18527503bfac06b6d28",
++    "39211e10e8eef37013f25e0aac0a1fee2f1cdaf3039a5cf892e797a246adf53d",
+     "028550520954c9964831f67a463ddedbfb0efed7538a2b8f9ffef129984941a0",
+     "2e734417dd1e1ce809c9aeea28efff039afa94113692b7338dd2059ea81a82be",
+     "29757c79e4a078356f577d110e6b3b10473cdd59a19af923f0d6abea075c6401",
+     "5367f3eb363cf2bd1c4b0f08acf64ae95391a290682d6be82575842421c1f13d",
+   ],
+   [
+-    "0385eff76da673d95736b4ed7ac492c28bc41de9181f7a11a93a3f7c181b248f",
++    "164abd50c0faf6f7b59f7bcd264faa00681b85f642a1f887c2e2159d49055259",
+     "9baeffb8bd0fe58e3caff258cf84f27d66f7af8b1bd33ba1d3d3c874c6dac7a8",
+     "ed919665e540ff6adac6b1889ce3fde4028fbead051be96fffd8f6f17cf8bdde",
+     "2f1b6afcd1fc4158db01984f11bcd8f4f1dfa667958fff5bd114ea23947a7d0d",
+diff --git a/src/ui/exercise-image.tsx b/src/ui/exercise-image.tsx
+index 7534684c..2ccf6a2d 100644
+--- a/src/ui/exercise-image.tsx
++++ b/src/ui/exercise-image.tsx
+@@ -3,12 +3,14 @@
+ import Image from 'next/image';
+ import { useEffect, useRef, useState } from 'react';
+ 
+-export function ExerciseImage({ src, alt, width, height, fullWidth = false, className = '' }: {
+-  src: string; alt: string; width: number; height: number; fullWidth?: boolean; className?: string;
++export function ExerciseImage({ src, alt, width, height, fullWidth = false, className = '', eager = false }: {
++  src: string; alt: string; width: number; height: number; fullWidth?: boolean; className?: string; eager?: boolean;
+ }) {
+   const target = useRef<HTMLSpanElement>(null);
+-  const [visible, setVisible] = useState(false);
++  const [visible, setVisible] = useState(eager);
++  const [loaded, setLoaded] = useState(false);
+   useEffect(() => {
++    if (eager) return;
+     const element = target.current;
+     if (!element) return;
+     const motion = matchMedia('(prefers-reduced-motion: reduce)');
+@@ -16,7 +18,7 @@ export function ExerciseImage({ src, alt, width, height, fullWidth = false, clas
+     const observe = () => {
+       observer?.disconnect();
+       setVisible(false);
+-      if (motion.matches) return;
++      if (motion.matches) { setVisible(true); return; }
+       if (!('IntersectionObserver' in window)) { setVisible(true); return; }
+       observer = new IntersectionObserver(entries => {
+         if (entries.some(entry => entry.isIntersecting)) { setVisible(true); observer?.disconnect(); }
+@@ -26,12 +28,12 @@ export function ExerciseImage({ src, alt, width, height, fullWidth = false, clas
+     observe();
+     motion.addEventListener('change', observe);
+     return () => { observer?.disconnect(); motion.removeEventListener('change', observe); };
+-  }, []);
++  }, [eager]);
+   const placeholder = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}'/%3E`;
+   return <span ref={target}
+     style={{ aspectRatio: `${width}/${height}`, width: fullWidth ? '100%' : width, maxWidth: '100%' }}
+-    className={`inline-block shrink-0 overflow-hidden rounded-control bg-surface-raised align-middle ${className}`}>
++    className={`inline-block shrink-0 overflow-hidden rounded-control align-middle ${loaded ? 'bg-transparent' : 'animate-pulse bg-surface-raised motion-reduce:animate-none'} ${className}`}>
+     <Image unoptimized src={visible ? src : placeholder} alt={alt} width={width} height={height}
+-      loading="lazy" decoding="async" className="h-full w-full object-contain" />
++      loading={eager ? 'eager' : 'lazy'} decoding="async" onLoad={() => { if (visible) setLoaded(true); }} className="h-full w-full object-contain" />
+   </span>;
+ }
+diff --git a/src/ui/segmented.tsx b/src/ui/segmented.tsx
+index 4ee2c329..858a6b9f 100644
+--- a/src/ui/segmented.tsx
++++ b/src/ui/segmented.tsx
+@@ -20,7 +20,7 @@ export interface SegmentedProps extends Omit<HTMLAttributes<HTMLDivElement>, 'on
+ 
+ export function Segmented({ options, value, onChange, className, phoneScroll, disabled, ...props }: SegmentedProps) {
+   return (
+-    <div {...props} role="radiogroup" aria-disabled={disabled} className={cn('glass flex gap-inline rounded-control p-inline', phoneScroll && 'max-md:max-w-full max-md:overflow-x-auto', className)}>
++    <div {...props} role="radiogroup" aria-disabled={disabled} className={cn('glass flex max-w-full gap-inline overflow-x-auto rounded-control p-inline', phoneScroll && 'max-md:max-w-full max-md:overflow-x-auto', className)}>
+       {options.map((option, index) => (
+         <button
+           key={option.value}
+@@ -46,7 +46,7 @@ export function Segmented({ options, value, onChange, className, phoneScroll, di
+             const target = event.currentTarget.parentElement?.children.item(next);
+             if (target instanceof HTMLButtonElement) target.focus();
+           }}
+-          className={cn('press min-h-12 min-w-0 flex-1 rounded-control px-stack text-sm', phoneScroll && 'max-md:shrink-0 max-md:basis-auto max-md:whitespace-nowrap', variants[option.value === value ? 'active' : 'idle'])}
++          className={cn('press min-h-12 min-w-fit shrink-0 flex-1 whitespace-nowrap rounded-control px-stack text-sm', phoneScroll && 'max-md:shrink-0 max-md:basis-auto max-md:whitespace-nowrap', variants[option.value === value ? 'active' : 'idle'])}
+         >{option.label}</button>
+       ))}
+     </div>

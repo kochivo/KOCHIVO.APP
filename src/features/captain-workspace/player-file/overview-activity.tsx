@@ -45,7 +45,7 @@ export function OverviewActivity({ profile, activity, playerId, locale, overview
           {activity.last && <span className="text-xs text-lime">{activity.last.program_days?.title} · {formatDateAr(activity.last.training_date, { day: 'numeric', month: 'long' }, locale)}</span>}
         </div>
         {exercises.size ? [...exercises].map(([id, sets]) => <div key={id} className="flex min-h-12 items-center gap-stack border-t border-line-soft py-stack">
-          {sets[0]?.exercises?.media_path && <ExerciseImage src={exerciseMediaUrl(sets[0].exercises.media_path)} alt="" width={44} height={44} />}
+          {sets[0]?.exercises?.media_path && <ExerciseImage src={exerciseMediaUrl(sets[0].exercises.media_path)} alt="" width={44} height={44} eager />}
           <div className="min-w-0 flex-1"><h3 className="text-sm">{locale === 'en' ? sets[0]?.exercises?.name_en : sets[0]?.exercises?.name_ar}</h3>
             {sets.filter(set => (set.drop_index ?? 0) === 0).map((set, index) => <div key={index} className="mt-inline text-xs text-muted">
               <p><bdi>{setPerformance(set.weight_kg, set.reps, ft('kg'), locale)}</bdi></p>

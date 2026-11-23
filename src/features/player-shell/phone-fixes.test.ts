@@ -6,7 +6,12 @@ const source = (path: string) => readFileSync(`src/${path}`, 'utf8');
 it('reserves room above the navigation for floating controls and their tooltip', () => {
   const css = source('app/globals.css');
   expect(css).toContain('--player-content-clearance: max(var(--page-bottom-clearance), calc(var(--nav-clearance) + 0.5rem + 3.25rem + 3rem + var(--spacing-card-gap)))');
-  expect(source('features/player-shell/components/player-shell.tsx')).toContain('pb-[var(--player-content-clearance)]');
+  // P1: the player layout owns the shared clearance (.player-content) once —
+  // the shell must not pad a second time, and the layout is the one place
+  // that covers the shell states whose inner div never renders.
+  expect(css).toContain('.player-content { padding-block-end: var(--player-content-clearance); }');
+  expect(source('app/[locale]/(player)/player/layout.tsx')).toContain('className="player-content"');
+  expect(source('features/player-shell/components/player-shell.tsx')).not.toContain('pb-[var(--player-content-clearance)]');
 });
 
 it('keeps an opaque safe-area strip above scrolling player content', () => {

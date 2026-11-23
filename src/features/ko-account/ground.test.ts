@@ -119,6 +119,7 @@ it.each([
 
 it.each(['audio', 'question', 'old user value', 'old KO question', 'KO statement'] as const)(
   'grounds only text and the preceding KO question (%s)', async mode => {
+    vi.stubEnv('KO_MEAL_RECEIPT_SECRET', 'm'.repeat(32));
     vi.spyOn(Date, 'now').mockReturnValue(1_800_000_000_000);
     vi.spyOn(account, 'getKoActor').mockResolvedValue(actor);
     vi.spyOn(entry, 'koAccountConfig').mockReturnValue({

@@ -8,7 +8,7 @@ export type HomeTask = {
   title?: string; days?: number; urgent: boolean;
 };
 export const taskEstimate = (count: number) => count * 3;
-export const taskProgress = (completed: number, pending: number) => completed + pending ? completed / (completed + pending) : 1;
+export const taskProgress = (completed: number, pending: number) => completed + pending ? completed / (completed + pending) : 0;
 
 export function buildHomeTasks(tasks: CaptainTask[]): HomeTask[] {
   return tasks.map(task => ({ id: task.id, playerId: task.playerId, name: task.name,

@@ -1,5 +1,24 @@
 import { Banknote, Bell, CalendarClock, ClipboardList, Play, Trophy, UserPlus } from 'lucide-react';
-import type { NotificationType } from '../types';
+import type { Notification, NotificationType } from '../types';
+
+// Pain and inactivity alerts carry no event detail in the list and both link to the
+// same aggregate view (the player file / its pain reports), so repeated rows for one
+// player read as the same alert several times. Keep the latest per player and drop
+// the rest. Every other type stays one row per event: its payload identifies the
+// event (a form request, a check-in, a receipt) and hiding it would hide real work.
+const DEDUPED_TYPES: ReadonlySet<NotificationType> = new Set(['player_pain', 'player_inactive']);
+
+export function deduplicateNotifications(rows: Notification[]): Notification[] {
+  // Rows arrive newest first, so the first row kept per key is the latest one.
+  const seen = new Set<string>();
+  return rows.filter(row => {
+    if (!DEDUPED_TYPES.has(row.type)) return true;
+    const key = `${row.type}:${row.payload.player_id ?? row.payload.name ?? ''}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
 
 export function captainNotification(kind: NotificationType) {
   if (kind === 'ramadan_soon') return { Icon: CalendarClock, href: '/captain/settings#ramadan' };

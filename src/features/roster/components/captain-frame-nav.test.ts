@@ -35,14 +35,22 @@ it('keeps desktop groups and exposes the five phone controls in order', () => {
 });
 it('retains tasks when polling fails and accepts a fresh endpoint count', () => {
   state.error = true;
-  expect(render(7)).toContain('العدد مش متاح');
+  expect(render(7)).not.toContain('العدد مش متاح');
   for (const link of taskLinks(render(7))) expect(link).toContain('>7</span>');
   state.error = false;
   state.tasks = 9;
   for (const link of taskLinks(render(99))) expect(link).toContain('>9</span>');
 });
+it('shows the badge for two pending tasks and hides it for zero', () => {
+  state.tasks = 2;
+  for (const link of taskLinks(render(99))) expect(link).toContain('>2</span>');
+  state.tasks = 0;
+  expect(render(99)).not.toContain('العدد مش متاح');
+  for (const link of taskLinks(render(99))) expect(link).not.toMatch(/>\d+<\/span>/);
+});
 it('keeps the badge unknown before the first successful endpoint read', () => {
   state.tasks = null;
+  expect(render(99)).not.toContain('العدد مش متاح');
   for (const link of taskLinks(render(99))) expect(link).not.toMatch(/>\d+<\/span>/);
 });
 

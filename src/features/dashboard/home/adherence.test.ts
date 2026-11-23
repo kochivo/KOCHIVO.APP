@@ -32,6 +32,15 @@ it('returns zero for no plans, empty intake and rest-only rotation', () => {
     [], '2026-11-17')).toEqual({ current: 0, previous: 0 });
 });
 
+it('keeps a real previous-week delta when this week is empty, so a -25% badge is not vacuous', () => {
+  expect(weekComparison([{ playerId: 'p', days: [
+    { id: 'a', weekday: 0, isRestDay: false }, { id: 'b', weekday: 1, isRestDay: false },
+    { id: 'c', weekday: 2, isRestDay: false }, { id: 'd', weekday: 3, isRestDay: false },
+  ], trainingDays: [0, 1, 2, 3] }], [
+    { playerId: 'p', dayId: 'a', date: '2026-11-07' },
+  ], '2026-11-17')).toEqual({ current: 0, previous: 25 });
+});
+
 it('weights players by planned dates and deduplicates overlapping programs and weekdays', () => {
   const rotation = { playerId: 'p', days: [{ id: 'a', weekday: null, isRestDay: false }], trainingDays: [0, 0, 2, 4] };
   expect(weekComparison([rotation, rotation, { playerId: 'q', days: [{ id: 'b', weekday: 0, isRestDay: false }], trainingDays: [] }], [

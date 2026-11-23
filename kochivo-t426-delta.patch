@@ -1,0 +1,118 @@
+diff --git a/docs/tasks/T-426-ko-secrets.md b/docs/tasks/T-426-ko-secrets.md
+index 1aab1317..143da547 100644
+--- a/docs/tasks/T-426-ko-secrets.md
++++ b/docs/tasks/T-426-ko-secrets.md
+@@ -57,6 +57,8 @@ Create or modify only these:
+ - **Coordinator correction — the check RPC lives in `public`, not `ko_private`.** The implementer built `ko_private.ko_secret_check` called via `actor.db.schema('ko_private').rpc(...)`, exactly as the card first wrote it. That cannot work in production: PostgREST only serves exposed schemas, `ko_private` is deliberately not exposed (T-116), and the card's own decision 1 already noted `ko_private` functions are not exposed to the app's PostgREST client. Without a dashboard change KO would have failed closed everywhere — the old deployment blocker is gone: no Supabase dashboard change is needed, and `ko_private` stays unexposed. `public.ko_secret_check` follows every other ko RPC (`ko_usage_take`, `ko_rate_take`, `ko_usage_refund`, …): `security definer`, `authenticated`-only grant, boolean-only return. Decision 1, decision 2, the Files list and the migration were updated to match.
+ - **Coordinator correction — the 7 route-test mock files were updated** (listed in Files). The new pre-check broke 67 existing route tests two ways: their mocked `actor.db` had no `.schema()` method, and no test environment sets `KO_MEAL_RECEIPT_SECRET` (a missing meal secret is a mismatch by decision 4). Each file now answers `ko_secret_check` with `true` and stubs the meal secret, simulating a configured environment. After the fix the KO suite is back to its pre-T-426 baseline: 307 passed, 11 failed — all 11 the pre-existing `answer-route.test.ts` "KO memory read failed" failures from the staged T-423 code, none mentioning the secret check.
+ 
++- **Follow-up fix (2026-11-23, publish blocker):** the pre-check as written blocked *every* KO chat request — including meal replies — when the meal-receipt secret was missing or mismatched (`supabase/tests/points-ranks.test.ts` "preserves a successful meal reply with award outcome missing" failed 404 instead of 200). Owner decision on publish: scope the fail-closed pre-check to KO chat usage only. `route.ts` now calls new `verifyKoApprovalSecret` (approval secret only — it signs approval tokens and the usage-warning proof), and a missing/mismatched meal-receipt secret never blocks the reply: the meal-points award at the end of a meal reply is skipped with the pre-existing warning instead. Decision 3/4 above are amended accordingly for the meal secret only; an approval-secret mismatch still fails KO loudly before any usage is taken.
++
+ ## References
+ - `docs/ARCHITECTURE.md` §3, §5
+ - `src/features/ko-account/data/approval.ts` (`issueApproval`/`verifyApproval`), `execute.ts` (issuance), `route.ts` (verification + meal receipt), `usage.ts:35` (warning proof), `meal-receipt.ts`
+diff --git a/src/features/ko-account/data/route.ts b/src/features/ko-account/data/route.ts
+index f94ff4d8..b8f951de 100644
+--- a/src/features/ko-account/data/route.ts
++++ b/src/features/ko-account/data/route.ts
+@@ -27,7 +27,7 @@ import { planIntent } from './intents';
+ import { normalizeName } from './match';
+ import { messages } from '../messages';
+ import { mealReceipt } from './meal-receipt';
+-import { verifyKoSecrets } from './secret-check';
++import { verifyKoApprovalSecret } from './secret-check';
+ import { chooseSwap } from './swap';
+ import { isValidSwapChoice, readSwapApproval } from './numeric-swap';
+ import type { AccountReply } from './execute';
+@@ -71,8 +71,12 @@ export async function postKoAccountChat(request: Request) {
+   try {
+     const actor = await getKoActor();
+     if (!actor || !config.pilots.has(actor.id)) return reply({ error: 'unauthorized' }, 403);
+-    // A secret the DB disagrees with fails KO loudly before any usage is taken.
+-    if ((await verifyKoSecrets(actor, config)).length) return reply({ error: 'unavailable' }, 404);
++    // The approval secret signs approval tokens and the usage-warning proof,
++    // so its mismatch fails KO loudly before any usage is taken. The
++    // meal-receipt secret only signs the meal-points award at the end of a
++    // meal reply, so a missing or mismatched meal secret never blocks the
++    // reply itself — the award is skipped with a warning instead.
++    if ((await verifyKoApprovalSecret(actor, config)).length) return reply({ error: 'unavailable' }, 404);
+     const now = Date.now();
+     const form = await request.formData().catch(() => null);
+     if (!form) return reply({ error: 'invalid' }, 400);
+diff --git a/src/features/ko-account/data/secret-check.ts b/src/features/ko-account/data/secret-check.ts
+index 8b9785a0..846f95f6 100644
+--- a/src/features/ko-account/data/secret-check.ts
++++ b/src/features/ko-account/data/secret-check.ts
+@@ -27,6 +27,27 @@ async function checkSecret(actor: KoActor, kind: 'approval' | 'meal_receipt', se
+   }
+ }
+ 
++// Cached per process per approval-secret value, keyed by a hash of the value
++// (never the value itself). Separate from the combined cache below: the
++// route's pre-check only needs the approval secret.
++let approvalCached: { key: string; mismatches: string[] } | null = null;
++
++// The approval secret signs approval tokens and the usage-warning proof, so
++// it is the only secret KO chat itself needs: its mismatch fails KO loudly
++// before any usage is taken. The meal-receipt secret is not needed for the
++// reply — it only signs the meal-points award at the end of a meal reply,
++// which is skipped with a warning when the secret is missing or mismatched —
++// so it must never block the reply itself.
++export async function verifyKoApprovalSecret(actor: KoActor, config: { secret: string }): Promise<string[]> {
++  const key = createHash('sha256').update(config.secret).digest('hex');
++  if (approvalCached?.key === key) return approvalCached.mismatches;
++  const mismatches: string[] = [];
++  if (!(await checkSecret(actor, 'approval', config.secret))) mismatches.push('KO_APPROVAL_SECRET');
++  if (mismatches.length) console.warn('KO secrets do not match the database:', mismatches.join(', '));
++  approvalCached = { key, mismatches };
++  return mismatches;
++}
++
+ // Names only, never values: the caller warns with these and KO stays unavailable.
+ export async function verifyKoSecrets(actor: KoActor, config: { secret: string }): Promise<string[]> {
+   const mealSecret = process.env.KO_MEAL_RECEIPT_SECRET;
+diff --git a/src/features/ko-account/secret-check.test.ts b/src/features/ko-account/secret-check.test.ts
+index a6a84438..9addb36c 100644
+--- a/src/features/ko-account/secret-check.test.ts
++++ b/src/features/ko-account/secret-check.test.ts
+@@ -1,7 +1,7 @@
+ import { createHmac } from 'node:crypto';
+ import { afterEach, expect, it, vi } from 'vitest';
+ import type { KoActor } from './data/account';
+-import { verifyKoSecrets } from './data/secret-check';
++import { verifyKoApprovalSecret, verifyKoSecrets } from './data/secret-check';
+ 
+ vi.mock('server-only', () => ({}));
+ 
+@@ -85,6 +85,31 @@ it('checks once per process per secret value and re-checks when a secret changes
+   expect(rpc).toHaveBeenCalledTimes(4);
+ });
+ 
++it('lets a meal reply through when only the meal secret is missing', async () => {
++  vi.stubEnv('KO_MEAL_RECEIPT_SECRET', '');
++  const { actor, rpc } = setup({ approval: approval('10'), meal: meal('10') });
++  expect(await verifyKoApprovalSecret(actor, { secret: approval('10') })).toEqual([]);
++  expect(rpc).toHaveBeenCalledTimes(1);
++  expectMac(rpc, 'approval', approval('10'));
++});
++
++it('still fails closed when the approval secret disagrees, even with a good meal secret', async () => {
++  vi.stubEnv('KO_MEAL_RECEIPT_SECRET', meal('11'));
++  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
++  const { actor, rpc } = setup({ approval: approval('9'), meal: meal('11') });
++  expect(await verifyKoApprovalSecret(actor, { secret: approval('11') })).toEqual(['KO_APPROVAL_SECRET']);
++  expect(rpc).toHaveBeenCalledTimes(1);
++  expect(warn).toHaveBeenCalledWith('KO secrets do not match the database:', 'KO_APPROVAL_SECRET');
++});
++
++it('checks the approval secret once per process per value', async () => {
++  vi.stubEnv('KO_MEAL_RECEIPT_SECRET', meal('12'));
++  const { actor, rpc } = setup({ approval: approval('12'), meal: meal('12') });
++  expect(await verifyKoApprovalSecret(actor, { secret: approval('12') })).toEqual([]);
++  expect(await verifyKoApprovalSecret(actor, { secret: approval('12') })).toEqual([]);
++  expect(rpc).toHaveBeenCalledTimes(1);
++});
++
+ it.each(['error', 'throws'] as const)('swallows RPC %s as a mismatch instead of throwing', async fail => {
+   vi.stubEnv('KO_MEAL_RECEIPT_SECRET', fail === 'error' ? meal('7') : meal('8'));
+   const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});

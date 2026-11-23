@@ -65,3 +65,19 @@ it('provides loading, error and empty states without invented receipt rows', () 
   state.error = undefined; state.data = { data: [] };
   expect(render(createElement(CaptainReceipts))).toContain('No receipts awaiting review');
 });
+it('keeps the workspace receipts section visible through loading, error, empty and listed states', () => {
+  expect(render(createElement(CaptainReceipts, { workspace: true }))).toContain('Loading receipts');
+  state.error = new Error('offline');
+  const error = render(createElement(CaptainReceipts, { workspace: true }));
+  expect(error).toContain('Could not load receipts');
+  expect(error).toContain('Try again');
+  state.error = undefined; state.data = { data: [] };
+  const empty = render(createElement(CaptainReceipts, { workspace: true }));
+  expect(empty).toContain('Receipts awaiting review');
+  expect(empty).toContain('No receipts awaiting review');
+  state.data = { data: [{ ...receipt, debt: 900 }] };
+  const listed = render(createElement(CaptainReceipts, { workspace: true }));
+  expect(listed).toContain('Receipts awaiting review');
+  expect(listed).toContain('Player name');
+  expect(listed).not.toContain('No receipts awaiting review');
+});

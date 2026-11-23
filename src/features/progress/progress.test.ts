@@ -6,7 +6,7 @@ import { weekStart } from './week';
 import { mainLifts, topSets, trendDelta } from './trends';
 import { listCheckIns, submitCheckIn } from './data/checkins';
 import { compressImage } from './image';
-import { localDb, setLocalUser } from '@/core/offline';
+import { localDb, saveAndQueue, setLocalUser } from '@/core/offline';
 import type * as Ids from '@/core/offline/ids';
 import { readStrength } from './data/strength';
 
@@ -95,7 +95,7 @@ it('maps the weekly unique constraint to Arabic', async () => {
   const { client } = mockClient('23505');
   expect(await submitCheckIn(client, {
     today: '2026-11-03', body_weight_kg: 75, waist_cm: null, notes: '', photos: [],
-  })).toEqual({ error: 'بعتّ تحديث الأسبوع ده خلاص' });
+  })).toEqual({ error: 'بعتّ تحديث الأسبوع ده خلاص', status: 'already-sent' });
 });
 it('uploads before inserting a check-in, using the authenticated player and Saturday', async () => {
   const { client, upload, insert } = mockClient();
@@ -105,7 +105,7 @@ it('uploads before inserting a check-in, using the authenticated player and Satu
   expect(await submitCheckIn(client, {
     today: '2026-11-03', body_weight_kg: 75, waist_cm: 90, notes: 'تمام', photos: [photo],
     body_fat_pct: 18.5, photo_poses: ['side'],
-  })).toEqual({ error: null });
+  })).toEqual({ error: null, status: 'sent' });
   expect(upload.mock.invocationCallOrder[0]).toBeLessThan(insert.mock.invocationCallOrder[0] ?? 0);
   expect(insert).toHaveBeenCalledWith({
     id: '0194cc00-0000-7000-8000-000000000001', notes: 'تمام',
@@ -121,12 +121,12 @@ it('lists only the authenticated player, newest first, capped at 26', async () =
   expect(order).toHaveBeenCalledWith('week_start', { ascending: false });
   expect(limit).toHaveBeenCalledWith(26);
 });
-it('blocks offline submissions before upload or insert', async () => {
+it('returns the online-only error offline without a local database', async () => {
   const { client, upload, insert } = mockClient();
   vi.stubGlobal('navigator', { onLine: false });
   expect(await submitCheckIn(client, {
     today: '2026-11-03', body_weight_kg: 75, waist_cm: null, notes: '', photos: [],
-  })).toEqual({ error: 'محتاج نت عشان تبعت الصور' });
+  })).toEqual({ error: 'التحديث متبعتش. جرّب تاني', status: 'queued' });
   expect(upload).not.toHaveBeenCalled();
   expect(insert).not.toHaveBeenCalled();
 });
@@ -215,4 +215,68 @@ it('joins local sets to session dates and snapshot names, excluding deleted and 
     expect(result.names).toEqual({ bench: 'بنش' });
     expect(result.sets).toEqual([{ exercise_id: 'bench', training_date: '2026-11-03', weight_kg: 50, reps: 8 }]);
   } finally { await setLocalUser(null); await db.delete(); }
+});
+
+function listClient(serverRows: unknown, serverError: object | null = null) {
+  const returns = vi.fn().mockResolvedValue({ data: serverRows, error: serverError });
+  const limit = vi.fn(() => ({ returns }));
+  const order = vi.fn(() => ({ limit }));
+  const eq = vi.fn(() => ({ order }));
+  const select = vi.fn(() => ({ eq }));
+  return fakeClient({
+    auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'player' } }, error: null }) },
+    from: vi.fn(() => ({ select })),
+  });
+}
+
+const localRow = (id: string, week_start: string) => ({
+  id, week_start, body_weight_kg: 75, waist_cm: 90, notes: '', photo_paths: [] as string[],
+  body_fat_pct: null, photo_poses: [] as string[], photo_total: 0,
+});
+const serverRow = (id: string, week_start: string) => ({
+  id, player_id: 'player', week_start, body_weight_kg: 76, waist_cm: 91, notes: '',
+  photo_paths: ['player/a.jpg'], captain_reply: null, reviewed_at: null, body_fat_pct: null, photo_poses: ['front'],
+});
+
+describe('merged listCheckIns', () => {
+  it('shows a queued local check-in as pending', async () => {
+    await setLocalUser('progress-list');
+    const db = localDb();
+    try {
+      await saveAndQueue(db, 'check_ins', localRow('local-1', '2026-10-31'), 1000);
+      const rows = await listCheckIns(listClient([]));
+      expect(rows).toEqual([expect.objectContaining({ id: 'local-1', week_start: '2026-10-31', pending: true })]);
+    } finally { await setLocalUser(null); await db.delete(); }
+  });
+
+  it('prefers the server row per week and merges other pending weeks newest first', async () => {
+    await setLocalUser('progress-list');
+    const db = localDb();
+    try {
+      await saveAndQueue(db, 'check_ins', localRow('local-1', '2026-10-31'), 1000);
+      await saveAndQueue(db, 'check_ins', localRow('local-2', '2026-11-07'), 1000);
+      const rows = await listCheckIns(listClient([serverRow('server-1', '2026-10-31')]));
+      expect(rows.map(row => [row.week_start, row.id, row.pending ?? false])).toEqual([
+        ['2026-11-07', 'local-2', true], ['2026-10-31', 'server-1', false],
+      ]);
+    } finally { await setLocalUser(null); await db.delete(); }
+  });
+
+  it('returns local rows when the server fails', async () => {
+    await setLocalUser('progress-list');
+    const db = localDb();
+    try {
+      await saveAndQueue(db, 'check_ins', localRow('local-1', '2026-10-31'), 1000);
+      const rows = await listCheckIns(listClient([], { message: 'offline' }));
+      expect(rows).toEqual([expect.objectContaining({ id: 'local-1', pending: true })]);
+    } finally { await setLocalUser(null); await db.delete(); }
+  });
+
+  it('throws when the server fails and nothing is queued locally', async () => {
+    await setLocalUser('progress-list');
+    const db = localDb();
+    try {
+      await expect(listCheckIns(listClient([], { message: 'offline' }))).rejects.toThrow('مش قادرين نحمّل تحديثاتك');
+    } finally { await setLocalUser(null); await db.delete(); }
+  });
 });

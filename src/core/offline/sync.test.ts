@@ -4,7 +4,7 @@ import { KochivoDB } from './db';
 import { stableId, uuidv7 } from './ids';
 import { parkedCount, pendingCount, retryParked, saveAndQueue } from './outbox';
 import { flushOutbox, type SyncTransport } from './sync';
-import type { SetLogRow, WorkoutSessionRow } from './tables';
+import type { CheckInRow, SetLogRow, WorkoutSessionRow } from './tables';
 
 let db: KochivoDB;
 const capture = vi.hoisted(() => vi.fn());
@@ -181,6 +181,25 @@ describe('flushOutbox', () => {
     expect(calls).toEqual(['workout_sessions', 'set_logs']);
     expect(result).toEqual({ sent: 2, failed: 0 });
     expect(await db.outbox.count()).toBe(0);
+  });
+
+  it('sends a check-in once and re-sends the same payload after a lost acknowledgement', async () => {
+    const row: CheckInRow = { id: 'checkin-1', week_start: '2026-10-31', body_weight_kg: 75, waist_cm: 90,
+      notes: 'ok', photo_paths: ['player/a.jpg'], body_fat_pct: null, photo_poses: ['front'], photo_total: 1 };
+    await saveAndQueue(db, 'check_ins', row, 1000);
+    const payloads: CheckInRow[][] = [];
+    expect(await flushOutbox(db, async (_table, rows) => {
+      payloads.push(rows as CheckInRow[]);
+      throw new Error('acknowledgement lost');
+    }, 5000)).toEqual({ sent: 0, failed: 1 });
+    expect(await db.outbox.count()).toBe(1);
+    const sent: CheckInRow[] = [];
+    expect(await flushOutbox(db, async (_table, rows) => {
+      sent.push(...(rows as CheckInRow[]));
+    }, 7000)).toEqual({ sent: 1, failed: 0 });
+    expect(await db.outbox.count()).toBe(0);
+    expect(payloads).toEqual([[row]]);
+    expect(sent).toEqual([row]);
   });
 
   it('keeps entries with backoff on failure and stops dependent tables', async () => {

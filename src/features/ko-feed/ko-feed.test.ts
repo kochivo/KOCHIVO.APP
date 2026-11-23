@@ -10,13 +10,15 @@ import type { GenerateKind, KoFeedItem, UrgentKind } from './types';
 import { snoozeOptimistically } from './data/dismiss';
 import { messages } from './messages';
 import { KoFeed } from '../ko-preview/components/ko-feed';
+import { KoWidget } from '../ko-preview/components/ko-widget';
 import { FeedCard, feedHref } from '../ko-preview/components/feed-card';
 import type * as FeedStore from './hooks/use-ko-feed';
+import type * as TaskCountLoader from './data/load-task-count';
 import { decideSwap, decideSwapOptimistically } from './data/decide-swap';
 import type * as FeedLoader from './data/load-feed';
 
-const state = vi.hoisted(() => ({ rows: [] as KoFeedItem[], status: 'ready' as 'ready' | 'error' | 'loading', saveError: false }));
-const loads = vi.hoisted(() => ({ load: vi.fn() }));
+const state = vi.hoisted(() => ({ rows: [] as KoFeedItem[], status: 'ready' as 'ready' | 'error' | 'loading', saveError: false, taskCount: 0 }));
+const loads = vi.hoisted(() => ({ load: vi.fn(), count: vi.fn() }));
 const swapRpc = vi.hoisted(() => vi.fn());
 const clicks = vi.hoisted(() => ({ capture: false, handlers: new Map<string, () => void>() }));
 vi.mock('react/jsx-dev-runtime', async original => {
@@ -40,12 +42,13 @@ vi.mock('react', async original => {
   } };
 });
 vi.mock('./data/load-feed', () => ({ loadFeed: loads.load }));
+vi.mock('./data/load-task-count', () => ({ loadTaskCount: loads.count }));
 vi.mock('./hooks/use-ko-feed', () => ({
   refreshFeed: vi.fn(),
   useKoFeed: () => ({ ...state, refresh: vi.fn(), dismiss: vi.fn() }),
-  useKoFeedCount: () => state.rows.filter(row => row.severity === 'urgent').length,
+  useKoFeedCount: () => state.taskCount,
 }));
-beforeEach(() => { state.rows = []; state.status = 'ready'; state.saveError = false; previewView.enabled = false; swapRpc.mockReset(); });
+beforeEach(() => { state.rows = []; state.status = 'ready'; state.saveError = false; state.taskCount = 0; previewView.enabled = false; swapRpc.mockReset(); loads.count.mockReset(); });
 
 const item = (variant: { kind: UrgentKind; severity: 'urgent' } | { kind: GenerateKind; severity: 'generate' }): KoFeedItem => ({
   key: `${variant.kind}:p:2026-11-03`, ...variant, player_id: 'p', player_name: 'Ali', data: {},
@@ -198,6 +201,75 @@ it.each(['ar', 'en'] as const)('offers a fresh preview after clarification or an
     if ('token' in reply) expect(html).toContain(t('confirm'));
   }
   previewView.enabled = false;
+});
+
+it('reads the KO badge count from the shared task-count endpoint, not the feed', async () => {
+  const loader = await vi.importActual<typeof TaskCountLoader>('./data/load-task-count');
+  const fetcher = vi.fn<typeof fetch>(async () => Response.json({ count: 2 }));
+  expect(await loader.loadTaskCount('ar', fetcher)).toBe(2);
+  // The same endpoint the sidebar badge reads (`useTaskCount`): one loader,
+  // one number for the queue, the dashboard and the KO badge.
+  expect(fetcher).toHaveBeenCalledWith('/ar/api/captain/task-count', { cache: 'no-store' });
+});
+
+it.each([500, 401])('reports an unknown badge count on HTTP %s', async status => {
+  const loader = await vi.importActual<typeof TaskCountLoader>('./data/load-task-count');
+  const fetcher = vi.fn<typeof fetch>(async () => Response.json({ count: 2 }, { status }));
+  expect(await loader.loadTaskCount('ar', fetcher)).toBeNull();
+});
+
+it.each([null, -1, 1.5, '2', {}, Number.MAX_SAFE_INTEGER + 1])('reports an unknown badge count for invalid payloads: %j', async count => {
+  const loader = await vi.importActual<typeof TaskCountLoader>('./data/load-task-count');
+  const fetcher = vi.fn<typeof fetch>(async () => Response.json({ count }));
+  expect(await loader.loadTaskCount('ar', fetcher)).toBeNull();
+});
+
+it('reports an unknown badge count on network and parse failures', async () => {
+  const loader = await vi.importActual<typeof TaskCountLoader>('./data/load-task-count');
+  const failing = vi.fn<typeof fetch>(async () => { throw new Error('offline'); });
+  expect(await loader.loadTaskCount('ar', failing)).toBeNull();
+  const malformed = vi.fn<typeof fetch>(async () => new Response('invalid JSON'));
+  expect(await loader.loadTaskCount('ar', malformed)).toBeNull();
+});
+
+it('derives the badge from the shared task-count loader and clears it when the queue empties', async () => {
+  const store = await vi.importActual<typeof FeedStore>('./hooks/use-ko-feed');
+  vi.stubGlobal('document', { visibilityState: 'visible', addEventListener: vi.fn(), removeEventListener: vi.fn() });
+  vi.stubGlobal('window', { setInterval: vi.fn(), clearInterval: vi.fn(), addEventListener: vi.fn(), removeEventListener: vi.fn() });
+  loads.count.mockResolvedValue(0);
+  const stop = store.watchTaskCount('ar');
+  await store.refreshTaskCount('ar');
+  expect(store.getTaskCountState()).toBe(0);
+  expect(loads.count).toHaveBeenCalledWith('ar', expect.any(Function));
+  loads.count.mockResolvedValue(2);
+  await store.refreshTaskCount('ar');
+  expect(store.getTaskCountState()).toBe(2);
+  // Completing every task clears the badge instead of leaving a stale 2.
+  loads.count.mockResolvedValue(0);
+  await store.refreshTaskCount('ar');
+  expect(store.getTaskCountState()).toBe(0);
+  loads.count.mockResolvedValue(2);
+  await store.refreshTaskCount('ar');
+  loads.count.mockResolvedValue(null);
+  await store.refreshTaskCount('ar');
+  expect(store.getTaskCountState()).toBe(2);
+  stop();
+  expect(store.getTaskCountState()).toBeNull();
+  vi.unstubAllGlobals();
+});
+
+it.each(['ar', 'en'] as const)('hides the KO badge with an empty queue and shows the queue count otherwise in %s', locale => {
+  const render = () => renderToStaticMarkup(createElement(LocaleProvider, { locale },
+    createElement(KoWidget, { role: 'captain' })));
+  state.taskCount = 0;
+  const empty = render();
+  expect(empty).not.toContain('مهمتين مستعجلين');
+  expect(empty).not.toContain('2 urgent tasks');
+  expect(empty).not.toMatch(/>2<\/span>/);
+  state.taskCount = 2;
+  const html = render();
+  expect(html).toContain('>2</span>');
+  expect(html).toContain(locale === 'ar' ? 'مهمتين مستعجلين' : '2 urgent tasks');
 });
 
 it('starts a fresh load after remount and ignores obsolete request cleanup', async () => {

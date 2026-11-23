@@ -19,7 +19,7 @@ it('estimates three minutes for each pending task, including an empty day', () =
 });
 it('uses completed reviews and pending work for progress without a sample daily target', () => {
   expect(taskProgress(3, 7)).toBe(0.3);
-  expect(taskProgress(0, 0)).toBe(1);
+  expect(taskProgress(0, 0)).toBe(0);
   expect(taskProgress(0, 20)).toBe(0);
 });
 it('charts all sessions Saturday to Friday, keeps zero days, and distinguishes future days', () => {

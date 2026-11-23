@@ -57,7 +57,7 @@ export function WorkspaceBillingPaymentRow({ row, onOpen }: { row: PaymentRow; o
           className={fullyPaid ? 'mt-inline' : 'mt-inline [&>div]:bg-warn [&>div]:bg-none'} />
       </>}
     </td>
-    <td className={cell}><span className={`inline-flex rounded-md px-inline text-micro font-semibold ${tone}`}>{status}</span>
+    <td className={cell}><span className={`inline-flex shrink-0 whitespace-nowrap rounded-md px-inline text-micro font-semibold ${tone}`}>{status}</span>
       {player.sessionsLeft === 0 && player.due > 0 && !player.frozenAt && !player.pending &&
         <small className="block text-xs text-faint">{paymentT('sessionsEnded')}</small>}</td>
     <td className={`${cell} text-xs text-faint`}>{hasPackage

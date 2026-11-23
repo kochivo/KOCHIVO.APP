@@ -38,12 +38,13 @@ export interface SyncRows {
   workout_sessions: WorkoutSessionRow;
   set_logs: SetLogRow;
   meal_logs: MealLogRow;
+  check_ins: CheckInRow;
 }
 
 export type SyncTable = keyof SyncRows;
 
 /** Flush order respects foreign keys: a session must exist before its sets. */
-export const SYNC_ORDER: readonly SyncTable[] = ['workout_sessions', 'set_logs', 'meal_logs', 'supplement_logs', 'daily_checks', 'pain_reports'];
+export const SYNC_ORDER: readonly SyncTable[] = ['workout_sessions', 'set_logs', 'meal_logs', 'supplement_logs', 'daily_checks', 'pain_reports', 'check_ins'];
 
 export const SYNC_DEPENDENCIES: {
   [T in SyncTable]?: readonly { parent: SyncTable; key: keyof SyncRows[T] }[];
@@ -54,6 +55,21 @@ export const SYNC_DEPENDENCIES: {
 
 export type DailyCheckRow = LocalRow<'daily_checks'>;
 export type SupplementLogRow = LocalRow<'supplement_logs'>;
+
+// Weekly check-ins: player-owned columns only (the server sets player_id from auth.uid()
+// and captain_id from the trigger). photo_paths holds null placeholders until each photo
+// uploads; photo_total is local-only and guards the queue-until-complete check.
+export interface CheckInRow {
+  id: string;
+  week_start: string;
+  body_weight_kg: number | null;
+  waist_cm: number | null;
+  notes: string | null;
+  photo_paths: (string | null)[];
+  body_fat_pct: number | null;
+  photo_poses: string[];
+  photo_total: number;
+}
 
 // The supplements timing CHECK restricts server text to these values.
 export type SupplementRow = Narrow<Tables<'supplements'>, { timing: SupplementTiming }>;

@@ -11,8 +11,10 @@ afterEach(() => { vi.restoreAllMocks(); vi.unstubAllEnvs(); });
 
 it.each(['allowed', 'limited', 'error', 'throws'] as const)('handles a shared rate RPC that is %s', async mode => {
   vi.stubEnv('KO_ANSWER', '');
+  vi.stubEnv('KO_MEAL_RECEIPT_SECRET', 'm'.repeat(32));
   vi.spyOn(Date, 'now').mockReturnValue(1_800_000_000_000);
   const rpc = vi.fn(async (name: string, args: unknown) => {
+    if (name === 'ko_secret_check') return { data: true, error: null };
     if (name === 'ko_usage_tier') return { data: [{ captain_id: 'pilot', tier: 'entry' }], error: null };
     if (name === 'ko_usage_take') return { data: 'ok', error: null };
     expect(name).toBe('ko_rate_take');

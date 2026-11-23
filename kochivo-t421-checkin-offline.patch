@@ -1,0 +1,1122 @@
+diff --git a/src/core/offline/db.ts b/src/core/offline/db.ts
+index ac0d282c..837a1e43 100644
+--- a/src/core/offline/db.ts
++++ b/src/core/offline/db.ts
+@@ -1,7 +1,7 @@
+ import Dexie, { type Table } from 'dexie';
+ import type { SetTarget } from '@/lib/set-plan';
+ import type { PainReportRow, PainLoadHint } from './pain-tables';
+-import type { DailyCheckRow, SupplementLogRow, SupplementRow } from './tables';
++import type { CheckInRow, DailyCheckRow, SupplementLogRow, SupplementRow } from './tables';
+ import type { MealLogRow, SetLogRow, SyncTable, WorkoutSessionRow } from './tables';
+ 
+ export interface SnapshotExercise {
+@@ -71,14 +71,18 @@ export interface OutboxEntry {
+ 
+ export interface MediaQueueEntry {
+   id?: number;
+-  kind: 'form_check';
++  kind: 'form_check' | 'checkin_photo';
+   /** Server row id, fixed at enqueue so a retried insert hits 23505 instead of duplicating. */
+-  form_check_id: string;
++  form_check_id?: string;
+   blob: Blob;
+   mime: string;
+-  exercise_id: string;
++  exercise_id?: string;
+   set_log_id: string | null;
+   note: string | null;
++  /** Local check-in row this photo belongs to (checkin_photo only). */
++  checkin_id?: string;
++  /** Index into the check-in's photo_paths / photo_poses (checkin_photo only). */
++  position?: number;
+   created_at: number;
+   attempts: number;
+   next_attempt_at: number;
+@@ -136,6 +140,7 @@ export class KochivoDB extends Dexie {
+   workout_sessions!: Table<WorkoutSessionRow, string>;
+   set_logs!: Table<SetLogRow, string>;
+   meal_logs!: Table<MealLogRow, string>;
++  check_ins!: Table<CheckInRow, string>;
+   outbox!: Table<OutboxEntry, number>;
+   program_snapshot!: Table<ProgramSnapshot, string>;
+   nutrition_snapshot!: Table<NutritionSnapshot, string>;
+@@ -159,6 +164,7 @@ export class KochivoDB extends Dexie {
+     }).upgrade(tx => tx.table('set_logs').toCollection().modify({ drop_index: 0 }));
+     this.version(8).stores({ pain_reports: 'id, session_id' });
+     this.version(9).stores({ meal_logs: 'id, &[meal_id+log_date]' });
++    this.version(10).stores({ check_ins: 'id, week_start' });
+   }
+ }
+ 
+diff --git a/src/core/offline/media-queue.test.ts b/src/core/offline/media-queue.test.ts
+index 4ea9cda5..f2c2635e 100644
+--- a/src/core/offline/media-queue.test.ts
++++ b/src/core/offline/media-queue.test.ts
+@@ -18,9 +18,20 @@ const entry = (setId: string | null = null) => ({
+ });
+ const transport = () => ({
+   upload: vi.fn<MediaTransport['upload']>().mockResolvedValue('player/video.mp4'),
++  uploadCheckinPhoto: vi.fn<MediaTransport['uploadCheckinPhoto']>().mockResolvedValue('player/checkin.jpg'),
+   insertFormCheck: vi.fn<MediaTransport['insertFormCheck']>().mockResolvedValue(undefined),
+ });
+ 
++const checkinRow = (id = 'checkin-1', photoTotal = 2) => ({
++  id, week_start: '2026-10-31', body_weight_kg: 75, waist_cm: 90, notes: '',
++  photo_paths: Array<string | null>(photoTotal).fill(null),
++  body_fat_pct: null, photo_poses: ['front', 'side'].slice(0, photoTotal), photo_total: photoTotal,
++});
++const photoEntry = (position: number) => ({
++  kind: 'checkin_photo' as const, checkin_id: 'checkin-1', position,
++  blob: new Blob([position === 0 ? 'a' : 'b'], { type: 'image/jpeg' }), mime: 'image/jpeg',
++});
++
+ beforeEach(() => { db = new KochivoDB(`media-test-${sequence++}`); });
+ afterEach(async () => { await db.delete(); });
+ 
+@@ -127,13 +138,85 @@ describe('media queue', () => {
+     const existingTables = old.tables.map(table => table.name);
+     old.close();
+     await db.open();
+-    expect(db.verno).toBe(9);
++    expect(db.verno).toBe(10);
+     for (const name of existingTables) expect(await db.table(name).count()).toBe(1);
+     expect(await db.supplements.count()).toBe(0);
+     expect(await db.supplement_logs.count()).toBe(0);
+     expect(await db.daily_checks.count()).toBe(0);
+     expect(await db.pain_reports.count()).toBe(0);
++    expect(await db.check_ins.count()).toBe(0);
+     await enqueueMedia(db, entry(), 1000);
+     expect(await mediaPending(db)).toBe(1);
+   });
+ });
++
++describe('check-in photos', () => {
++  it('uploads photos in position order and queues the row once complete', async () => {
++    await db.check_ins.put(checkinRow());
++    await enqueueMedia(db, photoEntry(0), 1000);
++    await enqueueMedia(db, photoEntry(1), 1000);
++    const send = transport();
++    send.uploadCheckinPhoto.mockImplementation(async (blob) => `player/photo-${await blob.text()}.jpg`);
++    expect(await flushMediaQueue(db, send, 2000)).toEqual({ sent: 2, failed: 0, waiting: 0 });
++    expect((await db.check_ins.get('checkin-1'))?.photo_paths).toEqual(['player/photo-a.jpg', 'player/photo-b.jpg']);
++    expect(await mediaPending(db)).toBe(0);
++    const outbox = await db.outbox.toArray();
++    expect(outbox).toHaveLength(1);
++    expect(outbox[0]).toMatchObject({ table: 'check_ins', row_id: 'checkin-1' });
++    expect(send.upload).not.toHaveBeenCalled();
++    expect(send.insertFormCheck).not.toHaveBeenCalled();
++  });
++
++  it('waits for the remaining photo before queueing the row', async () => {
++    await db.check_ins.put(checkinRow());
++    await enqueueMedia(db, photoEntry(0), 1000);
++    await enqueueMedia(db, photoEntry(1), 1000);
++    const send = transport();
++    send.uploadCheckinPhoto.mockImplementation(async (blob) => `player/photo-${await blob.text()}.jpg`);
++    send.uploadCheckinPhoto.mockRejectedValueOnce(new Error('offline'));
++    expect(await flushMediaQueue(db, send, 2000)).toEqual({ sent: 1, failed: 1, waiting: 0 });
++    expect((await db.check_ins.get('checkin-1'))?.photo_paths.filter(Boolean)).toHaveLength(1);
++    expect(await db.outbox.count()).toBe(0);
++    expect(await db.media_queue.toArray()).toHaveLength(1);
++    expect((await db.media_queue.toArray())[0]).toMatchObject({ attempts: 1, next_attempt_at: 4000 });
++    expect(await flushMediaQueue(db, send, 4000)).toEqual({ sent: 1, failed: 0, waiting: 0 });
++    expect((await db.check_ins.get('checkin-1'))?.photo_paths).toEqual(['player/photo-a.jpg', 'player/photo-b.jpg']);
++    expect(await db.outbox.count()).toBe(1);
++  });
++
++  it('retries a failed check-in photo upload with backoff', async () => {
++    await db.check_ins.put(checkinRow('checkin-1', 1));
++    await enqueueMedia(db, photoEntry(0), 1000);
++    const send = transport();
++    send.uploadCheckinPhoto.mockRejectedValue({ code: '42501', message: 'private/path' });
++    await flushMediaQueue(db, send, 1000);
++    expect(await flushMediaQueue(db, send, 2999)).toEqual({ sent: 0, failed: 0, waiting: 1 });
++    expect(send.uploadCheckinPhoto).toHaveBeenCalledTimes(1);
++    await flushMediaQueue(db, send, 3000);
++    expect((await db.media_queue.toArray())[0]).toMatchObject({ attempts: 2, next_attempt_at: 7000, last_error: '42501' });
++    expect(await db.outbox.count()).toBe(0);
++  });
++
++  it('drops a check-in photo whose check-in is gone instead of blocking the queue', async () => {
++    await enqueueMedia(db, { ...photoEntry(0), checkin_id: 'missing' }, 1000);
++    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
++    try {
++      const send = transport();
++      expect(await flushMediaQueue(db, send, 1000)).toEqual({ sent: 1, failed: 0, waiting: 0 });
++      expect(send.uploadCheckinPhoto).toHaveBeenCalledTimes(1);
++      expect(await mediaPending(db)).toBe(0);
++      expect(warn).toHaveBeenCalled();
++    } finally { warn.mockRestore(); }
++  });
++
++  it('uploads check-in photos to the checkin-photos bucket', async () => {
++    const upload = vi.fn().mockResolvedValue({ error: null });
++    const storageFrom = vi.fn().mockReturnValue({ upload });
++    const client = fakeClient({ storage: { from: storageFrom } });
++    const send = supabaseMediaTransport(client, 'player');
++    const path = await send.uploadCheckinPhoto(new Blob(['photo']), 'image/jpeg');
++    expect(path).toMatch(/^player\/[0-9a-f-]+\.jpg$/);
++    expect(storageFrom).toHaveBeenCalledWith('checkin-photos');
++    expect(upload).toHaveBeenCalledWith(path, expect.any(Blob), { contentType: 'image/jpeg', upsert: false });
++  });
++});
+diff --git a/src/core/offline/media-queue.ts b/src/core/offline/media-queue.ts
+index 831754c6..0070c183 100644
+--- a/src/core/offline/media-queue.ts
++++ b/src/core/offline/media-queue.ts
+@@ -4,16 +4,27 @@ import type { AppDatabase } from '@/types/app-database';
+ import { backoffDelay } from './backoff';
+ import type { KochivoDB, MediaQueueEntry } from './db';
+ import { uuidv7 } from './ids';
++import { saveAndQueue } from './outbox';
+ 
+-type MediaInput = Pick<MediaQueueEntry, 'kind' | 'blob' | 'mime' | 'exercise_id' | 'set_log_id' | 'note'>;
+-type FormCheckRow = Pick<MediaQueueEntry, 'exercise_id' | 'set_log_id' | 'note'> & { id: string; video_path: string };
++type FormCheckInput = {
++  kind: 'form_check'; blob: Blob; mime: string; exercise_id: string; set_log_id: string | null; note: string | null;
++};
++type CheckinPhotoInput = {
++  kind: 'checkin_photo'; blob: Blob; mime: string; checkin_id: string; position: number;
++};
++export type MediaInput = FormCheckInput | CheckinPhotoInput;
++type FormCheckRow = { id: string; video_path: string; exercise_id: string; set_log_id: string | null; note: string | null };
+ 
+ export interface MediaTransport {
+   upload(blob: Blob, mime: string): Promise<string>;
++  uploadCheckinPhoto(blob: Blob, mime: string): Promise<string>;
+   insertFormCheck(row: FormCheckRow): Promise<void>;
+ }
+ 
+ export function enqueueMedia(db: KochivoDB, entry: MediaInput, now: number = Date.now()): Promise<number> {
++  if (entry.kind === 'checkin_photo') {
++    return db.media_queue.add({ ...entry, set_log_id: null, note: null, created_at: now, attempts: 0, next_attempt_at: now });
++  }
+   return db.media_queue.add({ ...entry, form_check_id: uuidv7(), created_at: now, attempts: 0, next_attempt_at: now });
+ }
+ 
+@@ -44,18 +55,8 @@ export async function flushMediaQueue(db: KochivoDB, transport: MediaTransport,
+         result.waiting++;
+         continue;
+       }
+-      let path = entry.video_path;
+-      if (!path) {
+-        path = await transport.upload(entry.blob, entry.mime);
+-        await db.media_queue.update(entry.id, { video_path: path });
+-      }
+-      try {
+-        await transport.insertFormCheck({ id: entry.form_check_id, exercise_id: entry.exercise_id, set_log_id: entry.set_log_id,
+-          video_path: path, note: entry.note });
+-      } catch (error) {
+-        if (!duplicate(error)) throw error;
+-      }
+-      await db.media_queue.delete(entry.id);
++      if (entry.kind === 'checkin_photo') await flushCheckinPhoto(db, transport, entry);
++      else await flushFormCheck(db, transport, entry);
+       result.sent++;
+     } catch (error) {
+       result.failed++;
+@@ -66,9 +67,73 @@ export async function flushMediaQueue(db: KochivoDB, transport: MediaTransport,
+   return result;
+ }
+ 
++async function flushFormCheck(db: KochivoDB, transport: MediaTransport, entry: MediaQueueEntry): Promise<void> {
++  const entryId = entry.id;
++  const formCheckId = entry.form_check_id;
++  const exerciseId = entry.exercise_id;
++  if (entryId === undefined || formCheckId === undefined || exerciseId === undefined) {
++    if (entryId !== undefined) await db.media_queue.delete(entryId);
++    console.warn('Dropping form-check entry without a form-check id');
++    return;
++  }
++  let path = entry.video_path;
++  if (!path) {
++    path = await transport.upload(entry.blob, entry.mime);
++    await db.media_queue.update(entryId, { video_path: path });
++  }
++  try {
++    await transport.insertFormCheck({ id: formCheckId, exercise_id: exerciseId, set_log_id: entry.set_log_id,
++      video_path: path, note: entry.note });
++  } catch (error) {
++    if (!duplicate(error)) throw error;
++  }
++  await db.media_queue.delete(entryId);
++}
++
++/**
++ * Uploads one check-in photo, patches its slot in the local row, and queues the row only
++ * once every photo is uploaded: the row can never be updated on the server afterwards,
++ * so it must not sync with placeholder paths. A photo whose check-in is gone is dropped
++ * instead of blocking the queue.
++ */
++async function flushCheckinPhoto(db: KochivoDB, transport: MediaTransport, entry: MediaQueueEntry): Promise<void> {
++  const entryId = entry.id;
++  const checkinId = entry.checkin_id;
++  const position = entry.position;
++  if (entryId === undefined || checkinId === undefined || position === undefined) {
++    if (entryId !== undefined) await db.media_queue.delete(entryId);
++    console.warn('Dropping check-in photo without a check-in');
++    return;
++  }
++  let path = entry.video_path;
++  if (!path) {
++    path = await transport.uploadCheckinPhoto(entry.blob, entry.mime);
++    await db.media_queue.update(entryId, { video_path: path });
++  }
++  const row = await db.check_ins.get(checkinId);
++  if (!row) {
++    await db.media_queue.delete(entryId);
++    console.warn('Dropping check-in photo without a check-in', checkinId);
++    return;
++  }
++  const photoPaths = [...row.photo_paths];
++  photoPaths[position] = path;
++  await db.check_ins.update(checkinId, { photo_paths: photoPaths });
++  await db.media_queue.delete(entryId);
++  const fresh = await db.check_ins.get(checkinId);
++  if (!fresh) return;
++  const remaining = await db.media_queue.filter((other) => other.checkin_id === checkinId).count();
++  const uploaded = fresh.photo_paths.filter((photo): photo is string => photo !== null).length;
++  if (remaining === 0 && uploaded === fresh.photo_total) {
++    await saveAndQueue(db, 'check_ins', { ...fresh,
++      photo_paths: fresh.photo_paths.filter((photo): photo is string => photo !== null) });
++  }
++}
++
+ export function supabaseMediaTransport(client: SupabaseClient<AppDatabase>, playerId: string): MediaTransport {
+   return {
+     upload: (blob, mime) => uploadPrivateMedia(client, 'form-videos', playerId, blob.slice(0, blob.size, mime)),
++    uploadCheckinPhoto: (blob, mime) => uploadPrivateMedia(client, 'checkin-photos', playerId, blob.slice(0, blob.size, mime)),
+     async insertFormCheck(row) {
+       const { error } = await client.from('form_checks').insert(row);
+       if (error) throw error;
+diff --git a/src/core/offline/sync.test.ts b/src/core/offline/sync.test.ts
+index d07717d1..7b8d2744 100644
+--- a/src/core/offline/sync.test.ts
++++ b/src/core/offline/sync.test.ts
+@@ -4,7 +4,7 @@ import { KochivoDB } from './db';
+ import { stableId, uuidv7 } from './ids';
+ import { parkedCount, pendingCount, retryParked, saveAndQueue } from './outbox';
+ import { flushOutbox, type SyncTransport } from './sync';
+-import type { SetLogRow, WorkoutSessionRow } from './tables';
++import type { CheckInRow, SetLogRow, WorkoutSessionRow } from './tables';
+ 
+ let db: KochivoDB;
+ const capture = vi.hoisted(() => vi.fn());
+@@ -183,6 +183,25 @@ describe('flushOutbox', () => {
+     expect(await db.outbox.count()).toBe(0);
+   });
+ 
++  it('sends a check-in once and re-sends the same payload after a lost acknowledgement', async () => {
++    const row: CheckInRow = { id: 'checkin-1', week_start: '2026-10-31', body_weight_kg: 75, waist_cm: 90,
++      notes: 'ok', photo_paths: ['player/a.jpg'], body_fat_pct: null, photo_poses: ['front'], photo_total: 1 };
++    await saveAndQueue(db, 'check_ins', row, 1000);
++    const payloads: CheckInRow[][] = [];
++    expect(await flushOutbox(db, async (_table, rows) => {
++      payloads.push(rows as CheckInRow[]);
++      throw new Error('acknowledgement lost');
++    }, 5000)).toEqual({ sent: 0, failed: 1 });
++    expect(await db.outbox.count()).toBe(1);
++    const sent: CheckInRow[] = [];
++    expect(await flushOutbox(db, async (_table, rows) => {
++      sent.push(...(rows as CheckInRow[]));
++    }, 7000)).toEqual({ sent: 1, failed: 0 });
++    expect(await db.outbox.count()).toBe(0);
++    expect(payloads).toEqual([[row]]);
++    expect(sent).toEqual([row]);
++  });
++
+   it('keeps entries with backoff on failure and stops dependent tables', async () => {
+     const s = session();
+     await saveAndQueue(db, 'workout_sessions', s, 1000);
+diff --git a/src/core/offline/tables.ts b/src/core/offline/tables.ts
+index 4818baed..a4bd9d8a 100644
+--- a/src/core/offline/tables.ts
++++ b/src/core/offline/tables.ts
+@@ -38,12 +38,13 @@ export interface SyncRows {
+   workout_sessions: WorkoutSessionRow;
+   set_logs: SetLogRow;
+   meal_logs: MealLogRow;
++  check_ins: CheckInRow;
+ }
+ 
+ export type SyncTable = keyof SyncRows;
+ 
+ /** Flush order respects foreign keys: a session must exist before its sets. */
+-export const SYNC_ORDER: readonly SyncTable[] = ['workout_sessions', 'set_logs', 'meal_logs', 'supplement_logs', 'daily_checks', 'pain_reports'];
++export const SYNC_ORDER: readonly SyncTable[] = ['workout_sessions', 'set_logs', 'meal_logs', 'supplement_logs', 'daily_checks', 'pain_reports', 'check_ins'];
+ 
+ export const SYNC_DEPENDENCIES: {
+   [T in SyncTable]?: readonly { parent: SyncTable; key: keyof SyncRows[T] }[];
+@@ -55,5 +56,20 @@ export const SYNC_DEPENDENCIES: {
+ export type DailyCheckRow = LocalRow<'daily_checks'>;
+ export type SupplementLogRow = LocalRow<'supplement_logs'>;
+ 
++// Weekly check-ins: player-owned columns only (the server sets player_id from auth.uid()
++// and captain_id from the trigger). photo_paths holds null placeholders until each photo
++// uploads; photo_total is local-only and guards the queue-until-complete check.
++export interface CheckInRow {
++  id: string;
++  week_start: string;
++  body_weight_kg: number | null;
++  waist_cm: number | null;
++  notes: string | null;
++  photo_paths: (string | null)[];
++  body_fat_pct: number | null;
++  photo_poses: string[];
++  photo_total: number;
++}
++
+ // The supplements timing CHECK restricts server text to these values.
+ export type SupplementRow = Narrow<Tables<'supplements'>, { timing: SupplementTiming }>;
+diff --git a/src/features/progress/checkin-duplicate.test.ts b/src/features/progress/checkin-duplicate.test.ts
+index 91f07e69..7e83a94b 100644
+--- a/src/features/progress/checkin-duplicate.test.ts
++++ b/src/features/progress/checkin-duplicate.test.ts
+@@ -16,7 +16,7 @@ vi.mock('react', async original => ({ ...await original<typeof React>(),
+ vi.mock('@/core/i18n/client', () => ({ useLocale: () => 'en', useT: () => createT(messages, 'en') }));
+ vi.mock('@/core/timezone/client', () => ({ useTimezone: () => 'Africa/Cairo' }));
+ vi.mock('@/core/supabase/lazy', () => ({ loadSupabaseBrowser: async () => ({}) }));
+-vi.mock('./data/checkins', () => ({ submitCheckIn: async () => ({ error: "You've already sent this week's check-in" }) }));
++vi.mock('./data/checkins', () => ({ submitCheckIn: async () => ({ error: "You've already sent this week's check-in", status: 'already-sent' }) }));
+ 
+ it('keeps the sheet open with a translated error when this week already has a check-in', async () => {
+   state.index = 0; state.errors = [];
+diff --git a/src/features/progress/components/checkin-history.tsx b/src/features/progress/components/checkin-history.tsx
+index f16b7a1f..5d1f1449 100644
+--- a/src/features/progress/components/checkin-history.tsx
++++ b/src/features/progress/components/checkin-history.tsx
+@@ -44,6 +44,7 @@ export function CheckinHistory({ checkins, now = currentTime }: { checkins: Chec
+     {load.status === 'error' && <ErrorState message={t('voiceLoadFailed')} retryLabel={t('tryAgain')} onRetry={() => setRetry(value => value + 1)} />}
+     <ul className="space-y-stack">{checkins.map(row => <li key={row.id} className="glass space-y-stack rounded-card p-card">
+       <time dateTime={row.week_start} className="text-sm text-muted">{formatDateAr(row.week_start, { day: 'numeric', month: 'long' }, locale)}</time>
++      {row.pending && <p className="text-sm text-muted"><span className="rounded-full bg-ink/5 px-inline text-xs font-bold">{t('checkinPending')}</span> {t('checkinSavedOnDevice')}</p>}
+       <p className="whitespace-pre-wrap">{row.reviewed_at ? row.captain_reply || t('voiceReply') : t('noReplyYet')}</p>
+       {row.reviewed_at && load.status === 'ready' && ((load.groups[row.id]?.length ?? 0) > 0 ?
+         <VoiceNoteList notes={load.groups[row.id] ?? []} onPlay={played} /> : <p className="text-sm text-muted">{t('noVoiceReply')}</p>)}
+diff --git a/src/features/progress/components/checkin-sheet.tsx b/src/features/progress/components/checkin-sheet.tsx
+index 09270583..0a107b62 100644
+--- a/src/features/progress/components/checkin-sheet.tsx
++++ b/src/features/progress/components/checkin-sheet.tsx
+@@ -47,12 +47,6 @@ export function CheckinSheet({ latest, open, onClose, onSent }: {
+     if (open) dialog.current?.showModal();
+     else dialog.current?.close();
+   }, [open]);
+-  useEffect(() => {
+-    const update = () => { if (!navigator.onLine) setError(t('goOnlineToSendPhotos')); };
+-    update();
+-    window.addEventListener('offline', update);
+-    return () => window.removeEventListener('offline', update);
+-  }, [t]);
+   async function submit(event: FormEvent<HTMLFormElement>) {
+     event.preventDefault();
+     if (busy) return;
+@@ -66,7 +60,9 @@ export function CheckinSheet({ latest, open, onClose, onSent }: {
+         photo_poses: poses.filter((_, index) => photos[index] !== null),
+         onProgress: (completed, total) => setProgress(Math.round(completed / total * 100)),
+       }, t);
+-      if (result.error) {
++      if (result.status === 'already-sent') {
++        setError(result.error ?? t('youveAlreadySentThisWeeksCheckin'));
++      } else if (result.error) {
+         setError(result.error);
+       } else onSent(today);
+     } catch {
+diff --git a/src/features/progress/data/checkins.ts b/src/features/progress/data/checkins.ts
+index 7480b908..ec2a4469 100644
+--- a/src/features/progress/data/checkins.ts
++++ b/src/features/progress/data/checkins.ts
+@@ -4,7 +4,8 @@ import { messages } from '../messages';
+ import type { Translator } from '@/core/i18n/messages';
+ 
+ import type { SupabaseClient } from '@supabase/supabase-js';
+-import { uuidv7 } from '@/core/offline/ids';
++import { enqueueMedia, localDb, saveAndQueue, stableId, uuidv7, type KochivoDB } from '@/core/offline';
++import type { CheckInRow } from '@/core/offline/tables';
+ import { uploadPrivateMedia } from '@/core/storage';
+ import type { Tables } from '@/types/database';
+ import type { AppDatabase } from '@/types/app-database';
+@@ -12,7 +13,7 @@ import { compressImage } from '../image';
+ import { weekStart } from '../week';
+ 
+ export type CheckIn = Pick<Tables<'check_ins'>,
+-  'id' | 'player_id' | 'week_start' | 'body_weight_kg' | 'waist_cm' | 'notes' | 'photo_paths' | 'captain_reply' | 'reviewed_at' | 'body_fat_pct' | 'photo_poses'>;
++  'id' | 'player_id' | 'week_start' | 'body_weight_kg' | 'waist_cm' | 'notes' | 'photo_paths' | 'captain_reply' | 'reviewed_at' | 'body_fat_pct' | 'photo_poses'> & { pending?: boolean };
+ export interface CheckInInput {
+   today: string;
+   body_weight_kg: number;
+@@ -23,13 +24,28 @@ export interface CheckInInput {
+   photo_poses?: string[];
+   onProgress?: (completed: number, total: number) => void;
+ }
++export type SubmitResult = { error: string | null; status: 'sent' | 'queued' | 'already-sent' };
+ async function playerId(client: SupabaseClient<AppDatabase>, t: Translator<typeof messages>) {
+   const { data, error } = await client.auth.getUser();
+   if (error || !data.user) throw new Error(t('signInAgain'));
+   return data.user.id;
+ }
+ 
+-export async function listCheckIns(client: SupabaseClient<AppDatabase>, t: Translator<typeof messages> = createT(messages, 'ar')): Promise<CheckIn[]> {
++/** The local database is absent before the player shell sets the local user. */
++function tryLocalDb(): KochivoDB | null {
++  try { return localDb(); } catch { return null; }
++}
++
++function invalid(input: CheckInInput): boolean {
++  return !Number.isFinite(input.body_weight_kg) || input.body_weight_kg < 20 || input.body_weight_kg > 400 ||
++    (input.waist_cm !== null && (!Number.isFinite(input.waist_cm) || input.waist_cm < 30 || input.waist_cm > 300)) ||
++    input.notes.length > 1000 || input.photos.length > 3 ||
++    (input.body_fat_pct != null && (!Number.isFinite(input.body_fat_pct) || input.body_fat_pct < 3 || input.body_fat_pct > 60)) ||
++    (input.photo_poses?.length ? (input.photo_poses.length !== input.photos.length ||
++      input.photo_poses.some(pose => !['front', 'side', 'back'].includes(pose))) : false);
++}
++
++async function fetchServerCheckIns(client: SupabaseClient<AppDatabase>, t: Translator<typeof messages>): Promise<CheckIn[]> {
+   const id = await playerId(client, t);
+   const { data, error } = await client.from('check_ins')
+     .select('id,player_id,week_start,body_weight_kg,waist_cm,notes,photo_paths,captain_reply,reviewed_at,body_fat_pct,photo_poses')
+@@ -38,14 +54,102 @@ export async function listCheckIns(client: SupabaseClient<AppDatabase>, t: Trans
+   return data ?? [];
+ }
+ 
+-export async function submitCheckIn(client: SupabaseClient<AppDatabase>, input: CheckInInput, t: Translator<typeof messages> = createT(messages, 'ar')): Promise<{ error: string | null }> {
+-  if (typeof navigator !== 'undefined' && navigator.onLine === false) return { error: t('goOnlineToSendPhotos') };
+-  if (!Number.isFinite(input.body_weight_kg) || input.body_weight_kg < 20 || input.body_weight_kg > 400 ||
+-    (input.waist_cm !== null && (!Number.isFinite(input.waist_cm) || input.waist_cm < 30 || input.waist_cm > 300)) ||
+-    input.notes.length > 1000 || input.photos.length > 3) return { error: t('checkYourWeightMeasurementsAndPhotos') };
+-  if ((input.body_fat_pct != null && (!Number.isFinite(input.body_fat_pct) || input.body_fat_pct < 3 || input.body_fat_pct > 60)) ||
+-    (input.photo_poses?.length && (input.photo_poses.length !== input.photos.length ||
+-      input.photo_poses.some(pose => !['front', 'side', 'back'].includes(pose))))) return { error: t('checkYourWeightMeasurementsAndPhotos') };
++/** Local rows still on the device (queued row or photos not yet uploaded), newest first. */
++async function pendingCheckIns(db: KochivoDB): Promise<CheckIn[]> {
++  const pending: CheckIn[] = [];
++  for (const row of await db.check_ins.toArray()) {
++    const queued = await db.outbox.where('[table+row_id]').equals(['check_ins', row.id]).count() > 0;
++    const media = await db.media_queue.filter((entry) => entry.checkin_id === row.id).count() > 0;
++    if (!queued && !media) continue;
++    pending.push({
++      id: row.id, player_id: db.userId ?? '', week_start: row.week_start,
++      body_weight_kg: row.body_weight_kg, waist_cm: row.waist_cm, notes: row.notes,
++      photo_paths: row.photo_paths.filter((path): path is string => path !== null),
++      captain_reply: null, reviewed_at: null, body_fat_pct: row.body_fat_pct,
++      photo_poses: row.photo_poses, pending: true,
++    });
++  }
++  pending.sort((a, b) => b.week_start.localeCompare(a.week_start));
++  return pending.slice(0, 26);
++}
++
++export async function listCheckIns(client: SupabaseClient<AppDatabase>, t: Translator<typeof messages> = createT(messages, 'ar')): Promise<CheckIn[]> {
++  const db = tryLocalDb();
++  if (!db) return fetchServerCheckIns(client, t);
++  let server: CheckIn[];
++  try {
++    server = await fetchServerCheckIns(client, t);
++  } catch {
++    const local = await pendingCheckIns(db);
++    if (!local.length) throw new Error(t('couldntLoadYourCheckins'));
++    return local;
++  }
++  const pending = await pendingCheckIns(db);
++  const serverWeeks = new Set(server.map((row) => row.week_start));
++  const merged = [...server, ...pending.filter((row) => !serverWeeks.has(row.week_start))];
++  merged.sort((a, b) => b.week_start.localeCompare(a.week_start));
++  return merged.slice(0, 26);
++}
++
++export async function submitCheckIn(client: SupabaseClient<AppDatabase>, input: CheckInInput, t: Translator<typeof messages> = createT(messages, 'ar')): Promise<SubmitResult> {
++  const db = tryLocalDb();
++  if ((!db || !db.userId) && typeof navigator !== 'undefined' && navigator.onLine === false) {
++    return { error: t('couldntSendTheCheckinTryAgain'), status: 'queued' };
++  }
++  if (invalid(input)) return { error: t('checkYourWeightMeasurementsAndPhotos'), status: 'queued' };
++  if (!db || !db.userId) return submitOnlineOnly(client, input, t);
++  const week = weekStart(input.today);
++  const id = await stableId('checkin', db.userId, week);
++  const existing = await db.check_ins.get(id);
++  if (existing) {
++    const queued = await db.outbox.where('[table+row_id]').equals(['check_ins', id]).count() > 0;
++    const media = await db.media_queue.filter((entry) => entry.checkin_id === id).count() > 0;
++    if (!queued && !media) return { error: t('youveAlreadySentThisWeeksCheckin'), status: 'already-sent' };
++  }
++  let blobs: Blob[];
++  try {
++    blobs = [];
++    for (const file of input.photos) {
++      blobs.push(await compressImage(file, 1600, 0.8, t));
++      input.onProgress?.(blobs.length, input.photos.length + 1);
++    }
++  } catch {
++    return { error: t('couldntSendTheCheckinCheckYourPhotos'), status: 'queued' };
++  }
++  const row: CheckInRow = {
++    id, week_start: week,
++    body_weight_kg: input.body_weight_kg, waist_cm: input.waist_cm,
++    notes: input.notes, photo_paths: blobs.map(() => null),
++    body_fat_pct: input.body_fat_pct ?? null, photo_poses: input.photo_poses ?? [],
++    photo_total: blobs.length,
++  };
++  try {
++    if (blobs.length === 0) {
++      await saveAndQueue(db, 'check_ins', row);
++      // A re-send without photos supersedes photos still waiting to upload.
++      await db.media_queue.filter((entry) => entry.checkin_id === id).delete();
++    } else {
++      // One transaction: a crash can never leave a row without its photos or photos without a row.
++      await db.transaction('rw', db.check_ins, db.media_queue, async () => {
++        await db.check_ins.put(row);
++        await db.media_queue.filter((entry) => entry.checkin_id === id).delete();
++        for (const [position, blob] of blobs.entries()) {
++          await enqueueMedia(db, { kind: 'checkin_photo', checkin_id: id, position, blob, mime: blob.type });
++        }
++      });
++    }
++  } catch {
++    return { error: t('couldntSendTheCheckinTryAgain'), status: 'queued' };
++  }
++  input.onProgress?.(input.photos.length + 1, input.photos.length + 1);
++  return { error: null, status: 'queued' };
++}
++
++/**
++ * Fallback for a player shell that has not set the local user yet: the previous
++ * online-only behaviour (upload, then direct insert). Never used on the normal path.
++ */
++async function submitOnlineOnly(client: SupabaseClient<AppDatabase>, input: CheckInInput, t: Translator<typeof messages>): Promise<SubmitResult> {
+   try {
+     const id = await playerId(client, t);
+     const paths: string[] = [];
+@@ -61,12 +165,12 @@ export async function submitCheckIn(client: SupabaseClient<AppDatabase>, input:
+       body_fat_pct: input.body_fat_pct ?? null, photo_poses: input.photo_poses ?? [],
+     };
+     const { error } = await client.from('check_ins').insert(row);
+-    if (error?.code === '23505') return { error: t('youveAlreadySentThisWeeksCheckin') };
+-    if (error) return { error: t('couldntSendTheCheckinTryAgain') };
++    if (error?.code === '23505') return { error: t('youveAlreadySentThisWeeksCheckin'), status: 'already-sent' };
++    if (error) return { error: t('couldntSendTheCheckinTryAgain'), status: 'queued' };
+     input.onProgress?.(input.photos.length + 1, input.photos.length + 1);
+-    return { error: null };
++    return { error: null, status: 'sent' };
+   } catch {
+     return { error: typeof navigator !== 'undefined' && !navigator.onLine ?
+-      t('goOnlineToSendPhotos') : t('couldntSendTheCheckinCheckYourPhotos') };
++      t('couldntSendTheCheckinTryAgain') : t('couldntSendTheCheckinCheckYourPhotos'), status: 'queued' };
+   }
+ }
+diff --git a/src/features/progress/messages.ts b/src/features/progress/messages.ts
+index e16b07d2..9d00bf97 100644
+--- a/src/features/progress/messages.ts
++++ b/src/features/progress/messages.ts
+@@ -40,7 +40,8 @@ export const messages = defineMessages({
+     front: "قدام",
+     side: "جنب",
+     back: "ضهر",
+-    goOnlineToSendPhotos: "محتاج نت عشان تبعت الصور",
++    checkinSavedOnDevice: "اتحفظ على جهازك وهيتبعت أول ما النت يرجع",
++    checkinPending: "محفوظ على الجهاز، مستني النت",
+     startWithAFrontPhoto: "ابدأ بصورة من قدام",
+     youveAlreadySentThisWeeksCheckin: "بعتّ تحديث الأسبوع ده خلاص",
+     couldntSendTheCheckinTryAgain: "التحديث متبعتش. جرّب تاني",
+@@ -132,7 +133,8 @@ export const messages = defineMessages({
+     front: "Front",
+     side: "Side",
+     back: "Back",
+-    goOnlineToSendPhotos: "Go online to send photos",
++    checkinSavedOnDevice: "Saved on your device. It will send when you're back online.",
++    checkinPending: "Saved on this device, waiting for connection",
+     startWithAFrontPhoto: "Start with a front photo",
+     youveAlreadySentThisWeeksCheckin: "You've already sent this week's check-in",
+     couldntSendTheCheckinTryAgain: "Couldn't send the check-in. Try again",
+diff --git a/src/features/progress/progress.test.ts b/src/features/progress/progress.test.ts
+index 9ae3648f..b2895799 100644
+--- a/src/features/progress/progress.test.ts
++++ b/src/features/progress/progress.test.ts
+@@ -6,7 +6,7 @@ import { weekStart } from './week';
+ import { mainLifts, topSets, trendDelta } from './trends';
+ import { listCheckIns, submitCheckIn } from './data/checkins';
+ import { compressImage } from './image';
+-import { localDb, setLocalUser } from '@/core/offline';
++import { localDb, saveAndQueue, setLocalUser } from '@/core/offline';
+ import type * as Ids from '@/core/offline/ids';
+ import { readStrength } from './data/strength';
+ 
+@@ -95,7 +95,7 @@ it('maps the weekly unique constraint to Arabic', async () => {
+   const { client } = mockClient('23505');
+   expect(await submitCheckIn(client, {
+     today: '2026-11-03', body_weight_kg: 75, waist_cm: null, notes: '', photos: [],
+-  })).toEqual({ error: 'بعتّ تحديث الأسبوع ده خلاص' });
++  })).toEqual({ error: 'بعتّ تحديث الأسبوع ده خلاص', status: 'already-sent' });
+ });
+ it('uploads before inserting a check-in, using the authenticated player and Saturday', async () => {
+   const { client, upload, insert } = mockClient();
+@@ -105,7 +105,7 @@ it('uploads before inserting a check-in, using the authenticated player and Satu
+   expect(await submitCheckIn(client, {
+     today: '2026-11-03', body_weight_kg: 75, waist_cm: 90, notes: 'تمام', photos: [photo],
+     body_fat_pct: 18.5, photo_poses: ['side'],
+-  })).toEqual({ error: null });
++  })).toEqual({ error: null, status: 'sent' });
+   expect(upload.mock.invocationCallOrder[0]).toBeLessThan(insert.mock.invocationCallOrder[0] ?? 0);
+   expect(insert).toHaveBeenCalledWith({
+     id: '0194cc00-0000-7000-8000-000000000001', notes: 'تمام',
+@@ -121,12 +121,12 @@ it('lists only the authenticated player, newest first, capped at 26', async () =
+   expect(order).toHaveBeenCalledWith('week_start', { ascending: false });
+   expect(limit).toHaveBeenCalledWith(26);
+ });
+-it('blocks offline submissions before upload or insert', async () => {
++it('returns the online-only error offline without a local database', async () => {
+   const { client, upload, insert } = mockClient();
+   vi.stubGlobal('navigator', { onLine: false });
+   expect(await submitCheckIn(client, {
+     today: '2026-11-03', body_weight_kg: 75, waist_cm: null, notes: '', photos: [],
+-  })).toEqual({ error: 'محتاج نت عشان تبعت الصور' });
++  })).toEqual({ error: 'التحديث متبعتش. جرّب تاني', status: 'queued' });
+   expect(upload).not.toHaveBeenCalled();
+   expect(insert).not.toHaveBeenCalled();
+ });
+@@ -216,3 +216,67 @@ it('joins local sets to session dates and snapshot names, excluding deleted and
+     expect(result.sets).toEqual([{ exercise_id: 'bench', training_date: '2026-11-03', weight_kg: 50, reps: 8 }]);
+   } finally { await setLocalUser(null); await db.delete(); }
+ });
++
++function listClient(serverRows: unknown, serverError: object | null = null) {
++  const returns = vi.fn().mockResolvedValue({ data: serverRows, error: serverError });
++  const limit = vi.fn(() => ({ returns }));
++  const order = vi.fn(() => ({ limit }));
++  const eq = vi.fn(() => ({ order }));
++  const select = vi.fn(() => ({ eq }));
++  return fakeClient({
++    auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'player' } }, error: null }) },
++    from: vi.fn(() => ({ select })),
++  });
++}
++
++const localRow = (id: string, week_start: string) => ({
++  id, week_start, body_weight_kg: 75, waist_cm: 90, notes: '', photo_paths: [] as string[],
++  body_fat_pct: null, photo_poses: [] as string[], photo_total: 0,
++});
++const serverRow = (id: string, week_start: string) => ({
++  id, player_id: 'player', week_start, body_weight_kg: 76, waist_cm: 91, notes: '',
++  photo_paths: ['player/a.jpg'], captain_reply: null, reviewed_at: null, body_fat_pct: null, photo_poses: ['front'],
++});
++
++describe('merged listCheckIns', () => {
++  it('shows a queued local check-in as pending', async () => {
++    await setLocalUser('progress-list');
++    const db = localDb();
++    try {
++      await saveAndQueue(db, 'check_ins', localRow('local-1', '2026-10-31'), 1000);
++      const rows = await listCheckIns(listClient([]));
++      expect(rows).toEqual([expect.objectContaining({ id: 'local-1', week_start: '2026-10-31', pending: true })]);
++    } finally { await setLocalUser(null); await db.delete(); }
++  });
++
++  it('prefers the server row per week and merges other pending weeks newest first', async () => {
++    await setLocalUser('progress-list');
++    const db = localDb();
++    try {
++      await saveAndQueue(db, 'check_ins', localRow('local-1', '2026-10-31'), 1000);
++      await saveAndQueue(db, 'check_ins', localRow('local-2', '2026-11-07'), 1000);
++      const rows = await listCheckIns(listClient([serverRow('server-1', '2026-10-31')]));
++      expect(rows.map(row => [row.week_start, row.id, row.pending ?? false])).toEqual([
++        ['2026-11-07', 'local-2', true], ['2026-10-31', 'server-1', false],
++      ]);
++    } finally { await setLocalUser(null); await db.delete(); }
++  });
++
++  it('returns local rows when the server fails', async () => {
++    await setLocalUser('progress-list');
++    const db = localDb();
++    try {
++      await saveAndQueue(db, 'check_ins', localRow('local-1', '2026-10-31'), 1000);
++      const rows = await listCheckIns(listClient([], { message: 'offline' }));
++      expect(rows).toEqual([expect.objectContaining({ id: 'local-1', pending: true })]);
++    } finally { await setLocalUser(null); await db.delete(); }
++  });
++
++  it('throws when the server fails and nothing is queued locally', async () => {
++    await setLocalUser('progress-list');
++    const db = localDb();
++    try {
++      await expect(listCheckIns(listClient([], { message: 'offline' }))).rejects.toThrow('مش قادرين نحمّل تحديثاتك');
++    } finally { await setLocalUser(null); await db.delete(); }
++  });
++});
+diff --git a/src/features/progress/standard/messages.ts b/src/features/progress/standard/messages.ts
+index ebf7d075..f60d0401 100644
+--- a/src/features/progress/standard/messages.ts
++++ b/src/features/progress/standard/messages.ts
+@@ -12,7 +12,9 @@ export const arStd = {
+   voiceLoadFailed: 'تعذّر تحميل تسجيلات الكابتن. حاول مجدداً', noReplyYet: 'لم يردّ الكابتن بعد',
+   voiceReply: 'رد الكابتن', noVoiceReply: 'لا يوجد تسجيل مع هذا الرد', messageCoach: 'أرسل للكابتن',
+   firstWorkout: 'ابدأ تمريناً', workoutsTitle: 'سجّل أول تمرين', firstCheckin: 'أرسل أول Check-in', pageTitle: 'تطورك',
+-  weekLabel: 'أ{count}', front: 'الأمام', side: 'الجانب', back: 'الخلف', goOnlineToSendPhotos: 'اتصل بالإنترنت لإرسال الصور',
++  weekLabel: 'أ{count}', front: 'الأمام', side: 'الجانب', back: 'الخلف',
++  checkinSavedOnDevice: 'تم الحفظ على جهازك وسيُرسل عند عودة الاتصال',
++  checkinPending: 'محفوظ على الجهاز، بانتظار الاتصال',
+   startWithAFrontPhoto: 'ابدأ بصورة من الأمام', youveAlreadySentThisWeeksCheckin: 'أرسلت Check-in هذا الأسبوع بالفعل',
+   couldntSendTheCheckinTryAgain: 'تعذّر إرسال Check-in. حاول مجدداً', weeklyCheckin: 'Check-in الأسبوع',
+   closeCheckin: 'أغلق Check-in', weightKg: 'الوزن بالكيلو', waist: 'محيط الخصر', none: 'بدون', waistCm: 'الخصر بالسنتيمتر',
+diff --git a/src/types/app-database.ts b/src/types/app-database.ts
+index 9911cc9c..a85afb35 100644
+--- a/src/types/app-database.ts
++++ b/src/types/app-database.ts
+@@ -224,6 +224,7 @@ export type AppDatabase = Omit<Database, 'public'> & {
+         p_question: string; p_answer: string;
+       }; Returns: boolean };
+       sync_pain_reports: { Args: { p_rows: Json }; Returns: undefined };
++      sync_check_ins: { Args: { p_rows: Json }; Returns: undefined };
+       expire_pain_swaps: { Args: never; Returns: undefined };
+       answer_pain: { Args: { p_report: string; p_reply: PainReply }; Returns: undefined };
+       pain_repeat_count: { Args: { p_player: string; p_area: string }; Returns: number };
+diff --git a/docs/tasks/T-421-checkin-offline-queue.md b/docs/tasks/T-421-checkin-offline-queue.md
+new file mode 100644
+index 00000000..b80d68b3
+--- /dev/null
++++ b/docs/tasks/T-421-checkin-offline-queue.md
+@@ -0,0 +1,81 @@
++# T-421 — Weekly check-in survives offline (offline queue)
++
++**Phase:** fix · **Depends on:** none · **Status:** ready
++
++## Goal
++A player can fill in the weekly check-in in the gym with no signal and never lose it: the check-in is saved on the device at once, its photos are kept on the device and uploaded when the player is back online, and the captain receives it exactly once. Today `submitCheckIn()` refuses offline outright and a failed insert after photo upload orphans the photos and forces the player to re-enter everything.
++
++## Design decisions (read first — they are load-bearing)
++1. **Stable id, insert-only sync.** The check-in id is `stableId('checkin', playerId, week_start)`, so the same (player, week) is one row on every device. `sync_check_ins` is insert-only: `on conflict (player_id, week_start) do nothing`. This is forced by `supabase/migrations/0008_inbox.sql`: the `guard_review_update()` trigger raises 42501 on any player update of `check_ins`, and there is no player UPDATE policy. Check-ins are never edited after sending, so insert-only is correct; a re-send is a no-op and a legacy online row for the same week (old uuidv7 id) stands.
++2. **Row after photos.** Photos must be uploaded *before* the row syncs, because the row can never be updated afterwards (see 1). Flow: submit compresses the photos, saves the local row with `photo_paths` placeholders, enqueues one media entry per photo; the media flush uploads each photo, writes its path into the local row, and only when every photo for that check-in is uploaded does it queue the row with `saveAndQueue()`. A check-in with no photos is queued at once. The background runner already flushes the media queue after every outbox flush and on `online`/foreground events, so no runner change is needed.
++3. **Photo-count guard against a mid-submit flush.** The local row carries `photo_total` (how many photos were attached). The row is queued only when the uploaded-path count equals `photo_total` AND no media entries remain for that check-in. A flush that runs while submit is still enqueueing photos must never queue the row early.
++4. **No new sync mechanism.** Reuse `saveAndQueue()` / outbox / `flushOutbox()` / `supabaseTransport()` and the media queue. Do not invent a second queue.
++5. **Submit does not await a flush.** `submitCheckIn` returns `{ error, status }` with status `'sent' | 'queued' | 'already-sent'`. Online, the runner sends the queued row within seconds in the background; the history shows the pending row immediately (see 6) and the badge clears on the next load of the Progress screen. Do not add a second flush path in submit (concurrent flushes race the media completion check).
++6. **Pending is visible, not silent.** `listCheckIns()` merges local pending rows with server rows (server wins per week) and marks local rows `pending: true`. `progress-screen.tsx` needs no change: `onSent` already reloads the list and `canOpenCheckin` already blocks a week that is in the list, so a queued week cannot be re-entered.
++
++## Files
++Create or modify only these:
++- `docs/tasks/T-421-checkin-offline-queue.md`: this card
++- `src/core/offline/db.ts`: Dexie version 10 adds the `check_ins` table (`id, week_start`); `MediaQueueEntry` gains kind `'checkin_photo'` plus optional `checkin_id` / `position`, and `form_check_id` / `exercise_id` become optional (form_check-only). Never change an existing version's schema.
++- `src/core/offline/tables.ts`: `CheckInRow` (player-owned columns only: `id`, `week_start`, `body_weight_kg`, `waist_cm`, `notes`, `photo_paths: (string | null)[]`, `body_fat_pct`, `photo_poses`, plus local-only `photo_total: number`); add `check_ins` to `SyncRows` / `SyncTable` and append it to `SYNC_ORDER`. No `SYNC_DEPENDENCIES` entry for it.
++- `src/core/offline/media-queue.ts`: `checkin_photo` branch in `flushMediaQueue` (upload, patch the local row's `photo_paths[position]`, queue the row via `saveAndQueue()` only when complete per decision 3); `MediaTransport` gains `uploadCheckinPhoto(blob, mime)` using bucket `checkin-photos`; `enqueueMedia` accepts the discriminated union input (form_check / checkin_photo). Form_check behaviour must not change.
++- `src/core/offline/media-queue.test.ts`: checkin_photo cases (upload, local patch, queue-when-complete, incomplete waits, failure retries with backoff).
++- `src/core/offline/sync.test.ts`: add a `check_ins` flush case (send once, idempotent re-send).
++- `src/features/progress/data/checkins.ts`: rewrite `submitCheckIn` and `listCheckIns` per Requirements; add `pending?: boolean` to the `CheckIn` type. Validation stays exactly as today.
++- `src/features/progress/components/checkin-sheet.tsx`: remove the offline blocker (the `offline` listener and its `goOnlineToSendPhotos` error); handle the three statuses (`sent` and `queued` both close via `onSent(today)`; `already-sent` shows the existing error string).
++- `src/features/progress/components/checkin-history.tsx`: pending rows show the new pending badge/label under the week date. No other change (voice-note fetch already only runs for reviewed rows).
++- `src/features/progress/messages.ts` and `src/features/progress/standard/messages.ts`: add `checkinSavedOnDevice` and `checkinPending` in `ar`, `arStd` and `en`; remove `goOnlineToSendPhotos` from both files and the sheet (verify with a repo-wide grep that nothing else uses it first).
++- `src/features/progress/checkin-duplicate.test.ts`: update the `submitCheckIn` mock for the new `{ error, status }` return.
++- `src/features/progress/progress.test.ts`: keep the validation cases passing; extend for the merged `listCheckIns` (pending row shown, server row wins per week, server failure with local rows does not throw).
++- `src/features/progress/data/checkin-offline.test.ts`: new focused tests (see Tests).
++- `supabase/migrations/0164_checkin_sync.sql`: new additive migration, `sync_check_ins(p_rows jsonb)` only (see Requirements). Never edit an applied migration.
++- `supabase/tests/sync-check-ins.test.ts`: PGlite test for the RPC (see Tests).
++
++## Requirements
++1. `submitCheckIn(client, input, t)` returns `{ error: string | null; status: 'sent' | 'queued' | 'already-sent' }`.
++   - Validation identical to today (weight, waist, notes ≤ 1000, ≤ 3 photos, body-fat range, poses match photos). Invalid input returns an error and writes nothing locally.
++   - Id is `stableId('checkin', playerId, weekStart(input.today))`. A local row for the same week that is already sent (no outbox entry and no pending media) returns `{ error: t('youveAlreadySentThisWeeksCheckin'), status: 'already-sent' }` without touching the server. A local row for the same week that is still queued is updated in place (new values, new photos) and returns `status: 'queued'`.
++   - Photos are compressed exactly as today (`compressImage`, 1600 / 0.8). The row put and all media enqueues happen in ONE Dexie transaction, so a crash can never leave a row without its photos or photos without a row.
++   - Zero photos: `saveAndQueue(db, 'check_ins', row)` at once, return `status: 'queued'`.
++   - With photos: put the row locally (`photo_paths` as `photo_total` nulls, `photo_total` = photos taken) and enqueue one `checkin_photo` media entry per photo (position = the photo's index, same order as `photo_poses`); return `status: 'queued'`. Never call `client.from('check_ins').insert` and never call `uploadPrivateMedia` directly from this function.
++   - If `localDb()` is unavailable, keep the previous online-only behaviour (upload then direct insert; offline returns `couldntSendTheCheckinTryAgain`). This is a fallback for a player shell that has not set the local user yet, not a second code path for normal use.
++   - `status: 'sent'` is returned only when the row is already on the server — i.e. never by the new submit path itself; the sheet treats `queued` as success (closes, history shows the pending row). Keep the `'sent'` value in the type for callers that already know the row is on the server.
++2. `listCheckIns(client, t)` returns server rows merged with local pending rows, newest first, at most 26. Rules: server rows win per `week_start`; a local row with an outbox entry or pending media entries is included with `pending: true`; a local row that is already sent and also on the server is dropped. If the server query fails and local rows exist, return the local rows (do not throw). If the server query fails and there are no local rows, throw as today (`couldntLoadYourCheckins`). If `localDb()` is unavailable, behave exactly as today.
++3. Media flush for `checkin_photo` (in `flushMediaQueue`): upload with `transport.uploadCheckinPhoto`; on success write the path into the local row's `photo_paths[position]`; then, only if no media entries remain for that `checkin_id` AND the count of non-null `photo_paths` equals `photo_total`, fetch the fresh local row and `saveAndQueue()` it with `photo_paths` compacted to `string[]`. On upload failure, retry with the existing backoff (same as the form_check branch). If the local row is gone, drop the entry (with `console.warn`, real failure only) — a photo without a check-in must never block the queue.
++4. `sync_check_ins(p_rows jsonb)` (migration 0164, `language sql security invoker set search_path = ''`, following the `sync_meal_logs` header style in `0007_nutrition.sql`): inserts one row per element with columns `id, week_start, body_weight_kg, waist_cm, notes, photo_paths, body_fat_pct, photo_poses` (both `body_fat_pct` and `photo_poses` exist since `0048_body_fat.sql`); `player_id` defaults to `auth.uid()` and `captain_id` is set by the existing `set_inbox_captain()` trigger. Conflict: `on conflict (player_id, week_start) do nothing` — this also covers re-sends, because the stable id implies the same (player, week). Grants: `revoke all on function public.sync_check_ins(jsonb) from public, anon; grant execute on function public.sync_check_ins(jsonb) to authenticated;` (same as `sync_daily_checks` / `sync_pain_reports`). No other function in this migration.
++5. New strings in `messages.ts` for `ar`, `arStd` and `en` (no inline UI text, no emoji):
++   - `checkinSavedOnDevice`: ar "اتحفظ على جهازك وهيتبعت أول ما النت يرجع" · arStd "تم الحفظ على جهازك وسيُرسل عند عودة الاتصال" · en "Saved on your device. It will send when you're back online."
++   - `checkinPending`: ar "محفوظ على الجهاز، مستني النت" · arStd "محفوظ على الجهاز، بانتظار الاتصال" · en "Saved on this device, waiting for connection"
++6. Rules that still apply: files ≤ 250 lines, one component per file, kebab-case, import direction `app → features → (ui, core, lib)`, no `any`, no `console.log`, dates via `localDate()` (Africa/Cairo), ids via `stableId()` / `uuidv7()` (never `Math.random`), tokens only, logical RTL properties only, touch targets ≥ 48px.
++
++## Acceptance
++- [ ] Offline submit (no signal) saves locally, queues, returns `queued`, and the player never re-enters the week; history shows it with the pending label.
++- [ ] A failed row sync does not lose the entry: the outbox entry stays and a later flush sends it.
++- [ ] Re-submit of an already-sent week returns `already-sent` without a server write.
++- [ ] Photos survive offline and upload on flush; the server row ends up with the right `photo_paths` in the right order (poses aligned by index).
++- [ ] `sync_check_ins` is idempotent (same payload twice = one row) and a second player cannot touch the first player's week.
++- [ ] `npm run check`, `npm run build` and `npx vitest run src/lib/perf-budget.test.ts` pass.
++- [ ] No change to cycle settings, voice notes, parked-row retry, KO, billing, or the captain review flow.
++
++## Tests (deterministic, inject `now`, no real timers, no network — fake-indexeddb like `src/core/offline/sync.test.ts`)
++- `src/features/progress/data/checkin-offline.test.ts`: offline submit queues the local row + media entries and returns `queued` (mock client performs no insert); a failing row flush keeps the outbox entry and a retry succeeds; re-submit after send returns `already-sent`; photos: submit offline with photos, flush media with a mock transport, assert the local row is queued with the uploaded paths in order, then flush the outbox with a mock RPC and assert the payload carries those paths; a flush that runs while photos are still uploading does not queue the row early.
++- `supabase/tests/sync-check-ins.test.ts` (PGlite, following `supabase/tests/rls-set-sync.test.ts`): insert via the RPC as the player; call twice with the same payload (one row, no duplicate); a legacy row for the same week plus the new payload still leaves one row; another player inserting the same `week_start` gets their own row only; anon cannot execute; a lapsed-subscription player gets 42501.
++- Extend `media-queue.test.ts` and `sync.test.ts` as listed in Files; keep `progress.test.ts` validation cases green.
++
++## Out of scope
++- Cycle settings, voice notes, parked-row auto-retry, KO, billing, captain review flow.
++- Editing or deleting a sent check-in; removing a photo from a sent check-in.
++- A live refresh of the pending badge after the background flush (it clears on the next load of the Progress screen).
++- Do not apply the migration to any real database.
++- No new dependency.
++
++## Notes for reviewer
++- The legacy-week edge: a player who sent week W with the old app (uuidv7 id) and then queues week W with the new app ends up with the legacy row standing and the new photos orphaned in storage (same orphan risk the old code already had on failed inserts). The week is still represented exactly once; no duplicate is ever shown because `listCheckIns` dedupes by week with the server row winning.
++- `sync_check_ins` deliberately has no `client_updated_at` conflict rule: `check_ins` has no such column, and the review trigger forbids player updates, so insert-only is the only honest semantics.
++- The `checkinSavedOnDevice` string is currently only used as the history pending label's companion text; the sheet closes on `queued` and the pending badge is the confirmation. If the owner wants a toast on queue, that is a follow-up, not this card.
++
++## References
++- `docs/ARCHITECTURE.md` §3 (feature layout), §6 (offline engine)
++- `src/core/offline/sync.ts`, `transport.ts`, `media-queue.ts`, `runner.ts`
++- `supabase/migrations/0008_inbox.sql` (check_ins table, `guard_review_update`, RLS)
++- `supabase/migrations/0007_nutrition.sql` (`sync_meal_logs` header/grants to copy)
+diff --git a/src/features/progress/data/checkin-offline.test.ts b/src/features/progress/data/checkin-offline.test.ts
+new file mode 100644
+index 00000000..26e05247
+--- /dev/null
++++ b/src/features/progress/data/checkin-offline.test.ts
+@@ -0,0 +1,138 @@
++import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
++import type { SupabaseClient } from '@supabase/supabase-js';
++import type { AppDatabase } from '@/types/app-database';
++import { enqueueMedia, flushMediaQueue, flushOutbox, localDb, setLocalUser, stableId,
++  type KochivoDB, type MediaTransport } from '@/core/offline';
++import type { CheckInRow } from '@/core/offline/tables';
++import { submitCheckIn, type CheckInInput } from './checkins';
++
++let sequence = 0;
++let db: KochivoDB | undefined;
++
++function mockClient(user: string) {
++  const insert = vi.fn().mockResolvedValue({ error: null });
++  const client = {
++    auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: user } }, error: null }) },
++    from: vi.fn(() => ({ insert })),
++  };
++  return { client: client as unknown as SupabaseClient<AppDatabase>, insert };
++}
++
++function photoTransport(): MediaTransport {
++  return {
++    upload: vi.fn<MediaTransport['upload']>().mockResolvedValue('player/video.mp4'),
++    uploadCheckinPhoto: vi.fn<MediaTransport['uploadCheckinPhoto']>()
++      .mockImplementation(async (blob: Blob) => `player/photo-${await blob.text()}.jpg`),
++    insertFormCheck: vi.fn<MediaTransport['insertFormCheck']>().mockResolvedValue(undefined),
++  };
++}
++
++async function openDb(): Promise<{ local: KochivoDB; user: string }> {
++  const user = `checkin-offline-${sequence++}`;
++  await setLocalUser(user);
++  db = localDb();
++  return { local: db, user };
++}
++
++beforeEach(() => {
++  vi.stubGlobal('navigator', { onLine: false });
++  vi.stubGlobal('createImageBitmap', undefined);
++});
++afterEach(async () => {
++  vi.unstubAllGlobals();
++  if (db) { await setLocalUser(null); await db.delete(); db = undefined; }
++});
++
++describe('check-in offline queue', () => {
++  it('queues an offline submit with photos without touching the server', async () => {
++    const { local, user } = await openDb();
++    const { client, insert } = mockClient(user);
++    const result = await submitCheckIn(client, {
++      today: '2026-11-03', body_weight_kg: 75, waist_cm: 90, notes: 'تمام',
++      photos: [new File(['a'], 'a.jpg', { type: 'image/jpeg' }), new File(['b'], 'b.jpg', { type: 'image/jpeg' })],
++      body_fat_pct: 18.5, photo_poses: ['front', 'side'],
++    });
++    expect(result).toEqual({ error: null, status: 'queued' });
++    expect(insert).not.toHaveBeenCalled();
++    const id = await stableId('checkin', user, '2026-10-31');
++    expect(await local.check_ins.get(id)).toMatchObject({
++      week_start: '2026-10-31', body_weight_kg: 75, photo_total: 2, photo_poses: ['front', 'side'],
++    });
++    expect((await local.check_ins.get(id))?.photo_paths).toEqual([null, null]);
++    expect(await local.outbox.count()).toBe(0);
++    const media = await local.media_queue.toArray();
++    expect(media.map((entry) => [entry.kind, entry.checkin_id, entry.position])).toEqual([
++      ['checkin_photo', id, 0], ['checkin_photo', id, 1],
++    ]);
++  });
++
++  it('keeps a failed row flush queued and sends it on retry', async () => {
++    const { local, user } = await openDb();
++    const { client } = mockClient(user);
++    expect(await submitCheckIn(client, {
++      today: '2026-11-03', body_weight_kg: 75, waist_cm: null, notes: '', photos: [],
++    })).toEqual({ error: null, status: 'queued' });
++    expect(await local.outbox.count()).toBe(1);
++    const now = Date.now();
++    expect(await flushOutbox(local, async () => { throw new Error('offline'); }, now)).toEqual({ sent: 0, failed: 1 });
++    expect(await local.outbox.count()).toBe(1);
++    const sent: CheckInRow[] = [];
++    expect(await flushOutbox(local, async (_table, rows) => { sent.push(...(rows as CheckInRow[])); }, now + 2000))
++      .toEqual({ sent: 1, failed: 0 });
++    expect(await local.outbox.count()).toBe(0);
++    expect(sent).toHaveLength(1);
++    expect(sent[0]).toMatchObject({ week_start: '2026-10-31', photo_paths: [] });
++  });
++
++  it('returns already-sent when the week is re-submitted after sync', async () => {
++    const { local, user } = await openDb();
++    const { client, insert } = mockClient(user);
++    const input: CheckInInput = { today: '2026-11-03', body_weight_kg: 75, waist_cm: null, notes: '', photos: [] };
++    expect(await submitCheckIn(client, input)).toEqual({ error: null, status: 'queued' });
++    expect(await flushOutbox(local, async () => undefined, Date.now())).toEqual({ sent: 1, failed: 0 });
++    expect(await submitCheckIn(client, { ...input, body_weight_kg: 76 }))
++      .toEqual({ error: 'بعتّ تحديث الأسبوع ده خلاص', status: 'already-sent' });
++    expect(insert).not.toHaveBeenCalled();
++    expect(await local.outbox.count()).toBe(0);
++    expect(await local.check_ins.count()).toBe(1);
++  });
++
++  it('uploads photos on flush, queues the row with the paths in order, then syncs them', async () => {
++    const { local, user } = await openDb();
++    const { client } = mockClient(user);
++    await submitCheckIn(client, {
++      today: '2026-11-03', body_weight_kg: 75, waist_cm: 90, notes: '',
++      photos: [new File(['a'], 'a.jpg', { type: 'image/jpeg' }), new File(['b'], 'b.jpg', { type: 'image/jpeg' })],
++      photo_poses: ['front', 'side'],
++    });
++    expect(await flushMediaQueue(local, photoTransport(), Date.now())).toEqual({ sent: 2, failed: 0, waiting: 0 });
++    const id = await stableId('checkin', user, '2026-10-31');
++    expect((await local.check_ins.get(id))?.photo_paths).toEqual(['player/photo-a.jpg', 'player/photo-b.jpg']);
++    const payloads: CheckInRow[][] = [];
++    expect(await flushOutbox(local, async (_table, rows) => { payloads.push(rows as CheckInRow[]); }, Date.now()))
++      .toEqual({ sent: 1, failed: 0 });
++    expect(payloads).toHaveLength(1);
++    expect(payloads[0]?.[0]).toMatchObject({
++      id, photo_paths: ['player/photo-a.jpg', 'player/photo-b.jpg'], photo_poses: ['front', 'side'],
++    });
++  });
++
++  it('does not queue the row while photos are still uploading', async () => {
++    const { local, user } = await openDb();
++    const id = await stableId('checkin', user, '2026-10-31');
++    // A flush that lands after the row was written but before every photo was enqueued.
++    await local.check_ins.put({ id, week_start: '2026-10-31', body_weight_kg: 75, waist_cm: 90, notes: '',
++      photo_paths: [null, null], body_fat_pct: null, photo_poses: ['front', 'side'], photo_total: 2 });
++    await enqueueMedia(local, { kind: 'checkin_photo', checkin_id: id, position: 0,
++      blob: new Blob(['a'], { type: 'image/jpeg' }), mime: 'image/jpeg' }, Date.now());
++    const send = photoTransport();
++    expect(await flushMediaQueue(local, send, Date.now())).toEqual({ sent: 1, failed: 0, waiting: 0 });
++    expect((await local.check_ins.get(id))?.photo_paths).toEqual(['player/photo-a.jpg', null]);
++    expect(await local.outbox.count()).toBe(0);
++    await enqueueMedia(local, { kind: 'checkin_photo', checkin_id: id, position: 1,
++      blob: new Blob(['b'], { type: 'image/jpeg' }), mime: 'image/jpeg' }, Date.now());
++    expect(await flushMediaQueue(local, send, Date.now())).toEqual({ sent: 1, failed: 0, waiting: 0 });
++    expect((await local.check_ins.get(id))?.photo_paths).toEqual(['player/photo-a.jpg', 'player/photo-b.jpg']);
++    expect(await local.outbox.count()).toBe(1);
++  });
++});
+diff --git a/supabase/migrations/0164_checkin_sync.sql b/supabase/migrations/0164_checkin_sync.sql
+new file mode 100644
+index 00000000..55a143fa
+--- /dev/null
++++ b/supabase/migrations/0164_checkin_sync.sql
+@@ -0,0 +1,17 @@
++-- 0164 check-in sync: insert-only sync for offline weekly check-ins (T-421).
++-- Insert-only because guard_review_update() forbids player updates of check_ins and
++-- there is no player UPDATE policy; a re-send is a no-op on (player_id, week_start).
++
++create function public.sync_check_ins(p_rows jsonb)
++returns void language sql security invoker set search_path = ''
++as $$
++  insert into public.check_ins (id, week_start, body_weight_kg, waist_cm, notes, photo_paths, body_fat_pct, photo_poses)
++  select r.id, r.week_start, r.body_weight_kg, r.waist_cm, r.notes, r.photo_paths, r.body_fat_pct, r.photo_poses
++  from jsonb_to_recordset(p_rows) as r(
++    id uuid, week_start date, body_weight_kg numeric, waist_cm numeric, notes text,
++    photo_paths text[], body_fat_pct numeric, photo_poses text[])
++  on conflict (player_id, week_start) do nothing;
++$$;
++
++revoke all on function public.sync_check_ins(jsonb) from public, anon;
++grant execute on function public.sync_check_ins(jsonb) to authenticated;
+diff --git a/supabase/tests/sync-check-ins.test.ts b/supabase/tests/sync-check-ins.test.ts
+new file mode 100644
+index 00000000..63ae87db
+--- /dev/null
++++ b/supabase/tests/sync-check-ins.test.ts
+@@ -0,0 +1,92 @@
++import type { PGlite } from '@electric-sql/pglite';
++import { afterAll, beforeAll, describe, expect, it } from 'vitest';
++import { asUser, createCaptainWithPlayer, createTestDb } from './harness';
++
++let db: PGlite;
++let captain: string;
++let player: string;
++const week = '2026-10-31';
++const legacyWeek = '2026-11-07';
++
++const payload = (id: string, owner: string, weekStart = week) => [{
++  id, week_start: weekStart, body_weight_kg: 75, waist_cm: 90, notes: 'تمام',
++  photo_paths: [`${owner}/a.jpg`, `${owner}/b.jpg`], body_fat_pct: 18.5, photo_poses: ['front', 'side'],
++}];
++
++beforeAll(async () => {
++  db = await createTestDb();
++  ({ captain, player } = await createCaptainWithPlayer(db));
++});
++afterAll(async () => { await db?.close(); });
++
++async function callSync(userId: string, rows: unknown): Promise<void> {
++  await asUser(db, userId, (tx) => tx.query('select public.sync_check_ins($1)', [JSON.stringify(rows)]));
++}
++
++async function countFor(userId: string, weekStart = week): Promise<number> {
++  const { rows } = await db.query<{ total: number }>(
++    'select count(*)::int as total from public.check_ins where player_id = $1 and week_start = $2', [userId, weekStart]);
++  return rows[0]?.total ?? 0;
++}
++
++describe('sync_check_ins', () => {
++  it('inserts via the RPC and is idempotent', async () => {
++    const id = '0194cc00-0000-7000-8000-000000000001';
++    await callSync(player, payload(id, player));
++    await callSync(player, payload(id, player));
++    expect(await countFor(player)).toBe(1);
++    const { rows } = await db.query(
++      `select id, week_start::text as week_start, body_weight_kg::float as body_weight_kg,
++        waist_cm::float as waist_cm, notes, photo_paths, body_fat_pct::float as body_fat_pct,
++        photo_poses, captain_id from public.check_ins where player_id = $1`,
++      [player],
++    );
++    expect(rows).toEqual([{
++      id, week_start: week, body_weight_kg: 75, waist_cm: 90, notes: 'تمام',
++      photo_paths: [`${player}/a.jpg`, `${player}/b.jpg`], body_fat_pct: 18.5,
++      photo_poses: ['front', 'side'], captain_id: captain,
++    }]);
++  });
++
++  it('keeps a legacy row for the same week standing', async () => {
++    const second = await createCaptainWithPlayer(db);
++    const legacyId = '0194cc00-0000-7000-8000-000000000002';
++    await db.query(
++      `insert into public.check_ins (id, player_id, week_start, body_weight_kg) values ($1, $2, $3, 80)`,
++      [legacyId, second.player, legacyWeek],
++    );
++    await callSync(second.player, payload('0194cc00-0000-7000-8000-000000000003', second.player, legacyWeek));
++    expect(await countFor(second.player, legacyWeek)).toBe(1);
++    const { rows } = await db.query<{ id: string; body_weight_kg: string }>(
++      'select id, body_weight_kg::text as body_weight_kg from public.check_ins where player_id = $1 and week_start = $2',
++      [second.player, legacyWeek],
++    );
++    expect(rows).toEqual([{ id: legacyId, body_weight_kg: '80.0' }]);
++  });
++
++  it('gives another player their own row for the same week', async () => {
++    const second = await createCaptainWithPlayer(db);
++    await callSync(second.player, payload('0194cc00-0000-7000-8000-000000000004', second.player));
++    expect(await countFor(second.player)).toBe(1);
++    expect(await countFor(player)).toBe(1);
++    const { rows } = await db.query<{ total: number }>(
++      'select count(*)::int as total from public.check_ins where week_start = $1', [week]);
++    expect(rows[0]?.total).toBe(2);
++  });
++
++  it('denies anonymous callers', async () => {
++    await expect(db.transaction(async (tx) => {
++      await tx.exec('set local role anon');
++      await tx.query('select public.sync_check_ins($1)', [JSON.stringify(payload('0194cc00-0000-7000-8000-000000000005', player))]);
++    })).rejects.toMatchObject({ code: '42501' });
++    expect(await countFor(player)).toBe(1);
++  });
++
++  it('denies a lapsed-subscription player with 42501', async () => {
++    const lapsed = await createCaptainWithPlayer(db);
++    await db.query(`update public.coach_clients set access_until = '2026-10-01' where player_id = $1`, [lapsed.player]);
++    await expect(callSync(lapsed.player, payload('0194cc00-0000-7000-8000-000000000006', lapsed.player)))
++      .rejects.toMatchObject({ code: '42501' });
++    expect(await countFor(lapsed.player)).toBe(0);
++  });
++});

@@ -24,6 +24,21 @@ it.each(['ar', 'en'] as const)('renders package cards and custom empty state in 
     else { expect(html).toContain('href="/captain/billing'); expect(html).toContain(locale === 'en' ? 'No packages yet' : 'لسه معندكش باقات'); }
   }
 });
+it.each(['ar', 'en'] as const)('labels a 30-day package as one month and agrees with the summary span in %s', locale => {
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale }, createElement(InviteForm,
+    { packages: [pkg], today: '2026-11-22', onSave() {} })));
+  if (locale === 'ar') {
+    expect(html).toContain('شهر واحد');
+    expect(html).not.toContain('٠ شهر');
+    expect(html).toContain('22 نوفمبر');
+    expect(html).toContain('21 ديسمبر');
+  } else {
+    expect(html).toContain('1 month');
+    expect(html).toContain('22 November');
+    expect(html).toContain('21 December');
+  }
+  expect(html).toContain(locale === 'ar' ? '500 ج' : 'EGP 500');
+});
 it.each(['ar', 'en'] as const)('renders summary and correct share destinations in %s', locale => {
   for (const whatsapp of ['', '01001234567']) {
     const html = renderToStaticMarkup(createElement(LocaleProvider, { locale }, createElement(InviteResult,

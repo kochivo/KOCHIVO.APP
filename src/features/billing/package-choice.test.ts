@@ -16,7 +16,10 @@ it('chooses the first unused preset in the selected tier, excluding the edited r
 });
 it('labels real durations consistently', () => {
   const t = createT(messages, 'ar');
-  expect([30, 90, 180, 365, 45].map(days => durationLabel(days, t, 'ar'))).toEqual(['شهر', '٣ شهور', '٦ شهور', 'سنة', '٤٥ يوم']);
+  expect([30, 60, 90, 180, 365, 45].map(days => durationLabel(days, t, 'ar'))).toEqual(['شهر واحد', 'شهرين', '٣ شهور', '٦ شهور', 'سنة', '٤٥ يوم']);
+  expect(durationLabel(30, createT(messages, 'en'), 'en')).toBe('1 month');
+  // A zero duration never reads as "0 months".
+  expect(durationLabel(0, t, 'ar')).toBe('٠ يوم');
 });
 it('detects same-kind lengths only within the selected tier and excludes itself', () => {
   const item = catalogFixture.packages[0];

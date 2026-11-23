@@ -3,7 +3,7 @@ import { useTimezone } from '@/core/timezone/client';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
@@ -37,7 +37,7 @@ const LineChart = dynamic(() => import('./line-chart').then(module => module.Lin
   ssr: false, loading: () => <div aria-hidden className="aspect-[350/155] w-full" />,
 });
 
-export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
+export function ProgressScreen({ analytics, autoOpenCheckin }: { analytics?: ReactNode; autoOpenCheckin?: boolean }) {
   const timezone = useTimezone();
   const t = useT(messages);
   const v6 = captainWorkspaceEnabled();
@@ -135,6 +135,15 @@ export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
     setSheetLoaded(true);
     setSheet(true);
   }
+  // Deep link from Home (?checkin=1) opens the same sheet once it can open;
+  // when this week is already sent, eligibility stays false and nothing opens.
+  const openedCheckin = useRef(false);
+  useEffect(() => {
+    if (!autoOpenCheckin || openedCheckin.current || !eligible) return;
+    openedCheckin.current = true;
+    setSheetLoaded(true);
+    setSheet(true);
+  }, [autoOpenCheckin, eligible]);
   const partialStrength = remoteStrengthError && <div className="flex flex-wrap items-center gap-stack">
     <p role="status" className="flex-1 text-sm text-muted">{t('partialStrength')}</p>
     <Button variant="secondary" block={false} onClick={() => setStrengthRetry(value => value + 1)}>{t('tryAgain')}</Button>

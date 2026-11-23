@@ -93,13 +93,6 @@ export function WorkoutSet({ state, v4 = false }: { state: ReturnType<typeof use
       <FocusSetTable state={state} v4={v4} />
       {targetForSet(current.exercise, current.setIndex - 1).drop && <span className="self-start rounded-full bg-warn-soft px-stack py-inline text-xs text-warn">{st('drop')}</span>}
       <DropProgress state={state} />
-      <div className={current.exercise.superset_group !== null || dropping ? 'glass-strong grid gap-stack rounded-card p-card' : 'grid grid-cols-2 gap-stack'}>
-        <WorkoutValue key={`${exerciseId}:${current.setIndex}:${current.dropIndex ?? 0}:weight`} inline={current.exercise.superset_group !== null || dropping} kind="weight" value={state.weight} disabled={blocked || state.bodyweight}
-          invalid={state.invalid?.result === 'weight' || state.invalid?.result === 'both'} draft={state.bodyweight ? undefined : state.typedValues?.weight} onDraft={text => state.setTypedValue('weight', text)} onChange={state.setWeight} />
-        <WorkoutValue key={`${exerciseId}:${current.setIndex}:${current.dropIndex ?? 0}:reps`} inline={current.exercise.superset_group !== null || dropping} kind="reps" value={state.reps} disabled={blocked}
-          invalid={state.invalid?.result === 'reps' || state.invalid?.result === 'both'}
-          focusInvalid={state.invalid?.result === 'reps' || Boolean(state.bodyweight && state.invalid)} draft={state.typedValues?.reps} onDraft={text => state.setTypedValue('reps', text)} onChange={state.setReps} />
-      </div>
       {!dropping && <WorkoutHint last={state.performance} history={history ?? []} weight={state.weight} reps={state.reps} />}
       {historyFailed && <button type="button" className="min-h-12 text-xs text-muted" onClick={() => { setHistoryFailed(false); setAttempt(value => value + 1); }}>{t('tryAgain')}</button>}
       {state.invalid && <p id="set-error" role="alert" className="text-danger">{t(state.invalid.result === 'reps' ? 'enterReps' : 'enterWeightAndReps')}</p>}
@@ -107,15 +100,26 @@ export function WorkoutSet({ state, v4 = false }: { state: ReturnType<typeof use
       {!v4 && state.rest.remaining > 0 && <RestPanel remaining={state.rest.remaining} total={state.rest.total} sound={state.rest.sound} onToggleSound={state.rest.toggleSound}
         flashing={state.rest.flashing} onExtend={state.rest.extend} onSkip={state.rest.skip} />}
       <SupersetCue state={state} next />
-      <Button type="button" data-action-bar={v4 || undefined} style={{ fontFamily: 'inherit' }} disabled={blocked || state.typedWeightInvalid || state.typedRepsInvalid} onClick={() => void state.complete()}
-        variant={state.painCarried?.length ? 'secondary' : 'primary'} block={false} className={v4 ?
-          'sticky bottom-page-y z-10 mt-auto flex min-h-14 w-full items-center justify-center gap-inline text-md font-bold disabled:opacity-50' :
-          'mt-auto flex min-h-[68px] w-full items-center justify-center gap-stack text-xl font-black disabled:opacity-50'}>
-        <KoTraining aria-hidden className="size-6" />{dropping ? st('finishDrop') : nextMember && state.next ? st('finishMember', {
-          current: supersetTag(state.day.exercises, current.exercise) ?? '', next: supersetTag(state.day.exercises, state.next.exercise) ?? '',
-        }) : v4 && state.progress !== state.queue.length ? vt('doneSet', { set: formatNumber(current.setIndex, locale) }) :
-          t(state.progress === state.queue.length ? 'v3CompleteWorkout' : 'v3CompleteSet')}
-      </Button>
+      {/* The steppers and the finish button live in one sticky bar at the bottom of the set card,
+          so the player logs the set without scrolling on every set. */}
+      <div data-action-bar={v4 || undefined} className="glass-strong sticky bottom-page-y z-10 space-y-stack rounded-card border border-line-soft p-card">
+        <div className={current.exercise.superset_group !== null || dropping ? 'grid gap-stack' : 'grid grid-cols-2 gap-stack'}>
+          <WorkoutValue key={`${exerciseId}:${current.setIndex}:${current.dropIndex ?? 0}:weight`} inline={current.exercise.superset_group !== null || dropping} kind="weight" value={state.weight} disabled={blocked || state.bodyweight}
+            invalid={state.invalid?.result === 'weight' || state.invalid?.result === 'both'} draft={state.bodyweight ? undefined : state.typedValues?.weight} onDraft={text => state.setTypedValue('weight', text)} onChange={state.setWeight} />
+          <WorkoutValue key={`${exerciseId}:${current.setIndex}:${current.dropIndex ?? 0}:reps`} inline={current.exercise.superset_group !== null || dropping} kind="reps" value={state.reps} disabled={blocked}
+            invalid={state.invalid?.result === 'reps' || state.invalid?.result === 'both'}
+            focusInvalid={state.invalid?.result === 'reps' || Boolean(state.bodyweight && state.invalid)} draft={state.typedValues?.reps} onDraft={text => state.setTypedValue('reps', text)} onChange={state.setReps} />
+        </div>
+        <Button type="button" style={{ fontFamily: 'inherit' }} disabled={blocked || state.typedWeightInvalid || state.typedRepsInvalid} onClick={() => void state.complete()}
+          variant={state.painCarried?.length ? 'secondary' : 'primary'} block={false} className={v4 ?
+            'flex min-h-14 w-full items-center justify-center gap-inline text-md font-bold disabled:opacity-50' :
+            'flex min-h-[68px] w-full items-center justify-center gap-stack text-xl font-black disabled:opacity-50'}>
+          <KoTraining aria-hidden className="size-6" />{dropping ? st('finishDrop') : nextMember && state.next ? st('finishMember', {
+            current: supersetTag(state.day.exercises, current.exercise) ?? '', next: supersetTag(state.day.exercises, state.next.exercise) ?? '',
+          }) : v4 && state.progress !== state.queue.length ? vt('doneSet', { set: formatNumber(current.setIndex, locale) }) :
+            t(state.progress === state.queue.length ? 'v3CompleteWorkout' : 'v3CompleteSet')}
+        </Button>
+      </div>
     </div>
     <details className="glass rounded-card p-card">
       <summary className="flex min-h-12 cursor-pointer items-center text-muted">{t('v3Details')}</summary>

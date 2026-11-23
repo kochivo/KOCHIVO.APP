@@ -76,11 +76,11 @@ export async function WorkspaceHome({ data, now = new Date() }: {
         <div className="min-w-0 space-y-card-gap">
           <HomeTaskList tasks={tasks} count={count} contacts={contacts ?? new Map()} today={today} />
           <SmartAlerts alerts={buildAlerts(players, dues, today)} hideEmptyOnPhone={captainWorkspaceEnabled()} />
+          <WorkspaceActivity events={summary.activity} now={now} />
         </div>
         <div className="min-w-0 space-y-card-gap">
           <PlayerFinder players={finder(players)} recent={finder(recentActivity(players))} />
           <MoneyOwedEntry mode="home" />
-          <WorkspaceActivity events={summary.activity} now={now} />
           {players.length === 0 && <HomeStart phonePrimary={!count && captainWorkspaceEnabled()} />}
           <HomeWeekChart sessions={summary.sessions.filter(session => players.some(player => player.playerId === session.playerId))} today={today} />
           <HomeConfirmations requests={followup?.requests ?? null} retryRequests={retryFollowup} payments={renewals?.data ?? []} paymentsFailed={!renewals || Boolean(renewals.error)} /></div>

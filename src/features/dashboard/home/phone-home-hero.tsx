@@ -21,7 +21,7 @@ export function PhoneHomeHero({ tasks, count, locale, style }: { tasks: HomeTask
     { key: 'other', count: count - reviews - payments, tone: 'tone-danger' },
   ] as const;
   return <section className="glass-strong ko-strip cut-corner relative overflow-hidden rounded-card p-card md:hidden">
-    <span aria-hidden className="engraved pointer-events-none absolute end-0 top-0 origin-top scale-150 font-display text-stat-large-wide leading-none opacity-50">{number(count)}</span>
+    <span aria-hidden className="engraved pointer-events-none absolute end-0 top-0 font-display text-stat-large-wide leading-none opacity-50">{number(count)}</span>
     <div className="relative space-y-stack">
       <p className="text-xs font-bold text-lime">{home('todayTasks')}</p>
       <h2 className="text-h font-bold">{count ? t('waiting', { n: count, count: number(count) }) : home('emptyHero')}</h2>

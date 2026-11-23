@@ -11,12 +11,16 @@ export function duplicateDuration(packages: CatalogPackage[], item: Duration) {
 export function firstUnusedDuration(packages: CatalogPackage[], tierId: string, id?: string) {
   return durationPresets.find(days => !duplicateDuration(packages, { id, tier_id: tierId || null, kind: 'days', days, sessions: null })) ?? null;
 }
-export function durationLabel(days: number, t: (key: 'month' | 'months' | 'days' | 'year', values?: Record<string, string | number>, count?: number) => string, locale: Locale) {
-  if (days === 30) return t('month');
+export function durationLabel(days: number, t: (key: 'months' | 'days' | 'year', values?: Record<string, string | number>, count?: number) => string, locale: Locale) {
   if (days === 365) return t('year');
-  const n = days % 30 === 0 ? days / 30 : days;
+  // A 30-day package is one month: route it through the plural months form so the
+  // label carries the count ("شهر واحد" / "1 month") instead of a bare unit.
+  // A zero or missing duration must never read as "0 months": the plural fallback
+  // renders a 0 month-count as "{n} شهر", so label it as days instead.
+  const months = Number.isFinite(days) && days > 0 && days % 30 === 0 ? days / 30 : null;
+  const n = months ?? Math.max(0, Number.isFinite(days) ? days : 0);
   const count = n.toLocaleString(locale === 'en' ? 'en-US' : 'ar-EG');
-  return t(days % 30 === 0 ? 'months' : 'days', { n: count, count }, n);
+  return t(months === null ? 'days' : 'months', { n: count, count }, n);
 }
 export type PricingCatalog = { tiers: Tier[]; packages: CatalogPackage[]; offers: CatalogOffer[] };
 export function pricingBanner(catalog: PricingCatalog, isRenewal: boolean, now: Date) {

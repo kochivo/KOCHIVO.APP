@@ -8,7 +8,7 @@ import { PageBarActions } from '@/ui/page-bar-actions';
 import { messages } from '../messages';
 import { useNotifications } from '../hooks/use-notifications';
 import { importantNotificationHref, medalKey, notificationHref, notificationTextKey, relativeTime } from '../format';
-import { captainNotification } from './captain-notification-format';
+import { captainNotification, deduplicateNotifications } from './captain-notification-format';
 import { CaptainNotificationsStateEntry } from './captain-notifications-state-entry';
 import { Button } from '@/ui/button';
 
@@ -28,7 +28,7 @@ export function CaptainNotificationsEntry() {
     {n.saveError && <p role="alert" className="mb-stack text-sm text-danger">{t('saveError')}</p>}
     <section className="glass rounded-[18px] p-card">
       {n.rows.length === 0 ? <p className="p-card text-sm text-muted">{t('empty')}</p> :
-        <ul>{n.rows.map(row => {
+        <ul>{deduplicateNotifications(n.rows).map(row => {
           const { Icon, href: baseHref } = captainNotification(row.type);
           const href = importantNotificationHref(row) ?? (row.type === 'player_rank_up' || row.type === 'player_pain' || row.type === 'pain_answered' ? notificationHref(row) : baseHref);
           const time = relativeTime(row.created_at, now);
@@ -46,7 +46,7 @@ export function CaptainNotificationsEntry() {
                   rank: t(medalKey(row.payload.medal) ?? 'iron'),
                   n: row.payload.needs_workouts ?? 0, gap: row.payload.gap ?? 0,
                 }, row.payload.gap ?? 0)}</p>
-                <time dateTime={row.created_at} className="block truncate text-micro text-muted">{t(time.key, { n: time.n })}</time>
+                <time dateTime={row.created_at} className="mt-inline block truncate text-micro text-muted">{t(time.key, { n: time.n })}</time>
               </div>
               {!row.is_read && <><span className="text-micro text-muted">{t('unread')}</span><span aria-hidden className="size-2 shrink-0 rounded-full bg-lime" /></>}
             </Link>

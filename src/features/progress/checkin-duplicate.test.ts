@@ -16,7 +16,7 @@ vi.mock('react', async original => ({ ...await original<typeof React>(),
 vi.mock('@/core/i18n/client', () => ({ useLocale: () => 'en', useT: () => createT(messages, 'en') }));
 vi.mock('@/core/timezone/client', () => ({ useTimezone: () => 'Africa/Cairo' }));
 vi.mock('@/core/supabase/lazy', () => ({ loadSupabaseBrowser: async () => ({}) }));
-vi.mock('./data/checkins', () => ({ submitCheckIn: async () => ({ error: "You've already sent this week's check-in" }) }));
+vi.mock('./data/checkins', () => ({ submitCheckIn: async () => ({ error: "You've already sent this week's check-in", status: 'already-sent' }) }));
 
 it('keeps the sheet open with a translated error when this week already has a check-in', async () => {
   state.index = 0; state.errors = [];

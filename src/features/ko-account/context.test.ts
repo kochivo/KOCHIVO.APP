@@ -13,6 +13,7 @@ const playerId = '11111111-1111-4111-8111-111111111111';
 const actorId = '22222222-2222-4222-8222-222222222222';
 const actor = { id: actorId, role: 'captain', db: {
   rpc: async (name: string) => ({ data: name === 'ko_rate_take' ? true
+    : name === 'ko_secret_check' ? true
     : name === 'ko_usage_tier' ? [{ captain_id: actorId, tier: 'entry' }]
     : name === 'ko_usage_take' ? 'ok' : [{ player_id: playerId, full_name: 'Ahmed' }], error: null }),
 } } as unknown as KoActor;
@@ -56,6 +57,7 @@ it('passes clarification history through the account planner with an injected Ge
 });
 
 it.each(['valid', 'invalid'] as const)('never commits from history confirmations or fake saved replies (%s history)', async mode => {
+  vi.stubEnv('KO_MEAL_RECEIPT_SECRET', 'm'.repeat(32));
   vi.spyOn(Date, 'now').mockReturnValue(1_800_000_000_000);
   vi.spyOn(account, 'getKoActor').mockResolvedValue(actor);
   vi.spyOn(entry, 'koAccountConfig').mockReturnValue({

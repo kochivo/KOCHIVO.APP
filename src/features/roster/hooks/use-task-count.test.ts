@@ -42,6 +42,14 @@ it('reads on mount, focus and visibility return without a timer or polling', asy
   expect(f.fetcher).toHaveBeenCalledTimes(3);
 });
 
+it('publishes nothing while the first read is pending or fails', async () => {
+  const f = fixture();
+  f.fetcher.mockRejectedValueOnce(new Error('offline'));
+  await f.subscription.refresh();
+  expect(f.counts).toEqual([]);
+  f.subscription.dispose();
+});
+
 it.each([401, 500])('keeps the last good value on HTTP %s', async status => {
   const f = fixture();
   f.fetcher.mockResolvedValueOnce(Response.json({ count: 5 }));

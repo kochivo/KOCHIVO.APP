@@ -1,0 +1,1735 @@
+diff --git a/.env.example b/.env.example
+index a5952c3a..bc28894a 100644
+--- a/.env.example
++++ b/.env.example
+@@ -16,6 +16,16 @@ KO_TEASER_ENABLED=
+ # Comma-separated user ids that get the real KO, or * for every signed-in account.
+ # KO also needs KO_ENABLED=1 and KO_GEMINI_PAID=1 (a billed Gemini project).
+ KO_PILOT_USER_IDS=
++# Set to 1 to enable the real KO.
++KO_ENABLED=
++# Set to 1 when Gemini is on a billed project.
++KO_GEMINI_PAID=
++# Public origin KO accepts requests from.
++KO_ORIGIN=
++# Server secret that signs KO approval tokens; must match security_private.ko_approval_config.signing_key.
++KO_APPROVAL_SECRET=
++# Gemini API key KO answers with.
++GOOGLE_GENERATIVE_AI_API_KEY=
+ 
+ # MCP pilot. Uses KO_ORIGIN as its public origin.
+ # Use * for all eligible users, or a comma-separated list of user IDs.
+diff --git a/src/features/ko-account/actions.test.ts b/src/features/ko-account/actions.test.ts
+index 48d3c4ca..4a60f2db 100644
+--- a/src/features/ko-account/actions.test.ts
++++ b/src/features/ko-account/actions.test.ts
+@@ -25,9 +25,12 @@ const secret = 's'.repeat(32);
+ afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
+ 
+ function setup(role: KoActor['role'], usage = 'ok', credit = true) {
++  // A configured environment has both KO secrets set; without the meal secret
++  // the secret pre-check would make KO unavailable in every route test.
++  vi.stubEnv('KO_MEAL_RECEIPT_SECRET', 'm'.repeat(32));
+   let warned = false;
+   const rpc = vi.fn(async (name: string) => ({
+-    data: name === 'ko_rate_take' ? true : name === 'ko_apply_action' ? { sent: true }
++    data: name === 'ko_rate_take' ? true : name === 'ko_secret_check' ? true : name === 'ko_apply_action' ? { sent: true }
+       : name === 'ko_usage_tier' ? [{ captain_id: actorId, tier: 'entry' }]
+       : name === 'ko_usage_take' ? usage
+       : name === 'my_captain_id' ? null
+diff --git a/src/features/ko-account/answer-guard.test.ts b/src/features/ko-account/answer-guard.test.ts
+index f91301b6..94391c65 100644
+--- a/src/features/ko-account/answer-guard.test.ts
++++ b/src/features/ko-account/answer-guard.test.ts
+@@ -1,25 +1,32 @@
+ import { expect, it } from 'vitest';
+ import { guardAnswer, reviewAnswer } from './data/answer-guard';
+ 
+-const facts = '[progress] done ١٣, adherence 86.5%, last workout 2026-11-19';
++// The card calls the second line `[nutrition]`; the real source id is `nutrition_today`.
++const facts = '[progress] done ١٣, adherence 86.5%, last workout 2026-11-19\n'
++  + '[nutrition_today] kcal remaining 1800 / target 2500; eaten kcal 1200, protein 80 g, carbs 150 g, fat 40 g';
+ 
+ it.each([
+-  ['عملت ۱۳ تمرين والتزامك ٨٦٫٥٪.', '', null],
+-  ['You asked about 250 points. You trained 13 times.', 'Do I have 250 points?', null],
+-  ['You’ve done 3 sets.', '', null],
+-  ['You’ve done 130 workouts.', '', 'number'],
+-  ['You’ve done -13 workouts.', '', 'number'],
+-  ['You’ve done 1e3 workouts.', '', 'number'],
+-  ['You’ve done 86.55% of workouts.', '', 'number'],
+-  ['حفظت التمرين.', '', 'action_claim'],
+-  ['اتسجّل التمرين.', '', 'action_claim'],
+-  ['I have saved your workout.', '', 'action_claim'],
+-  ['Check example.com/workout.', '', 'link'],
+-  ['Call +20 101 234 5678.', '', 'phone'],
+-  ['Your last workout was 2026-11-19.', '', null],
+-  ['x'.repeat(701), '', 'length'],
+-] as const)('checks %s against the facts and user text', (text, userText, reason) => {
+-  expect(guardAnswer(text, facts, userText)).toBe(reason);
++  ['عملت ۱۳ تمرين والتزامك ٨٦٫٥٪.', '', ['progress'], null],
++  ['You asked about 250 points. You trained 13 times.', 'Do I have 250 points?', ['progress'], 'number'],
++  ['You’ve done 3 sets.', '', ['progress'], null],
++  ['You’ve done 130 workouts.', '', ['progress'], 'number'],
++  ['You’ve done -13 workouts.', '', ['progress'], 'number'],
++  ['You’ve done 1e3 workouts.', '', ['progress'], 'number'],
++  ['You’ve done 86.55% of workouts.', '', ['progress'], 'number'],
++  ['حفظت التمرين.', '', ['progress'], 'action_claim'],
++  ['اتسجّل التمرين.', '', ['progress'], 'action_claim'],
++  ['I have saved your workout.', '', ['progress'], 'action_claim'],
++  ['Check example.com/workout.', '', ['progress'], 'link'],
++  ['Call +20 101 234 5678.', '', ['progress'], 'phone'],
++  ['Your last workout was 2026-11-19.', '', ['progress'], null],
++  ['x'.repeat(701), '', ['progress'], 'length'],
++  ['You have 1800 kcal left today.', '', ['progress'], 'number'],
++  ['You have 1800 kcal left today.', '', ['nutrition_today'], null],
++  ['You asked about 500 points.', 'Do I have 500 points?', ['progress'], 'number'],
++  ['You did 3 sets and 13 workouts this month.', '', ['progress'], null],
++  ['You did 13 workouts this month.', '', [], 'number'],
++] as const)('checks %s against the facts and user text', (text, userText, sources, reason) => {
++  expect(guardAnswer(text, facts, userText, sources)).toBe(reason);
+ });
+ 
+ it('accepts a me citation and uses clarify if the source is missing', () => {
+@@ -30,3 +37,11 @@ it('accepts a me citation and uses clarify if the source is missing', () => {
+     ok: false, reason: 'source', fallback: { kind: 'clarify', reason: 'answer' },
+   });
+ });
++
++it('falls back to the first cited source when the guard fails on a number', () => {
++  const args = { text: 'You have 250 points.', sources: ['progress'] as const };
++  const answer = { ...args, sources: [...args.sources] };
++  expect(reviewAnswer(answer, facts, 'Do I have 250 points?')).toEqual({
++    ok: false, reason: 'number', fallback: { kind: 'my_progress', args: {} },
++  });
++});
+diff --git a/src/features/ko-account/answer-route.test.ts b/src/features/ko-account/answer-route.test.ts
+index 46e50edb..f72d2f8b 100644
+--- a/src/features/ko-account/answer-route.test.ts
++++ b/src/features/ko-account/answer-route.test.ts
+@@ -17,8 +17,9 @@ afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.unstubAllEnvs(
+ const pack = '[workout_today] rest day\n[workout_tomorrow] no program\n[progress] lifetime points 28';
+ 
+ function setup(status: number, calls: { name: string; args: object }[] = [], pending = false, role: KoActor['role'] = 'player') {
++  vi.stubEnv('KO_MEAL_RECEIPT_SECRET', 'm'.repeat(32));
+   const rpc = vi.fn(async (name: string) => ({
+-    data: name === 'ko_rate_take' ? true : name === 'ko_usage_tier' ? [{ captain_id: 'captain', tier: 'entry' }]
++    data: name === 'ko_rate_take' ? true : name === 'ko_secret_check' ? true : name === 'ko_usage_tier' ? [{ captain_id: 'captain', tier: 'entry' }]
+       : name === 'my_captain_id' ? 'captain' : 'ok',
+     error: null,
+   }));
+@@ -29,6 +30,7 @@ function setup(status: number, calls: { name: string; args: object }[] = [], pen
+   const insert = vi.fn().mockResolvedValue({ error: null });
+   const settings = vi.fn().mockResolvedValue({ data: null, error: null });
+   const memoryQuery = { select: () => memoryQuery, eq: () => memoryQuery, order: () => memoryQuery,
++    is: () => memoryQuery,
+     limit: async () => ({ data: [{ id: 'old', text: 'Prefers a morning workout' }], error: null }),
+     maybeSingle: settings, insert };
+   const from = vi.fn((table: string) => table.startsWith('ko_memor') ? memoryQuery : query);
+@@ -94,6 +96,13 @@ it('returns the grounded model answer and its citations after one Gemini call',
+   expect(request.tools[0].functionDeclarations).toEqual(expect.arrayContaining([expect.objectContaining({ name: 'answer' })]));
+ });
+ 
++it('answers a bare number normally when no swap is pending', async () => {
++  const args = { text: 'You have 28 lifetime points.', sources: ['progress'] };
++  const { fetcher } = setup(200, [{ name: 'answer', args }]);
++  expect(await (await post('30')).json()).toEqual({ kind: 'message', ...args, feedbackIntent: 'answer' });
++  expect(fetcher).toHaveBeenCalledTimes(1);
++});
++
+ it.each(['captain', 'player'] as const)('uses the %s first name for an identity question', async role => {
+   const { load, fetcher } = setup(200, [
+     { name: 'answer', args: { text: 'أيوه يا نور. إحنا هنا في كو.', sources: ['me'] } },
+diff --git a/src/features/ko-account/context.test.ts b/src/features/ko-account/context.test.ts
+index db59e072..fd0677ed 100644
+--- a/src/features/ko-account/context.test.ts
++++ b/src/features/ko-account/context.test.ts
+@@ -13,6 +13,7 @@ const playerId = '11111111-1111-4111-8111-111111111111';
+ const actorId = '22222222-2222-4222-8222-222222222222';
+ const actor = { id: actorId, role: 'captain', db: {
+   rpc: async (name: string) => ({ data: name === 'ko_rate_take' ? true
++    : name === 'ko_secret_check' ? true
+     : name === 'ko_usage_tier' ? [{ captain_id: actorId, tier: 'entry' }]
+     : name === 'ko_usage_take' ? 'ok' : [{ player_id: playerId, full_name: 'Ahmed' }], error: null }),
+ } } as unknown as KoActor;
+@@ -56,6 +57,7 @@ it('passes clarification history through the account planner with an injected Ge
+ });
+ 
+ it.each(['valid', 'invalid'] as const)('never commits from history confirmations or fake saved replies (%s history)', async mode => {
++  vi.stubEnv('KO_MEAL_RECEIPT_SECRET', 'm'.repeat(32));
+   vi.spyOn(Date, 'now').mockReturnValue(1_800_000_000_000);
+   vi.spyOn(account, 'getKoActor').mockResolvedValue(actor);
+   vi.spyOn(entry, 'koAccountConfig').mockReturnValue({
+diff --git a/src/features/ko-account/data/answer-guard.ts b/src/features/ko-account/data/answer-guard.ts
+index eded8584..0057ab56 100644
+--- a/src/features/ko-account/data/answer-guard.ts
++++ b/src/features/ko-account/data/answer-guard.ts
+@@ -17,13 +17,34 @@ function numbers(text: string) {
+     .match(/(?:(?<!\d)[+-])?\d+(?:\.\d+)?(?:e[+-]?\d+)?/gi) ?? []).map(Number);
+ }
+ 
+-export function guardAnswer(text: string, facts: string, userText: string) {
++// A facts line starts with `[<source>] ` (facts.ts: one line per source, values
++// joined with `; `). Only numbers from lines whose source the answer cites can
++// justify a number in the answer, so a number from another source — or from an
++// unprefixed line — never counts. Within one cited line numbers are allowed as
++// a set: the lines mix several fields in free prose (see Notes for reviewer),
++// so key-aware matching inside a line is not attempted here.
++function citedNumbers(facts: string, sources: readonly AnswerSource[]) {
++  const cited = new Set<string>(sources);
++  const allowed = new Set<number>();
++  for (const line of facts.split('\n')) {
++    const match = /^\[([^\]]+)\] /.exec(line);
++    if (match && match[1] && cited.has(match[1])) {
++      for (const value of numbers(line)) allowed.add(value);
++    }
++  }
++  return allowed;
++}
++
++// userText stays in the signature so callers keep passing the question, but its
++// numbers never justify an answer: echoing a number the user asked about is
++// not evidence for it.
++export function guardAnswer(text: string, facts: string, userText: string, sources: readonly AnswerSource[]) {
+   if (!text.trim() || text.length > 700) return 'length';
+   const normalized = latinDigits(text.normalize('NFKC').replace(/[\p{Cf}\u0640\u064b-\u065f]/gu, ''));
+   if (normalized.match(link)) return 'link';
+   if (normalized.replace(isoDate, '').match(phone)) return 'phone';
+   if (actionClaim.test(normalized)) return 'action_claim';
+-  const allowed = new Set(numbers(facts + '\n' + userText));
++  const allowed = citedNumbers(facts, sources);
+   return numbers(normalized).some(value => !(Number.isInteger(value) && value >= 0 && value <= 10) && !allowed.has(value))
+     ? 'number' : null;
+ }
+@@ -44,7 +65,7 @@ function answerInFacts(source: AnswerSource, facts: string) {
+ }
+ 
+ export function reviewAnswer(args: Extract<Intent, { kind: 'answer' }>['args'], facts: string, userText: string) {
+-  const reason = guardAnswer(args.text, facts, userText) ??
++  const reason = guardAnswer(args.text, facts, userText, args.sources) ??
+     (args.sources.some(source => !answerInFacts(source, facts)) ? 'source' : null);
+   if (!reason) return { ok: true as const, ...args };
+   const first = args.sources[0];
+diff --git a/src/features/ko-account/data/chat-memory.ts b/src/features/ko-account/data/chat-memory.ts
+index 30e25191..7c6cf44b 100644
+--- a/src/features/ko-account/data/chat-memory.ts
++++ b/src/features/ko-account/data/chat-memory.ts
+@@ -3,14 +3,17 @@ import type { KoActor } from './account';
+ import type { Intent } from './intents';
+ import { loadChatMemory, saveMemory } from './memory';
+ 
+-export function readChatMemory(actor: KoActor, enabled: boolean) {
+-  return enabled ? loadChatMemory(actor) : Promise.resolve({ learning: false, memories: [] });
++export function readChatMemory(actor: KoActor, enabled: boolean, playerId?: string) {
++  return enabled ? loadChatMemory(actor, playerId) : Promise.resolve({ learning: false, memories: [] });
+ }
+ 
+ export async function rememberFromPlan(
+   actor: KoActor, intents: readonly Intent[], state: Awaited<ReturnType<typeof readChatMemory>>, now: number,
+ ) {
+   if (!state.learning) return;
++  // `existing` comes from the scoped load above, so dedup uses the same
++  // (user, player) scope as the memories fed to Gemini; the unique index is
++  // the backstop for a note that names a different player than the context.
+   const existing = state.memories.map(row => row.text);
+   for (const intent of intents) {
+     if (intent.kind !== 'remember') continue;
+diff --git a/src/features/ko-account/data/memory.ts b/src/features/ko-account/data/memory.ts
+index e6a88e92..3638397b 100644
+--- a/src/features/ko-account/data/memory.ts
++++ b/src/features/ko-account/data/memory.ts
+@@ -5,19 +5,24 @@ import type { KoActor } from './account';
+ import { validateMemory } from './memory-validation';
+ import type { Remember } from './memory-validation';
+ 
+-export async function loadMemory(actor: KoActor) {
++export async function loadMemory(actor: KoActor, playerId?: string) {
++  // Scope is (user, player): a player actor only ever owns general (NULL-player)
++  // memories, and a captain reads one player's memories — or their own general
++  // notes when no player is in context. Another player's memories must never
++  // reach this actor's answers.
++  const query = actor.db.from('ko_memories').select('id,text').eq('user_id', actor.id);
++  const scoped = actor.role === 'player' || !playerId ? query.is('player_id', null) : query.eq('player_id', playerId);
+   const [settings, memories] = await Promise.all([
+     actor.db.from('ko_memory_settings').select('learning').eq('user_id', actor.id).maybeSingle(),
+-    actor.db.from('ko_memories').select('id,text').eq('user_id', actor.id)
+-      .order('created_at', { ascending: false }).order('id', { ascending: false }).limit(30),
++    scoped.order('created_at', { ascending: false }).order('id', { ascending: false }).limit(30),
+   ]);
+   if (settings.error || memories.error) throw settings.error ?? memories.error;
+   return { learning: settings.data?.learning ?? true, memories: memories.data };
+ }
+ 
+-export async function loadChatMemory(actor: KoActor) {
++export async function loadChatMemory(actor: KoActor, playerId?: string) {
+   try {
+-    return await loadMemory(actor);
++    return await loadMemory(actor, playerId);
+   } catch {
+     console.warn('KO memory read failed');
+     return { learning: false, memories: [] };
+diff --git a/src/features/ko-account/data/route.ts b/src/features/ko-account/data/route.ts
+index 3f4d5485..f94ff4d8 100644
+--- a/src/features/ko-account/data/route.ts
++++ b/src/features/ko-account/data/route.ts
+@@ -1,4 +1,5 @@
+ import { getTimezone } from '@/core/timezone/server';
++import { uuidv7 } from '@/core/offline/ids';
+ import 'server-only';
+ import { createT } from '@/core/i18n/messages';
+ import { getArabicStyle } from '@/core/i18n/server';
+@@ -26,10 +27,12 @@ import { planIntent } from './intents';
+ import { normalizeName } from './match';
+ import { messages } from '../messages';
+ import { mealReceipt } from './meal-receipt';
++import { verifyKoSecrets } from './secret-check';
+ import { chooseSwap } from './swap';
++import { isValidSwapChoice, readSwapApproval } from './numeric-swap';
+ import type { AccountReply } from './execute';
+ import { isBigAction } from './limits';
+-import { creditsOut, readCredits, takeCredit, takeUsage } from './usage';
++import { creditsOut, readCredits, refundTakenCredit, refundTakenUsage, takeCredit, takeUsage } from './usage';
+ import { quickKeys, readQuick } from './quick';
+ 
+ export { resolveContext } from './context';
+@@ -68,6 +71,8 @@ export async function postKoAccountChat(request: Request) {
+   try {
+     const actor = await getKoActor();
+     if (!actor || !config.pilots.has(actor.id)) return reply({ error: 'unauthorized' }, 403);
++    // A secret the DB disagrees with fails KO loudly before any usage is taken.
++    if ((await verifyKoSecrets(actor, config)).length) return reply({ error: 'unavailable' }, 404);
+     const now = Date.now();
+     const form = await request.formData().catch(() => null);
+     if (!form) return reply({ error: 'invalid' }, 400);
+@@ -117,24 +122,29 @@ export async function postKoAccountChat(request: Request) {
+         return result.ok ? reply(say(actionT(eaten ? 'mealEaten' : 'mealSkipped', { name }))) : reply(say(actionT('mealLogFailed')), 409);
+       }
+       if (actor.role !== 'captain') return expired();
++      let creditTaken = false;
+       try {
+-        if (isBigAction(action.kind) && !(await takeCredit(actor, await readCredits(actor, locale), token)))
+-          return reply(creditsOut(await readCredits(actor, locale), actionT), 409);
++        creditTaken = isBigAction(action.kind) && (await takeCredit(actor, await readCredits(actor, locale), token));
++        if (isBigAction(action.kind) && !creditTaken) return reply(creditsOut(await readCredits(actor, locale), actionT), 409);
+         const result = await commitApproval(actor, action, token, locale, style);
++        // 40001 means the prescription changed before ko_apply_action wrote
++        // anything: its receipt insert rolls back with the failed call, so the
++        // action did not apply and the credit is refunded. An action applied
++        // by another device returns 'replayed', never 40001, so it is not
++        // refunded here (and the receipt would block the refund anyway).
++        if (creditTaken && result.text === actionT('changed')) await refundTakenCredit(actor, creditTaken, now, token);
+         return reply(result, result.text === actionT('changed') ? 409 : 200);
+       } catch {
++        await refundTakenCredit(actor, creditTaken, now, token);
+         return reply(say(actionT('actionFailed')), 502);
+       }
+     }
+     if (actor.role === 'player' && !audio && !photo && /^[0-9٠-٩]+$/.test(text)) {
+-      const cookie = request.headers.get('cookie')?.split(';').map(part => part.trim())
+-        .find(part => part.startsWith(`${swapCookie}=`))?.slice(swapCookie.length + 1);
+-      const signed = typeof token === 'string' ? token : cookie;
+-      const action = signed ? verifyApproval(signed, actor.id, now, config.secret) : null;
+-      if (formPending && action?.kind === 'swap_options') return formReply();
+-      const result = actor.role === 'player' && action?.kind === 'swap_options' && action.player === actor.id
+-        ? await chooseSwap(actor, action.payload, text, locale) : say(t('expired'));
+-      return playerReply(result, config.origin.protocol === 'https:');
++      const action = readSwapApproval(request, token, actor.id, now, config.secret);
++      if (isValidSwapChoice(action, actor.id, text, parseHistory(form.get('history')))) {
++        if (formPending) return formReply();
++        return playerReply(await chooseSwap(actor, action?.payload, text, locale), config.origin.protocol === 'https:');
++      }
+     }
+     const suggestions = createT(koPreviewMessages, locale);
+     if (!audio && !photo && quick) {
+@@ -151,8 +161,10 @@ export async function postKoAccountChat(request: Request) {
+     if (status) return reply({ error: 'invalid' }, status);
+     if (!text && !media) return reply({ error: 'invalid' }, 400);
+     // Usage is taken before Gemini so an account at its cap never spends the shared free-tier quota.
+-    // A busy Gemini (429/503) still counts; on a 429 the shared quota is gone for the day anyway.
+-    if (await takeUsage(actor, now, photo !== null, config.secret) !== 'ok') {
++    // A busy or failing Gemini is refunded below, so it costs the user nothing.
++    const refundKey = uuidv7(now);
++    const usageTaken = await takeUsage(actor, now, photo !== null, config.secret) === 'ok';
++    if (!usageTaken) {
+       return reply({ kind: 'message', text: actionT('limitReached'), quick: quickKeys.map(key => actionT(key)) });
+     }
+     const history = parseHistory(form.get('history'));
+@@ -160,17 +172,27 @@ export async function postKoAccountChat(request: Request) {
+     const [accountFacts, memoryState] = await Promise.all([
+       process.env.KO_ANSWER === '0' || photo || formPending ? undefined
+         : loadFacts(actor, now, request.signal, contextPlayer).catch(() => undefined),
+-      readChatMemory(actor, !photo && !formPending),
++      readChatMemory(actor, !photo && !formPending, contextPlayer?.id),
+     ]);
+     const facts = accountFacts === undefined ? undefined : appendMemoryFacts(accountFacts, memoryState.memories.map(row => row.text));
+     const planned = await planIntent(actor.role, { text, media }, config.key, request.signal, contextPlayer?.name, history, fetch, facts, memoryState.learning)
+-      .catch((error: unknown) => {
+-        if (!(error instanceof KoModelError) || (error.status !== 429 && error.status !== 503)) throw error;
++      .catch(async (error: unknown) => {
++        if (!(error instanceof KoModelError) || (error.status !== 429 && error.status !== 503)) {
++          // Any other planIntent throw (timeout, 502, network) is a Gemini
++          // failure too, so the taken usage is refunded here — not in the
++          // outer catch, which also covers executeIntent throws where intents
++          // may already have partially executed.
++          await refundTakenUsage(actor, usageTaken, now, photo !== null, refundKey);
++          throw error;
++        }
+         console.warn('KO model busy', error.status);
+         return error.status;
+       });
+-    if (planned === 429) return reply({ kind: 'message', text: actionT('koBusy'), quick: quickKeys.map(key => actionT(key)) });
+-    if (planned === 503) return reply(say(actionT('koBusyNow')));
++    if (planned === 429 || planned === 503) {
++      await refundTakenUsage(actor, usageTaken, now, photo !== null, refundKey);
++      if (planned === 429) return reply({ kind: 'message', text: actionT('koBusy'), quick: quickKeys.map(key => actionT(key)) });
++      return reply(say(actionT('koBusyNow')));
++    }
+     const lastTurn = history.at(-1);
+     const question = lastTurn?.role === 'ko' && /[?؟]\s*$/.test(lastTurn.text) ? lastTurn.text : '';
+     const exclusive = planned.find(intent => intent.kind === 'meal_photo' || intent.kind === 'swap_exercise');
+diff --git a/src/features/ko-account/data/usage.ts b/src/features/ko-account/data/usage.ts
+index 464693ce..88cbd9b3 100644
+--- a/src/features/ko-account/data/usage.ts
++++ b/src/features/ko-account/data/usage.ts
+@@ -61,6 +61,46 @@ export async function takeCredit(actor: KoActor, credits: Awaited<ReturnType<typ
+   return data === true;
+ }
+ 
++// Refund one taken message/photo. Returns false when the key was already
++// refunded. A failed refund never throws: the warning is logged here (the
++// only place that sees the error) and the caller continues without the refund.
++export async function refundUsage(actor: KoActor, { day, kind, key }: { day: string; kind: 'message' | 'photo'; key: string }) {
++  try {
++    const { data, error } = await actor.db.rpc('ko_usage_refund', { p_day: day, p_kind: kind, p_key: key });
++    if (error) throw error;
++    return data === true;
++  } catch (error) {
++    console.warn('KO usage refund failed', error);
++    return false;
++  }
++}
++
++export async function refundCredit(actor: KoActor, { month, token }: { month: string; token: string }) {
++  try {
++    const { data, error } = await actor.db.rpc('ko_credit_refund', { p_month: month, p_token: token });
++    if (error) throw error;
++    return data === true;
++  } catch (error) {
++    console.warn('KO credit refund failed', error);
++    return false;
++  }
++}
++
++// Refund only usage that was actually taken: ko_usage_take returns 'ok' only
++// when it incremented the counters, so a 'daily'/'monthly' reply has nothing
++// to give back. The day/kind are recomputed here from the same inputs
++// takeUsage used, so the route never has to track them.
++export async function refundTakenUsage(actor: KoActor, taken: boolean, now: number, photo: boolean, key: string) {
++  if (!taken) return false;
++  const timezone = await getPlayerTimezone(actor.id);
++  return refundUsage(actor, { day: localDate(new Date(now), timezone), kind: photo ? 'photo' : 'message', key });
++}
++
++export async function refundTakenCredit(actor: KoActor, taken: boolean, now: number, token: string) {
++  if (!taken) return false;
++  return refundCredit(actor, { month: monthStart(now), token });
++}
++
+ export function creditsOut(credits: Awaited<ReturnType<typeof readCredits>>, t: Translate): Extract<AccountReply, { kind: 'message' }> {
+   const next = (Object.entries(limits) as [KoTier, (typeof limits)[KoTier]][])
+     .find(([, limit]) => limit.credits > credits.cap);
+diff --git a/src/features/ko-account/ground.test.ts b/src/features/ko-account/ground.test.ts
+index f3eca1f9..fd088c9a 100644
+--- a/src/features/ko-account/ground.test.ts
++++ b/src/features/ko-account/ground.test.ts
+@@ -119,6 +119,7 @@ it.each([
+ 
+ it.each(['audio', 'question', 'old user value', 'old KO question', 'KO statement'] as const)(
+   'grounds only text and the preceding KO question (%s)', async mode => {
++    vi.stubEnv('KO_MEAL_RECEIPT_SECRET', 'm'.repeat(32));
+     vi.spyOn(Date, 'now').mockReturnValue(1_800_000_000_000);
+     vi.spyOn(account, 'getKoActor').mockResolvedValue(actor);
+     vi.spyOn(entry, 'koAccountConfig').mockReturnValue({
+diff --git a/src/features/ko-account/memory.test.ts b/src/features/ko-account/memory.test.ts
+index dde5d6cf..b97d717c 100644
+--- a/src/features/ko-account/memory.test.ts
++++ b/src/features/ko-account/memory.test.ts
+@@ -1,8 +1,119 @@
+ import { expect, it, vi } from 'vitest';
+-import { factsBudget, formatFacts } from './data/facts';
++vi.mock('server-only', () => ({}));
++import { appendMemoryFacts, factsBudget, formatFacts } from './data/facts';
++import { loadMemory, saveMemory } from './data/memory';
++import type { KoActor } from './data/account';
+ import { validateMemory } from './data/memory-validation';
+ import { scrubFeedback } from './data/feedback-scrub';
+ 
++// resolvePlayer is stubbed: the scope tests only need a roster lookup by name.
++const ids = vi.hoisted(() => ({
++  captain: '00000000-0000-7000-8000-000000000100',
++  ahmed: '00000000-0000-7000-8000-000000000101',
++  youssef: '00000000-0000-7000-8000-000000000102',
++  player: '00000000-0000-7000-8000-000000000103',
++}));
++vi.mock('./data/account', () => ({
++  resolvePlayer: async (_actor: unknown, name: string | undefined) =>
++    name === 'Ahmed' ? { id: ids.ahmed, name: 'Ahmed' }
++    : name === 'Youssef' ? { id: ids.youssef, name: 'Youssef' } : null,
++}));
++
++type MemoryRow = { id: string; user_id: string; text: string; player_id: string | null };
++type MemoryQuery = {
++  select: () => MemoryQuery;
++  eq: (column: keyof MemoryRow, value: string) => MemoryQuery;
++  is: (column: keyof MemoryRow, value: null) => MemoryQuery;
++  order: () => MemoryQuery;
++  limit: () => Promise<{ data: MemoryRow[]; error: null }>;
++  maybeSingle: () => Promise<{ data: { learning: boolean }; error: null }>;
++  insert: (row: Record<string, unknown>) => Promise<{ error: null }>;
++};
++
++// In-memory stand-in for the ko_memories query: it applies exactly the
++// eq/is filters the code builds, so a missing scope filter shows up as
++// extra rows in the result.
++function fakeDb(rows: MemoryRow[]) {
++  const inserted: Record<string, unknown>[] = [];
++  const from = () => {
++    const filters: { column: keyof MemoryRow; value: string | null }[] = [];
++    const query: MemoryQuery = {
++      select: () => query,
++      eq: (column, value) => { filters.push({ column, value }); return query; },
++      is: (column, value) => { filters.push({ column, value }); return query; },
++      order: () => query,
++      limit: () => Promise.resolve({
++        data: rows.filter(row => filters.every(({ column, value }) => row[column] === value)), error: null,
++      }),
++      maybeSingle: () => Promise.resolve({ data: { learning: true }, error: null }),
++      insert: (row) => { inserted.push(row); return Promise.resolve({ error: null }); },
++    };
++    return query;
++  };
++  return { db: { from }, inserted };
++}
++
++function makeActor(id: string, role: 'captain' | 'player', rows: MemoryRow[]) {
++  const { db, inserted } = fakeDb(rows);
++  return { actor: { id, role, db } as unknown as KoActor, inserted };
++}
++
++const now = 1_800_000_000_000;
++const captainRows: MemoryRow[] = [
++  { id: '00000000-0000-7000-8000-000000000201', user_id: ids.captain, text: 'Ahmed prefers mornings', player_id: ids.ahmed },
++  { id: '00000000-0000-7000-8000-000000000202', user_id: ids.captain, text: 'Youssef prefers evenings', player_id: ids.youssef },
++  { id: '00000000-0000-7000-8000-000000000203', user_id: ids.captain, text: 'General note', player_id: null },
++];
++const playerRows: MemoryRow[] = [
++  { id: '00000000-0000-7000-8000-000000000204', user_id: ids.player, text: 'My own note', player_id: null },
++];
++
++it('loads only the context player’s memories for a captain', async () => {
++  const { actor } = makeActor(ids.captain, 'captain', captainRows);
++  expect((await loadMemory(actor, ids.ahmed)).memories.map(row => row.text)).toEqual(['Ahmed prefers mornings']);
++  expect((await loadMemory(actor, ids.youssef)).memories.map(row => row.text)).toEqual(['Youssef prefers evenings']);
++});
++
++it('loads only general memories for a captain with no context player', async () => {
++  const { actor } = makeActor(ids.captain, 'captain', captainRows);
++  expect((await loadMemory(actor)).memories.map(row => row.text)).toEqual(['General note']);
++});
++
++it('loads only the player’s own memories, never a captain’s player-scoped note', async () => {
++  const { actor } = makeActor(ids.player, 'player', [...captainRows, ...playerRows]);
++  expect((await loadMemory(actor, ids.ahmed)).memories.map(row => row.text)).toEqual(['My own note']);
++});
++
++it('feeds Gemini only the context player’s memories', async () => {
++  const { actor } = makeActor(ids.captain, 'captain', captainRows);
++  const state = await loadMemory(actor, ids.youssef);
++  const facts = appendMemoryFacts('[me] role: captain', state.memories.map(row => row.text));
++  expect(facts).toContain('Youssef prefers evenings');
++  expect(facts).not.toContain('Ahmed prefers mornings');
++  expect(facts).not.toContain('General note');
++});
++
++it('dedups a save against the scoped list only', async () => {
++  const scoped = makeActor(ids.captain, 'captain', captainRows);
++  const saved = await saveMemory(scoped.actor,
++    { kind: 'note', text: 'Prefers mornings', player: 'Ahmed' }, ['Youssef prefers evenings'], now);
++  expect(saved?.text).toBe('Prefers mornings');
++  expect(scoped.inserted).toHaveLength(1);
++  expect(scoped.inserted[0]).toMatchObject({ text: 'Prefers mornings', player_id: ids.ahmed });
++  const duplicate = makeActor(ids.captain, 'captain', captainRows);
++  expect(await saveMemory(duplicate.actor,
++    { kind: 'note', text: 'Prefers mornings', player: 'Ahmed' }, ['Prefers mornings'], now)).toBeUndefined();
++  expect(duplicate.inserted).toHaveLength(0);
++});
++
++it('saves a player’s own note as a general memory', async () => {
++  const scoped = makeActor(ids.player, 'player', playerRows);
++  const saved = await saveMemory(scoped.actor, { kind: 'note', text: 'I prefer mornings' }, [], now);
++  expect(saved?.text).toBe('I prefer mornings');
++  expect(scoped.inserted).toHaveLength(1);
++  expect(scoped.inserted[0]).toMatchObject({ text: 'I prefer mornings', player_id: null });
++});
++
+ vi.mock('server-only', () => ({}));
+ 
+ it('trims and caps valid memory and drops case-insensitive duplicates', () => {
+diff --git a/src/features/ko-account/rate-limit.test.ts b/src/features/ko-account/rate-limit.test.ts
+index 94a0f430..fd0254f9 100644
+--- a/src/features/ko-account/rate-limit.test.ts
++++ b/src/features/ko-account/rate-limit.test.ts
+@@ -11,8 +11,10 @@ afterEach(() => { vi.restoreAllMocks(); vi.unstubAllEnvs(); });
+ 
+ it.each(['allowed', 'limited', 'error', 'throws'] as const)('handles a shared rate RPC that is %s', async mode => {
+   vi.stubEnv('KO_ANSWER', '');
++  vi.stubEnv('KO_MEAL_RECEIPT_SECRET', 'm'.repeat(32));
+   vi.spyOn(Date, 'now').mockReturnValue(1_800_000_000_000);
+   const rpc = vi.fn(async (name: string, args: unknown) => {
++    if (name === 'ko_secret_check') return { data: true, error: null };
+     if (name === 'ko_usage_tier') return { data: [{ captain_id: 'pilot', tier: 'entry' }], error: null };
+     if (name === 'ko_usage_take') return { data: 'ok', error: null };
+     expect(name).toBe('ko_rate_take');
+diff --git a/src/features/ko-account/swap.test.ts b/src/features/ko-account/swap.test.ts
+index 12910f63..fd882466 100644
+--- a/src/features/ko-account/swap.test.ts
++++ b/src/features/ko-account/swap.test.ts
+@@ -104,10 +104,11 @@ const optionsToken = (overrides: Partial<Approval> = {}) => issueApproval({
+   actor: player, player, id: target, kind: 'swap_options', label: '', payload,
+   expires: now + 600_000, ...overrides,
+ }, secret);
+-function chatRequest(text: string, cookie?: string, token?: string) {
++function chatRequest(text: string, cookie?: string, token?: string, history?: { role: 'ko' | 'user'; text: string }[]) {
+   const form = new FormData();
+   form.set('locale', 'en'); form.set('text', text);
+   if (token) form.set('token', token);
++  if (history) form.set('history', JSON.stringify(history));
+   const request = new Request('https://kochivo.test/api/ko', { method: 'POST', body: form });
+   request.headers.set('origin', 'https://kochivo.test'); request.headers.set('host', 'kochivo.test');
+   request.headers.set('content-length', '1000');
+@@ -115,9 +116,10 @@ function chatRequest(text: string, cookie?: string, token?: string) {
+   return request;
+ }
+ function authenticated(role: 'player' | 'captain' = 'player') {
++  vi.stubEnv('KO_MEAL_RECEIPT_SECRET', 'm'.repeat(32));
+   const rpc = vi.fn().mockResolvedValue({ error: null });
+-  const sharedRpc = (name: string, args: unknown) => name === 'ko_rate_take' || name === 'my_captain_id'
+-    ? Promise.resolve({ data: name === 'ko_rate_take' ? true : null, error: null }) : rpc(name, args);
++  const sharedRpc = (name: string, args: unknown) => name === 'ko_rate_take' || name === 'my_captain_id' || name === 'ko_secret_check'
++    ? Promise.resolve({ data: name === 'my_captain_id' ? null : true, error: null }) : rpc(name, args);
+   chat.actor = { id: player, role, db: { rpc: sharedRpc } } as unknown as KoActor;
+   chat.pilots.add(player);
+   vi.spyOn(Date, 'now').mockReturnValue(now);
+@@ -152,17 +154,54 @@ it('routes a cookie-backed Arabic numeric choice only after signed token verific
+   expect(response.headers.get('set-cookie')).toContain('Max-Age=0');
+ });
+ it.each(['missing', 'expired', 'foreign', 'wrong-player', 'tampered', 'wrong-kind'])(
+-  'rejects %s options before a request RPC', async failure => {
++  'answers normally instead of expiring for %s options', async failure => {
+     const rpc = authenticated();
++    chat.plan.mockResolvedValue([{ kind: 'clarify', args: { question: 'Which exercise?' } }]);
+     const token = failure === 'missing' ? '' : failure === 'expired' ? optionsToken({ expires: now - 1 })
+       : failure === 'foreign' ? optionsToken({ actor: target }) : failure === 'wrong-player' ? optionsToken({ player: target })
+       : failure === 'wrong-kind' ? optionsToken({ kind: 'renew' })
+       : optionsToken() + (failure === 'tampered' ? '0' : '');
+     const response = await postKoAccountChat(chatRequest('1', `ko_swap_options=${token}`));
+-    expect(await response.json()).toMatchObject({ kind: 'message', text: expect.stringContaining('expired') });
++    expect(await response.json()).toMatchObject({ kind: 'message', text: 'Which exercise?' });
+     expect(rpc).not.toHaveBeenCalled();
+-    expect(chat.plan).not.toHaveBeenCalled();
++    expect(chat.plan).toHaveBeenCalledTimes(1);
+   });
++it('answers a bare number normally when no swap is pending', async () => {
++  const rpc = authenticated();
++  chat.plan.mockResolvedValue([{ kind: 'clarify', args: { question: 'Which exercise?' } }]);
++  expect(await (await postKoAccountChat(chatRequest('30'))).json()).toMatchObject({ kind: 'message', text: 'Which exercise?' });
++  expect(rpc).not.toHaveBeenCalled();
++  expect(chat.plan).toHaveBeenCalledTimes(1);
++});
++const secondTarget = '00000000-0000-7000-8000-000000000103';
++const thirdTarget = '00000000-0000-7000-8000-000000000104';
++const threeOptions = { programExercise, injury: 'knee', options: [target, secondTarget, thirdTarget] };
++it.each(['5', '٤', '0', '2'])('answers out-of-range %s normally with a valid pending swap', async text => {
++  const rpc = authenticated();
++  chat.plan.mockResolvedValue([{ kind: 'clarify', args: { question: 'Which exercise?' } }]);
++  const response = await postKoAccountChat(chatRequest(text, `ko_swap_options=${optionsToken()}`));
++  expect(await response.json()).toMatchObject({ kind: 'message', text: 'Which exercise?' });
++  expect(rpc).not.toHaveBeenCalled();
++  expect(chat.plan).toHaveBeenCalledTimes(1);
++});
++it('answers a number to a previous KO question normally while a swap is pending', async () => {
++  const rpc = authenticated();
++  chat.plan.mockResolvedValue([{ kind: 'clarify', args: { question: 'Which exercise?' } }]);
++  const response = await postKoAccountChat(chatRequest('2', `ko_swap_options=${optionsToken({ payload: threeOptions })}`,
++    undefined, [{ role: 'ko', text: 'How many sets did you do?' }]));
++  expect(await response.json()).toMatchObject({ kind: 'message', text: 'Which exercise?' });
++  expect(rpc).not.toHaveBeenCalled();
++  expect(chat.plan).toHaveBeenCalledTimes(1);
++});
++it('executes an in-range choice from the token form field for a three-option swap', async () => {
++  const rpc = authenticated();
++  const response = await postKoAccountChat(chatRequest('2', undefined, optionsToken({ payload: threeOptions })));
++  expect(await response.json()).toMatchObject({ kind: 'message', text: expect.stringContaining('sent to your coach') });
++  expect(rpc).toHaveBeenCalledExactlyOnceWith('request_exercise_swap', {
++    p_program_exercise_id: programExercise, p_to_exercise_id: secondTarget, p_injury: 'knee',
++  });
++  expect(chat.plan).not.toHaveBeenCalled();
++});
+ it('keeps numeric requests behind the pilot gate', async () => {
+   const rpc = authenticated(); chat.pilots.clear();
+   expect((await postKoAccountChat(chatRequest('1', undefined, optionsToken()))).status).toBe(403);
+diff --git a/src/features/ko-entry/config.ts b/src/features/ko-entry/config.ts
+index 1fe3d58d..bd0d1e2d 100644
+--- a/src/features/ko-entry/config.ts
++++ b/src/features/ko-entry/config.ts
+@@ -7,13 +7,14 @@ export function koTeaserEnabled(): boolean {
+ 
+ // Names only, never values: tells the owner which KO setting is off when KO stays unavailable.
+ function koConfigProblems(): string[] {
+-  const { KO_ENABLED, KO_GEMINI_PAID, KO_ORIGIN, KO_APPROVAL_SECRET, KO_PILOT_USER_IDS, GOOGLE_GENERATIVE_AI_API_KEY } = process.env;
++  const { KO_ENABLED, KO_GEMINI_PAID, KO_ORIGIN, KO_APPROVAL_SECRET, KO_PILOT_USER_IDS, GOOGLE_GENERATIVE_AI_API_KEY, KO_MEAL_RECEIPT_SECRET } = process.env;
+   const problems = [
+     KO_ENABLED !== '1' && 'KO_ENABLED must be 1',
+     KO_GEMINI_PAID !== '1' && 'KO_GEMINI_PAID must be 1',
+     (!KO_APPROVAL_SECRET || KO_APPROVAL_SECRET.length < 32) && 'KO_APPROVAL_SECRET must be at least 32 characters',
+     !KO_PILOT_USER_IDS && 'KO_PILOT_USER_IDS is empty',
+     !GOOGLE_GENERATIVE_AI_API_KEY && 'GOOGLE_GENERATIVE_AI_API_KEY is empty',
++    !KO_MEAL_RECEIPT_SECRET && 'KO_MEAL_RECEIPT_SECRET is empty',
+   ].filter((problem): problem is string => typeof problem === 'string');
+   try {
+     const origin = new URL(KO_ORIGIN ?? '');
+diff --git a/supabase/tests/ko-memory.test.ts b/supabase/tests/ko-memory.test.ts
+index 7362c3bc..36be710f 100644
+--- a/supabase/tests/ko-memory.test.ts
++++ b/supabase/tests/ko-memory.test.ts
+@@ -1,16 +1,23 @@
+ import type { PGlite } from '@electric-sql/pglite';
+ import { afterAll, beforeAll, expect, it } from 'vitest';
+-import { TEST_NOW, asUser, createCaptainWithPlayer, createTestDb, createUser } from './harness';
++import { TEST_NOW, asUser, createCaptainWithPlayer, createTestDb, createUser, dayOffset } from './harness';
+ 
+ let db: PGlite;
+ let captain: string;
+ let player: string;
++let player2: string;
+ let outsider: string;
+ const uuid = (n: number) => `00000000-0000-7000-8000-${String(n).padStart(12, '0')}`;
+ 
+ beforeAll(async () => {
+   db = await createTestDb();
+   ({ captain, player } = await createCaptainWithPlayer(db));
++  player2 = await createUser(db, 'player');
++  const accessUntil = await dayOffset(db, 30);
++  await db.query(
++    `insert into public.coach_clients (captain_id, player_id, access_until, started_on) values ($1, $2, $3, $4)`,
++    [captain, player2, accessUntil, await dayOffset(db, 0)],
++  );
+   outsider = await createUser(db, 'captain');
+ });
+ afterAll(async () => db?.close());
+@@ -31,11 +38,16 @@ it('isolates owner reads, deletes and inserts and checks roster ownership', asyn
+   await expect(insert(player, 2, 'different owner', null, captain)).rejects.toThrow(/row-level security/);
+   await expect(insert(outsider, 2, 'unrelated player', player)).rejects.toThrow(/row-level security/);
+   await expect(insert(player, 2, 'self attachment', player)).rejects.toThrow(/row-level security/);
++  // T-423: the same text is unique per (user, player), NULL included — a note
++  // for one player never collides with the same note for another player.
++  await expect(insert(captain, 2, 'eXAMPLE NOTE', player)).rejects.toThrow(/unique/);
++  await expect(insert(captain, 3, 'eXAMPLE NOTE', player2)).resolves.toBeDefined();
++  await expect(insert(captain, 4, 'Example note')).resolves.toBeDefined();
++  await expect(insert(captain, 5, 'example note')).rejects.toThrow(/unique/);
+   await db.query('update public.coach_clients set archived_at=$1 where captain_id=$2', [TEST_NOW, captain]);
+-  await expect(insert(captain, 2, 'archived player', player)).rejects.toThrow(/row-level security/);
+-  await expect(insert(captain, 2, 'eXAMPLE NOTE')).rejects.toThrow(/unique/);
+-  await expect(asUser(db, captain, tx => tx.query('select id from public.ko_memories')))
+-    .resolves.toMatchObject({ rows: [{ id: uuid(1) }] });
++  await expect(insert(captain, 6, 'archived player', player)).rejects.toThrow(/row-level security/);
++  await expect(asUser(db, captain, tx => tx.query('select id from public.ko_memories order by id')))
++    .resolves.toMatchObject({ rows: [{ id: uuid(1) }, { id: uuid(3) }, { id: uuid(4) }] });
+ });
+ 
+ it('keeps the newest 30 rows', async () => {
+diff --git a/src/types/app-database.ts b/src/types/app-database.ts
+--- a/src/types/app-database.ts
++++ b/src/types/app-database.ts
+@@ -219,6 +219,9 @@
+       submit_custom_form_answers: { Args: { p_request: string; p_answers: Json }; Returns: undefined };
+       save_custom_form: { Args: { p_form: Json; p_questions: Json }; Returns: undefined };
+       ko_rate_take: { Args: { p_limit: number; p_window_seconds: number }; Returns: boolean };
++      ko_usage_refund: { Args: { p_day: string; p_kind: string; p_key: string }; Returns: boolean };
++      ko_credit_refund: { Args: { p_month: string; p_token: string }; Returns: boolean };
++      ko_secret_check: { Args: { p_kind: string; p_challenge: string; p_mac: string }; Returns: boolean };
+       ko_feedback_submit: { Args: {
+         p_id: string; p_helpful: boolean; p_reason: string | null; p_intent: string; p_sources: string[];
+         p_question: string; p_answer: string;
+diff --git a/docs/tasks/T-422-ko-refund.md b/docs/tasks/T-422-ko-refund.md
+new file mode 100644
+index 00000000..0c25b496
+--- /dev/null
++++ b/docs/tasks/T-422-ko-refund.md
+@@ -0,0 +1,63 @@
++# T-422 — KO refunds usage and credits when Gemini fails
++
++**Phase:** fix · **Depends on:** none · **Status:** ready
++
++## Goal
++A KO user never pays for an answer they never got. Today usage is taken before Gemini runs and is never refunded on failure, so every 429/503/timeout burns the daily cap and the shared monthly quota, and a failed big-action commit leaves the credit spent. After this, a busy or failing Gemini costs the user nothing and a retry after a failure is not punished.
++
++## Design decisions (read first — they are load-bearing)
++1. **Refund only what was actually taken.** `ko_usage_take` (`supabase/migrations/0158_ko_usage.sql:63`) increments both the daily row and the monthly `calls` counter only when it returns `'ok'` (`'daily'` and `'monthly'` return before any increment). The route must therefore refund usage only when `takeUsage` returned `'ok'` — track it in a local flag, do not guess from the reply.
++2. **Refund is idempotent and keyed.** A refund RPC call can itself be retried (route code must call it at most once per request, but the DB must survive a double call). The refund RPC takes a per-request key (`uuidv7`, generated once in the route for that request) and records refunded keys in a new `security_private.ko_usage_refunds` table (PK on the key). A second call with the same key is a no-op returning "already refunded".
++3. **Credits refund only when the action did not apply.** The 3-arg `ko_credit_take` is token-keyed and replay-aware (`0158:116`): it returns true when the approval row already exists. A refund must therefore NOT blindly delete the approval row. The refund RPC refunds only when there is no receipt for the action in `ko_action_receipts` (read `ko_apply_action` first and confirm where the receipt is recorded). If a receipt exists, the action applied and the credit stays spent.
++4. **Gemini-failure paths only.** Refund usage on the Gemini-failure paths: `planIntent` returning 429/503, and `planIntent` throwing (timeout/502). Wrap the `planIntent` call so its throw is refunded there, not in the outer catch — the outer catch also covers `executeIntent` throws, where intents may already have partially executed, so a blanket outer-catch refund would be wrong. Read `src/features/ko-agent/gemini.ts` for the timeout/error shape (`KoModelError` statuses) so every Gemini failure mode is covered.
++5. **The 40001 question is decided in code, not guessed.** `commitApproval` returns a "changed" reply on error code `40001` instead of throwing. Read `ko_apply_action` and decide, with a code comment: if 40001 means "not applied", refund the credit there too; if it means "applied by another device", do not refund. Document the decision in Notes for reviewer.
++
++## Files
++Create or modify only these:
++- `docs/tasks/T-422-ko-refund.md`: this card
++- `src/features/ko-account/data/usage.ts`: `refundUsage(actor, { day, kind, key })` and `refundCredit(actor, { month, token })` helpers (thin RPC wrappers; return whether a refund was applied; never throw on refund failure — the route logs a warning and continues).
++- `src/features/ko-account/data/route.ts`: generate one refund key per request; set the usage-taken flag only when `takeUsage` returns `'ok'`; refund usage on the 429/503 replies and on a `planIntent` throw; in the confirm branch, track whether `takeCredit` returned true and refund the credit when `commitApproval` throws (and per decision 5, on 40001 if applicable). No other behaviour change.
++- `supabase/migrations/0165_ko_usage_refund.sql`: new additive migration — `security_private.ko_usage_refunds` table plus `ko_usage_refund(p_day, p_kind, p_key)` and `ko_credit_refund(p_month, p_token)` (both `security definer`, `set search_path = ''`, following the `ko_usage_take` header style). Refund decrements the daily messages/photos counter and the monthly `calls` counter with a floor of 0, and the monthly `credits` counter with a floor of 0; grants: `revoke all … from public, anon; grant execute … to authenticated;` (same as the other ko RPCs). No other function in this migration. Never edit an applied migration.
++- `supabase/tests/ko-usage-refund.test.ts`: PGlite tests for both RPCs (see Tests).
++- `src/features/ko-account/data/usage.test.ts`: unit tests for the TS helpers with a mocked `actor.db` (refund called once, refund failure swallowed, no refund when usage was not taken).
++- `src/types/app-database.ts`: add the two new RPCs' Functions entries only (mirror how `ko_usage_take` is typed there). Report the exact lines in your final message.
++
++## Requirements
++1. `takeUsage` returning `'ok'` followed by Gemini 429/503/timeout/throw leaves the daily messages/photos counter and the monthly `calls` counter exactly where they were before the request (verified by the PGlite tests, not just by code reading).
++2. Calling the refund RPC twice with the same key refunds once; a second refund with a different key for the same day/kind refunds again (each take has its own key — do not make the key the day/kind).
++3. A failed `commitApproval` after a successful `takeCredit` refunds the credit exactly once; a successful commit never refunds; a receipt for the action blocks the refund.
++4. The busy-Gemini replies (`koBusy` / `koBusyNow`) are unchanged in wording; only the usage accounting changes. No new user-facing strings.
++5. Rules that still apply: files ≤ 250 lines, one component per file, kebab-case, import direction `app → features → (ui, core, lib)`, no `any`, no `console.log` (a `console.warn` on refund failure is allowed — real failure only), TypeScript strict, dates via `localDate()` (Africa/Cairo).
++
++## Acceptance
++- [ ] Gemini 429, 503 and timeout/throw consume zero usage (daily + monthly counters unchanged).
++- [ ] Double refund with the same key is a no-op; refund is safe under concurrent retries.
++- [ ] Failed big-action commit refunds the credit; successful commit does not; replayed confirmation does not refund the original take.
++- [ ] Targeted vitest files pass; `npx tsc --noEmit` and `npx eslint` on touched files pass.
++- [ ] No change to rate limiting, tier caps, memory, swaps, or the answer guard.
++
++## Tests (deterministic, inject `now`, no real timers, no network; mock Gemini)
++- `supabase/tests/ko-usage-refund.test.ts` (PGlite, following `supabase/tests/ko-usage.test.ts`): take then refund returns counters to their prior values; refund twice with the same key refunds once; refund with an unknown key still decrements once and then is recorded (decide: unknown-key refund applies once — document if the card's key design differs); refund never drives a counter below 0; credit refund after a taken credit restores it, is blocked when a receipt exists, and is a no-op the second time; anon cannot execute either RPC.
++- `src/features/ko-account/data/usage.test.ts`: helper returns false (not applied) when the RPC reports already-refunded; helper swallows RPC errors; route-level behaviour is covered by `answer-route.test.ts` only if it already mocks `takeUsage` — otherwise add a route test for the 429 path asserting the refund RPC was called once (mock `actor.db.rpc`, never a live Gemini call).
++
++## Out of scope
++- Changing tier caps, rate limits, or the 2-arg `ko_credit_take` bypass (audit H1 of the data track — a separate fix, note it under Notes, do not touch it).
++- The `ko_usage_claim_warning` proof (T-426 owns the secret side of it).
++- Refunding usage for non-Gemini failures (e.g. an `executeIntent` throw mid-loop) — deliberate boundary, see decision 4.
++- No live Gemini calls, never run the live KO eval. Do not apply the migration to any real database.
++- No new dependency.
++
++## Notes for reviewer
++- Record here: the 40001 decision (decision 5) with the `ko_apply_action` evidence, and the unknown-key refund behaviour.
++- **40001 decision: refund the credit.** In `ko_apply_action` (`0071_ko_account_actions.sql`) the receipt is recorded first (`ko_private.record_receipt(p_token)`), before the `case` that mutates anything — but both 40001 raises (exercise prescription changed, renew subscription changed) happen *before* any write, and the raise aborts the whole RPC transaction, so the receipt insert rolls back with it. A 40001 therefore always means "not applied, no receipt left behind", and `ko_credit_refund`'s receipt check lets the refund through. The "applied by another device" case never produces 40001: a receipt already exists, so `record_receipt` returns false and the function returns `{'replayed': true}` instead. The route refunds on the `changed` reply and on a `commitApproval` throw; a replayed commit is never refunded, and if a commit somehow applied but its response was lost, the surviving receipt blocks the refund.
++- **Unknown-key refund behaviour:** `ko_usage_refund` does not require a prior take. A refund with a fresh key decrements once (floored at 0) and records the key, so a second call with the same key is a no-op. The route only ever refunds after `ko_usage_take` returned `'ok'`, so in practice every refund balances a take; the unknown-key path exists so a retried refund can never double-decrement and a stray key can never drive a counter below 0.
++- **Refund-failure warning placement:** the card says the route logs a warning, but the route cannot tell "already refunded" (a normal `false`) from an RPC failure, and warning on every `false` would break the existing `answer-route.test.ts` 429/503 expectations (its mock RPC returns `'ok'`, not `true`). So the `console.warn` lives in the `refundUsage`/`refundCredit` helpers, which are the only place that sees the error; the route just continues. No warning is emitted on an already-refunded key.
++- **Route test placement:** `answer-route.test.ts` already mocks `takeUsage` (via its generic RPC mock), but it is outside this card's Files list, so it was left untouched; the 429/503/throw route tests live in `src/features/ko-account/data/usage.test.ts` instead.
++- The pre-existing `npm run check` lint failure in `src/features/templates/components/workspace-programs-view.tsx` is out of scope; verify it is byte-identical to HEAD and do not fix it here.
++- Out of scope, noticed while reading: the 2-arg `ko_credit_take` bypass (audit H1 of the data track) is untouched, as instructed.
++
++## References
++- `docs/ARCHITECTURE.md` §3, §5
++- `src/features/ko-account/data/route.ts` (takeUsage call, planIntent catch, confirm branch), `usage.ts`, `execute.ts` (`commitApproval`)
++- `supabase/migrations/0158_ko_usage.sql` (`ko_usage_take`, `ko_credit_take` 2-arg and 3-arg, `ko_usage_claim_warning`), `0071_ko_account_actions.sql` (`ko_apply_action`, `ko_action_receipts`)
++- `docs/tasks/T-410-ko-launch-fixes.md` (the original T-410 refund requirement)
+diff --git a/docs/tasks/T-423-ko-memory-scope.md b/docs/tasks/T-423-ko-memory-scope.md
+new file mode 100644
+index 00000000..45693457
+--- /dev/null
++++ b/docs/tasks/T-423-ko-memory-scope.md
+@@ -0,0 +1,62 @@
++# T-423 — KO memory is scoped per player
++
++**Phase:** fix · **Depends on:** none · **Status:** ready
++
++## Goal
++A captain's note about one player never leaks into another player's answers, and never collides on save. Today the unique index is `(user_id, lower(text))` with no player, the load reads every memory for the user, and the route feeds all of them to Gemini — so "prefers mornings" saved for Ahmed then Youssef fails the second insert, and a note about Ahmed can be applied when the captain asks about Youssef.
++
++## Design decisions (read first — they are load-bearing)
++1. **`player_id` already exists — the scoping is missing, not the column.** `supabase/migrations/0162_ko_memory.sql` already has `player_id uuid references profiles(id)` and `saveMemory` (`src/features/ko-account/data/memory.ts`) already inserts it via `validateMemory` (`memory-validation.ts` returns `{ kind, text, player_id }`). The bugs are: the unique index ignores it, `loadMemory` selects only `id, text` with no player filter, and the route feeds every memory regardless of `contextPlayer`.
++2. **Scope = (user, player).** `loadMemory(actor, playerId)` filters: a player actor loads their own memories (`player_id IS NULL` — players can never set a player target, see `validateMemory`); a captain with a context player loads only `player_id = <that player>`; a captain with no context player loads only `player_id IS NULL` (their own general notes). A memory must never be fed to Gemini for a different player. Thread the context player through `readChatMemory` / `rememberFromPlan` (`chat-memory.ts`) — read `resolveContext` (`context.ts`) and the route's `contextPlayer` first and define the exact filter there; the existing `existing` strings passed to `validateMemory` for dedup must come from the same scoped load, so dedup is scoped too.
++3. **Unique index must treat NULL as a value.** Postgres treats NULLs as distinct in a unique index, so a plain `(user_id, player_id, lower(text))` index would let two general (NULL-player) memories with the same text both insert. Use `NULLS NOT DISTINCT` if the project's Postgres supports it (check what other migrations use), otherwise an expression index on `coalesce(player_id, '00000000-0000-0000-0000-000000000000')`. Either way the invariant is: same user + same player (including NULL) + same text (case-insensitive) = one row.
++4. **Backfill is a no-op by construction.** Existing rows already carry the `player_id` they were saved with, so no data rewrite is needed. Document this in the migration comment; rows that cannot be attributed do not exist (every row was saved with either a resolved player or NULL by design). The 30-row trim trigger (`ko_trim_memories`) stays per-user and needs no change.
++5. **The old collision test must change.** `supabase/tests/ko-memory.test.ts:36` currently asserts that inserting the same text for a different player rejects with `/unique/`. That assertion encodes the bug — replace it with: same text + same player rejects, same text + different player succeeds, same text + NULL player succeeds alongside a player-scoped one.
++
++## Files
++Create or modify only these:
++- `docs/tasks/T-423-ko-memory-scope.md`: this card
++- `src/features/ko-account/data/memory.ts`: `loadMemory(actor, playerId?)` filters by the scoped player (see decision 2); `saveMemory` unchanged except it must keep passing the scoped `existing` list (verify the callers pass it).
++- `src/features/ko-account/data/chat-memory.ts`: thread the context player id through `readChatMemory` and `rememberFromPlan` so load and dedup use the same scope.
++- `src/features/ko-account/data/route.ts`: pass the resolved `contextPlayer` id into the memory load (the `readChatMemory` call next to `loadFacts`); nothing else in the route changes.
++- `src/features/ko-account/data/memory-validation.ts`: only if the dedup needs an explicit player parameter — otherwise leave untouched and say so in Notes.
++- `supabase/migrations/0166_ko_memory_scope.sql`: new additive migration — drop `ko_memories_text_idx`, create the re-scoped unique index per decision 3. No other change. Never edit an applied migration.
++- `supabase/tests/ko-memory.test.ts`: update the collision assertion per decision 5; add per-player cases (see Tests).
++- `src/features/ko-account/memory.test.ts`: extend for scoped load/dedup (see Tests).
++
++## Requirements
++1. A captain saving the same note text for two different players succeeds twice (two rows); saving it twice for the same player is a single row (dedup/unique, no error surfaced).
++2. When the captain asks about player B, only B's memories reach Gemini; A's memories never appear in `[memory]` facts. When there is no context player, only general (NULL) memories are fed.
++3. A player sees only their own (NULL-player) memories; a captain's player-scoped memories are never visible to another player (RLS already enforces owner reads — verify, do not weaken it).
++4. The 30-row trim still works per user; the memory view ("KO فاكر إيه عنك") shows the same memories as before for a player (their own scope).
++5. Rules that still apply: files ≤ 250 lines, one component per file, kebab-case, import direction `app → features → (ui, core, lib)`, no `any`, no `console.log`, TypeScript strict.
++
++## Acceptance
++- [ ] Same text for Ahmed and Youssef saves twice; same text twice for Ahmed saves once.
++- [ ] `[memory]` facts for a Youssef question contain no Ahmed memory (test asserts on the fed facts, not just the DB rows).
++- [ ] Player load returns only the player's own memories.
++- [ ] `supabase/tests/ko-memory.test.ts` passes with the updated assertions; targeted vitest files pass; `npx tsc --noEmit` and `npx eslint` on touched files pass.
++- [ ] No change to the memory view UI, the learning switch, feedback, or KO answers other than the scoping.
++
++## Tests (deterministic, inject `now`, no real timers, no network; mock Gemini)
++- `supabase/tests/ko-memory.test.ts` (PGlite): insert same text for two roster players as captain (both succeed); insert same text twice for the same player (second rejects unique); insert same text with NULL player alongside a player-scoped one (both succeed); roster/RLS cases from the existing test still pass.
++- `src/features/ko-account/memory.test.ts`: scoped `loadMemory` returns only the requested player's rows (+ NULL rows only when no player is given for a captain); `saveMemory` dedups against the scoped list only (same text for a different player is not treated as a duplicate).
++
++## Out of scope
++- Changing the 30-row cap, the trim trigger, the learning switch, or the memory view UI.
++- The memory-validation gaps in the audit (spaced 6-digit codes, prices) — separate fix, note under Notes.
++- Voice-input grounding (T-424/T-425 area) and prompt-injection hardening — separate work.
++- Do not apply the migration to any real database.
++- No new dependency.
++
++## Notes for reviewer
++- Record here: the NULLS NOT DISTINCT vs coalesce choice with the Postgres evidence, and whether `memory-validation.ts` needed a change.
++- **Choice: `NULLS NOT DISTINCT`** (migration 0166). It needs Postgres 15+ (PostgreSQL docs, `CREATE INDEX ... NULLS [NOT] DISTINCT`); Supabase runs Postgres 15 or 17 on the platform, and the PGlite test database is PostgreSQL 18.6 (verified by running `select version()` in this clone). No migration in the repo uses `NULLS NOT DISTINCT` yet, and none uses a coalesce expression index for uniqueness, so this sets the precedent. The coalesce fallback was not needed.
++- **`memory-validation.ts` needed no change.** `validateMemory` already takes the player id and dedups against the `existing` list it is given; the scoping happens at the load (`loadMemory`), and `rememberFromPlan` reuses that scoped load for `existing`, so dedup is scoped without touching validation. `rememberFromPlan` also needed no signature change for the same reason — the context player reaches it through the scoped `state`, not a new parameter.
++- **Memory view consequence of decision 2:** `learning-route.ts` calls `loadMemory(actor)` with no player, so a captain's "KO فاكر إيه عنك" list now shows only their general (NULL-player) notes; player-scoped notes no longer appear there. That follows decision 2 as written, and the view UI is unchanged. If captains should still manage per-player notes from that view, that is a follow-up (learning-route is outside this card's Files list).
++- **Mock fix found by independent verification:** the scoped `loadMemory` calls `.is('player_id', null)`, but the `memoryQuery` mock in `src/features/ko-account/answer-route.test.ts` had no `is`, so 11 answer-route tests failed with "KO memory read failed" (the mock threw, the read caught it and returned no memories). Production code is correct — the real Supabase client has `.is()`. Fix was one line in the test mock only (`is: () => memoryQuery`, line 32), verified 23/23 in that file and 318 passed / 1 skipped for the full KO suite.
++- The pre-existing `npm run check` lint failure in `src/features/templates/components/workspace-programs-view.tsx` is out of scope; verify it is byte-identical to HEAD and do not fix it here.
++
++## References
++- `docs/ARCHITECTURE.md` §3, §5
++- `supabase/migrations/0162_ko_memory.sql` (table, unique index, trim trigger, RLS), `supabase/tests/ko-memory.test.ts`
++- `src/features/ko-account/data/memory.ts`, `memory-validation.ts`, `chat-memory.ts`, `facts.ts` (`appendMemoryFacts`), `route.ts` (`readChatMemory` call), `context.ts` (`resolveContext`)
+diff --git a/docs/tasks/T-424-ko-numeric-swap.md b/docs/tasks/T-424-ko-numeric-swap.md
+new file mode 100644
+index 00000000..8a15f8fc
+--- /dev/null
++++ b/docs/tasks/T-424-ko-numeric-swap.md
+@@ -0,0 +1,58 @@
++# T-424 — A numeric message is a swap choice only for a pending swap question
++
++**Phase:** fix · **Depends on:** none · **Status:** ready
++
++## Goal
++A player who answers KO with a bare number gets an answer, not a wrong swap. Today any numeric-only player message is intercepted before `planIntent` and either executes a swap choice or replies "expired" — so "30" (or "٥") as an answer to another KO question is swallowed, and inside the 10-minute swap window "1"–"3" meant as an answer executes a swap the player never chose.
++
++## Design decisions (read first — they are load-bearing)
++1. **The swap token is the pending question.** A swap choice is only real when a `swap_options` approval exists and is still valid: the token comes from the `ko_swap_options` cookie (set by `playerReply` on the reply that showed the options, Max-Age 600) or the `token` form field, verified by `verifyApproval` against the player id and expiry, exactly as today. No token, no valid swap action, no swap.
++2. **The number must be a valid choice for that pending question.** Read `src/features/ko-account/data/swap.ts` (`chooseSwap`, `swapPayloadSchema`) first: the payload's `options` array has 1–3 entries, so a valid choice is an integer in `1..options.length` (after Latin-digit normalisation — reuse the existing digit handling, do not add a second one). Any other number is not a swap choice.
++3. **Otherwise, fall through to normal answering.** When the message is numeric but there is no valid pending swap choice, the request must continue through the normal flow (`planIntent` and friends) exactly as if the numeric block did not exist — it must NOT return the "expired" reply. The `formPending` guard keeps its current behaviour, but only on the valid-swap-choice path: a numeric message that is not a valid swap choice and has a pending start form goes through the normal `formReply` handling downstream, not the swap branch.
++4. **No new UI, no new strings.** The swap question, options and "expired" reply already exist; this fix only changes when the numeric branch fires. Do not add copy.
++
++## Files
++Create or modify only these:
++- `docs/tasks/T-424-ko-numeric-swap.md`: this card
++- `src/features/ko-account/data/route.ts`: the numeric-only player block only — gate it on decisions 1–2, fall through otherwise (decision 3). No other route behaviour changes.
++- `src/features/ko-account/data/numeric-swap.ts`: new small helper — route.ts was already at exactly the 250 countable-line ESLint limit, so the cookie/token read plus the validity check live here and route.ts stays within the limit.
++- `src/features/ko-account/swap.test.ts`: the existing route test file that covers the numeric block (see Notes) — new numeric cases here, plus the one existing test whose expectation this card changes (see Notes).
++- `src/features/ko-account/data/swap.ts`: only if `chooseSwap` needs the range validation moved into it — otherwise leave untouched and say so in Notes.
++- `src/features/ko-account/answer-route.test.ts`: extend for the numeric cases (see Tests). If that file does not cover the route's numeric block, add the cases to the existing route test file that does (name it in Notes) — do not create a second route test harness.
++
++## Requirements
++1. Bare "30" with no pending swap is answered normally (goes through `planIntent`; test asserts the swap path is not taken and no "expired" reply is returned).
++2. Bare "5" (or "٤", or "0") with a pending 3-option swap is answered normally — it is not executed as a swap and does not return "expired".
++3. "2" as an answer to a previous KO question while a swap is pending is answered normally — the pending swap is not executed. (The pending question is the one shown with the options; a number that answers a different question is not a choice for it.)
++4. "1"–"3" for a pending swap with that many options still executes the swap exactly as today (no regression — `swap.test.ts` stays green).
++5. An expired/invalid swap token with a numeric message falls through to normal answering (never "expired" for a message that was never a swap answer).
++6. Rules that still apply: files ≤ 250 lines, one component per file, kebab-case, import direction `app → features → (ui, core, lib)`, no `any`, no `console.log`, TypeScript strict.
++
++## Acceptance
++- [ ] The three fall-through cases above reach normal answering; the valid-choice case still swaps.
++- [ ] No "expired" reply is ever returned for a numeric message that is not a swap answer.
++- [ ] `swap.test.ts` and the extended route tests pass; `npx tsc --noEmit` and `npx eslint` on touched files pass.
++- [ ] No change to swap option generation, the cookie, approval verification, or any other route branch.
++
++## Tests (deterministic, inject `now`, no real timers, no network; mock Gemini)
++- Extend the route tests with a mocked `actor.db` / mocked `planIntent` (follow the existing `answer-route.test.ts` harness — never a live Gemini call): numeric with no cookie/token → normal path; numeric out of range with a valid pending swap token → normal path; numeric as an answer to a previous KO question (history ends with a KO question, pending swap exists) → normal path; numeric in range with a valid pending swap token → `chooseSwap` runs; numeric with an expired token → normal path.
++
++## Out of scope
++- Changing how swap options are generated or how many options there are.
++- Voice input (audio path already skips this block) and the `groundIntent` swap checks.
++- The answer guard (T-425) and memory scoping (T-423).
++- No live Gemini calls, never run the live KO eval.
++- No new dependency.
++
++## Notes for reviewer
++- Record here: whether `swap.ts` needed a change, and which existing route test file the new cases went into.
++- `swap.ts` needed NO change: `chooseSwap` already validates the payload and the 1–3 range (and returns "expired" only on the valid-swap path now, which route.ts no longer reaches for an invalid choice). The range check for gating lives in the new `numeric-swap.ts` helper, reusing `swapPayloadSchema` and `chooseSwap`'s own ١٢٣ Latin-digit normalisation.
++- New route cases went into `src/features/ko-account/swap.test.ts` — that is the existing route test file covering the numeric block (cookie-backed choice, token rejection, pilot gate); `answer-route.test.ts` does not cover it. One Req-1 case ("30" with no swap pending) was also added to `answer-route.test.ts` via its mocked-Gemini harness.
++- Deviation: the existing `swap.test.ts` case "rejects %s options before a request RPC" (missing/expired/foreign/wrong-player/tampered/wrong-kind tokens expecting the "expired" reply) directly contradicts requirement 5, so it was updated to "answers normally instead of expiring for %s options" — the numeric message now falls through to normal answering (`planIntent`) and never returns "expired" for a message that was never a swap answer. No other existing test changed.
++- The pre-existing `npm run check` lint failure in `src/features/templates/components/workspace-programs-view.tsx` is out of scope; verify it is byte-identical to HEAD and do not fix it here.
++- `route.ts` stayed within the 250 countable-line ESLint limit by extracting the numeric handling into `numeric-swap.ts` (new file, see Files list).
++
++## References
++- `docs/ARCHITECTURE.md` §3
++- `src/features/ko-account/data/route.ts` (numeric block, `playerReply` swap cookie), `swap.ts` (`chooseSwap`, `swapPayloadSchema`), `approval.ts` (`verifyApproval`)
++- `src/features/ko-account/swap.test.ts`, `answer-route.test.ts`
+diff --git a/docs/tasks/T-425-ko-answer-guard.md b/docs/tasks/T-425-ko-answer-guard.md
+new file mode 100644
+index 00000000..0af97a45
+--- /dev/null
++++ b/docs/tasks/T-425-ko-answer-guard.md
+@@ -0,0 +1,53 @@
++# T-425 — Answer-guard numbers are grounded per cited source, not as a bag
++
++**Phase:** fix · **Depends on:** none · **Status:** ready
++
++## Goal
++KO stops stating numbers it was never told. Today `guardAnswer` allows any number that appears anywhere in the facts or in the user's own question, so Gemini can assert a number the user merely asked about, or swap numbers between fields (a kcal target stated as protein). After this, every number in an answer must be justified by the facts it claims to come from.
++
++## Design decisions (read first — they are load-bearing)
++1. **The user's question justifies nothing.** Numbers appearing only in `userText` are removed from the allowed set entirely. An answer that echoes a number from the question ("You asked about 250 points") is not grounded — it must fail the guard and fall back. This is a deliberate behaviour change, documented here: echoing is not evidence.
++2. **Allowed numbers come only from the sources the answer cites.** `reviewAnswer` already knows `args.sources`. Parse the facts into their `[source] …` lines (see `formatAccountFacts` / `appendMemoryFacts` in `facts.ts` — a facts line starts with `[<source>] `; the `[memory]` line is one source) and allow only numbers from lines whose source is in `args.sources`. Numbers from a fact line of a source the answer does not cite are not allowed — that is what stops cross-field swaps between sources.
++3. **Within a cited line, numbers are allowed as a set — and that limit is documented, not hidden.** A single facts line can hold several fields (e.g. one nutrition line with kcal and protein), so a swap inside one line can still pass. Read the actual fact line formats in `read-progress.ts` / `facts.ts` first: if the lines carry structured `key: value` pairs that make key-aware matching feasible without guessing, implement it (a number is allowed only if it appears under the same key it is claimed for); if the formats do not support that reliably, keep line-level grounding and record the residual risk in Notes for reviewer. Do not invent a parser that guesses at Arabic prose.
++4. **Small integers stay allowed (0–10).** The existing 0–10 allowance is for counts like sets and reps that Gemini composes legitimately; keep it. Everything else must be in the allowed set.
++5. **The 250-points case now fails the guard.** The existing test case `['You asked about 250 points. You trained 13 times.', 'Do I have 250 points?', null]` must change its expectation to `'number'` (the fallback then rewords via `fallbackBySource`). Update that test case; do not delete it — it is the regression test for this fix.
++6. **Signature change is contained.** `guardAnswer(text, facts, userText)` gains the cited sources as a parameter (e.g. `guardAnswer(text, facts, userText, sources)`); `reviewAnswer` passes `args.sources`. Update all callers (grep first) and the tests. If a caller has no sources, it passes an empty list, which means: only 0–10 numbers are allowed (no fact line is cited). Document any caller you find that this affects.
++
++## Files
++Create or modify only these:
++- `docs/tasks/T-425-ko-answer-guard.md`: this card
++- `src/features/ko-account/data/answer-guard.ts`: `guardAnswer` and `reviewAnswer` only, per decisions 1–6.
++- `src/features/ko-account/answer-guard.test.ts`: update the 250-points expectation; add cases (see Tests).
++
++## Requirements
++1. A number that appears only in the user's question never justifies an asserted fact.
++2. A number from a facts line whose source the answer does not cite never justifies the answer.
++3. A number from a cited source's facts line justifies the answer (legit cases keep passing, e.g. "عملت ۱۳ تمرين والتزامك ٨٦٫٥٪." against the progress facts).
++4. The `length` / `link` / `phone` / `action_claim` / `source` checks are unchanged.
++5. Rules that still apply: files ≤ 250 lines, one component per file, kebab-case, import direction `app → features → (ui, core, lib)`, no `any`, no `console.log`, TypeScript strict.
++
++## Acceptance
++- [ ] The 250-points case fails the guard (`'number'`) and the fallback path is exercised.
++- [ ] A cross-source number swap fails the guard (e.g. an answer citing only `progress` that states a number that exists only in the nutrition facts).
++- [ ] Legit answers citing their sources still pass, including Arabic-Indic digits and percentages.
++- [ ] All `guardAnswer` callers updated; `answer-guard.test.ts` passes; `npx tsc --noEmit` and `npx eslint` on touched files pass.
++- [ ] No change to the guard's other checks, to `planIntent`, or to any route behaviour.
++
++## Tests (deterministic, inject `now`, no real timers, no network)
++- `src/features/ko-account/answer-guard.test.ts`: update the 250-points case to `'number'`; add: answer citing `progress` that uses a number found only in a `[nutrition]` facts line → `'number'`; answer citing `nutrition` that uses the same number → `null`; answer echoing a user-only number → `'number'`; answer with a 0–10 count and a cited fact number → `null`; `reviewAnswer` with a failing guard returns the `fallbackBySource` fallback for the first cited source (existing `me` test stays green).
++
++## Out of scope
++- Key-aware (per-field) matching inside one facts line, unless the line formats support it reliably (decision 3) — otherwise it is a documented follow-up.
++- Voice-input grounding, prompt-injection hardening, memory scoping.
++- Changing what Gemini is asked to answer or the fallback wording.
++- No live Gemini calls, never run the live KO eval.
++- No new dependency.
++
++## Notes for reviewer
++- Record here: whether key-aware matching inside a line was feasible (with the line formats as evidence), and any `guardAnswer` caller found that passes no sources.
++- The pre-existing `npm run check` lint failure in `src/features/templates/components/workspace-programs-view.tsx` is out of scope; verify it is byte-identical to HEAD and do not fix it here.
++
++## References
++- `docs/ARCHITECTURE.md` §3
++- `src/features/ko-account/data/answer-guard.ts` (`guardAnswer`, `reviewAnswer`, `fallbackBySource`), `facts.ts` (`formatAccountFacts`, `appendMemoryFacts`), `read-progress.ts` (fact line formats)
++- `src/features/ko-account/answer-guard.test.ts`
+diff --git a/docs/tasks/T-426-ko-secrets.md b/docs/tasks/T-426-ko-secrets.md
+new file mode 100644
+index 00000000..1aab1317
+--- /dev/null
++++ b/docs/tasks/T-426-ko-secrets.md
+@@ -0,0 +1,65 @@
++# T-426 — KO secrets have one enforced source of truth
++
++**Phase:** fix · **Depends on:** none · **Status:** done (coordinator-corrected: public RPC, see Notes)
++
++## Goal
++KO never silently breaks because two copies of the same secret disagree. Today the app signs approval tokens with env `KO_APPROVAL_SECRET` while the database verifies them against `security_private.ko_approval_config.signing_key`, the meal receipt is signed with env `KO_MEAL_RECEIPT_SECRET` but verified against `security_private.app_secrets` (`meal_receipt`), and the usage-warning proof is signed in the app but verified against the DB signing key — and nothing seeds either side or checks they match. If they differ, every KO confirmation fails and meal points are silently skipped. After this, a mismatch fails KO loudly and visibly at config time, by name, never by silently skipping.
++
++## Design decisions (read first — they are load-bearing)
++1. **The DB key is authoritative; the env key must equal it.** Moving token issuance into the database was considered and rejected: issuance (`issueApproval` in `execute.ts`) and verification (`verifyApproval` in `route.ts`) both run in the app, and `ko_private` functions are not exposed to the app's PostgREST client, so a DB-only design would require exposing a new signing surface. Instead, a dedicated check RPC proves agreement without ever revealing a secret value: the app HMACs a fixed challenge with its env secret and the DB compares it with an HMAC computed from its stored key, returning only a boolean. Coordinator correction (2026-11-22): the check RPC therefore lives in `public`, not `ko_private` — PostgREST only serves exposed schemas and `ko_private` is deliberately not exposed (T-116), so a `ko_private` check would be unreachable from the app and KO would fail closed everywhere. The original `ko_private` wording is struck in decision 2 and the Files list; see Notes.
++2. **One check function, two kinds.** New `public.ko_secret_check(p_kind text, p_challenge text, p_mac text) returns boolean`, `security definer`, `set search_path = ''`: kind `'approval'` compares against `security_private.ko_approval_config.signing_key` (this same key backs the usage-warning proof in `ko_usage_claim_warning`, so one check covers both), kind `'meal_receipt'` compares against `security_private.app_secrets` where `name = 'meal_receipt'`. Unknown kind or missing DB key returns false. Grant execute to `authenticated` (a boolean oracle over a 256-bit HMAC with a ≥32-char secret is not a practical leak — same exposure class as `verified_approval` itself). Never log, return, or store a secret value anywhere in this flow.
++3. **The check runs before any usage is taken, and is cached per secret value.** New `src/features/ko-account/data/secret-check.ts`: `verifyKoSecrets(actor, config)` HMACs the challenge with the env secrets, calls the RPC for each kind, and returns the list of mismatching secret names (names only). `route.ts` calls it right after `getKoActor()` and before `takeUsage`; on any mismatch KO replies unavailable (same shape as the existing origin-mismatch 404) and logs a `console.warn` naming the secret (name only). Cache the result in module scope keyed by a hash of the env secret values, so the check runs at most once per process per secret value — a DB secret rotation therefore needs a restart/redeploy, which is already true for env secrets; document this in Notes.
++4. **A missing meal secret is a mismatch, not a silent skip.** `koAccountConfig()` (`ko-entry/config.ts`) gains `KO_MEAL_RECEIPT_SECRET` presence in its problem list (names only, following the existing `koConfigProblems` pattern). The route's current `if (!secret) console.warn('Meal points skipped…')` path must not be reachable with a live KO anymore: if the meal secret is missing or mismatched, KO is unavailable per decision 3. Meal-point award failures after a passing check stay as the existing warn (a real failure only).
++5. **`.env.example` gets empty placeholders — and one existing line is fixed.** Add empty entries for `KO_ENABLED`, `KO_GEMINI_PAID`, `KO_ORIGIN`, `KO_APPROVAL_SECRET`, `KO_PILOT_USER_IDS`, `GOOGLE_GENERATIVE_AI_API_KEY` (currently mentioned only in a comment). Change the existing `KO_MEAL_RECEIPT_SECRET=<redacted>` line to an empty value: `<redacted>` is a non-empty value and the release audit's example-secret rule flags non-empty SECRET values — verify with `node scripts/release-audit.mjs` after editing. Values stay empty; never put a real or example secret in the file.
++
++## Files
++Create or modify only these:
++- `docs/tasks/T-426-ko-secrets.md`: this card
++- `src/features/ko-account/data/secret-check.ts`: new `verifyKoSecrets` helper (decision 3). One responsibility per file, ≤ 250 lines.
++- `src/features/ko-account/data/route.ts`: call `verifyKoSecrets` after the actor is known and before `takeUsage`; on mismatch return unavailable + warn (decision 3). No other route behaviour changes.
++- `src/features/ko-entry/config.ts`: add `KO_MEAL_RECEIPT_SECRET` presence to the config problems (decision 4). No other change.
++- `supabase/migrations/0167_ko_secret_check.sql`: new additive migration — `public.ko_secret_check` only (decision 2, as corrected). Grants: `revoke all … from public, anon; grant execute … to authenticated;`. Never edit an applied migration.
++- Route-test mocks updated by the coordinator (outside the original Files list — required so the new pre-check passes in a configured test environment; one line each: answer `ko_secret_check` with `true` and stub `KO_MEAL_RECEIPT_SECRET`): `src/features/ko-account/actions.test.ts`, `answer-route.test.ts`, `swap.test.ts`, `context.test.ts`, `ground.test.ts`, `rate-limit.test.ts`, `src/features/ko-account/data/usage.test.ts`.
++- `supabase/tests/ko-secret-check.test.ts`: PGlite tests for the RPC (see Tests).
++- `src/features/ko-account/secret-check.test.ts`: unit tests for the helper with a mocked `actor.db` (see Tests).
++- `.env.example`: empty placeholders per decision 5 only.
++- `src/types/app-database.ts`: add the new RPC's Functions entry only (mirror how `ko_usage_take` is typed there). Report the exact lines in your final message.
++
++## Requirements
++1. When env and DB secrets agree, KO works exactly as today (no extra user-visible change, no extra per-request DB round trip after the first check per process).
++2. When the approval secret disagrees, KO is unavailable with a loud warning naming `KO_APPROVAL_SECRET` (name only) — no confirmation is attempted, no usage is taken, and no meal points are silently skipped.
++3. When the meal-receipt secret disagrees (or is missing in env), KO is unavailable with a loud warning naming `KO_MEAL_RECEIPT_SECRET`.
++4. The check RPC never reveals a secret value: it returns only a boolean, and no secret value appears in any log, error, or reply (grep to prove it).
++5. `node scripts/release-audit.mjs` passes with the edited `.env.example` (0 findings).
++6. Rules that still apply: files ≤ 250 lines, one component per file, kebab-case, import direction `app → features → (ui, core, lib)`, no `any`, no `console.log` (a `console.warn` naming a mismatching secret is required here — name only, never the value), TypeScript strict.
++
++## Acceptance
++- [ ] Matching secrets: KO chat works, check runs once per process per secret value.
++- [ ] Mismatched approval secret: KO unavailable, warning names the secret, zero usage taken.
++- [ ] Mismatched/missing meal secret: KO unavailable, warning names the secret.
++- [ ] PGlite + unit tests pass; `npx tsc --noEmit` and `npx eslint` on touched files pass; release audit passes.
++- [ ] No change to token issuance/verification logic, the usage-warning proof, or meal-point awarding other than the pre-check.
++
++## Tests (deterministic, inject `now`, no real timers, no network; mock Gemini)
++- `supabase/tests/ko-secret-check.test.ts` (PGlite): correct HMAC for the stored key returns true; wrong key returns false; unknown kind returns false; missing DB key returns false; anon cannot execute.
++- `src/features/ko-account/secret-check.test.ts`: helper returns `[]` when both RPCs return true; returns the mismatching names when one/both return false; caches the second call (RPC called once per kind per secret value); swallows RPC errors as a mismatch (fail closed — KO unavailable, never silently proceed).
++
++## Out of scope
++- Rotating existing production secrets (owner action — say so in Notes, with the two places the owner must update).
++- Moving token issuance into the database (considered and rejected in decision 1 — do not reopen it in this task).
++- Changing the usage-warning proof or the meal-point award logic beyond the pre-check.
++- Do not apply the migration to any real database. Do not create or modify any `.env` file (`.env.example` only).
++- No new dependency.
++
++## Notes for reviewer
++- Record here: the DB-rotation restart requirement (decision 3), the owner action for rotation (which two places, in which order), and the exact `app-database.ts` lines added.
++- The pre-existing `npm run check` lint failure in `src/features/templates/components/workspace-programs-view.tsx` is out of scope; verify it is byte-identical to HEAD and do not fix it here.
++- **Coordinator correction — the check RPC lives in `public`, not `ko_private`.** The implementer built `ko_private.ko_secret_check` called via `actor.db.schema('ko_private').rpc(...)`, exactly as the card first wrote it. That cannot work in production: PostgREST only serves exposed schemas, `ko_private` is deliberately not exposed (T-116), and the card's own decision 1 already noted `ko_private` functions are not exposed to the app's PostgREST client. Without a dashboard change KO would have failed closed everywhere — the old deployment blocker is gone: no Supabase dashboard change is needed, and `ko_private` stays unexposed. `public.ko_secret_check` follows every other ko RPC (`ko_usage_take`, `ko_rate_take`, `ko_usage_refund`, …): `security definer`, `authenticated`-only grant, boolean-only return. Decision 1, decision 2, the Files list and the migration were updated to match.
++- **Coordinator correction — the 7 route-test mock files were updated** (listed in Files). The new pre-check broke 67 existing route tests two ways: their mocked `actor.db` had no `.schema()` method, and no test environment sets `KO_MEAL_RECEIPT_SECRET` (a missing meal secret is a mismatch by decision 4). Each file now answers `ko_secret_check` with `true` and stubs the meal secret, simulating a configured environment. After the fix the KO suite is back to its pre-T-426 baseline: 307 passed, 11 failed — all 11 the pre-existing `answer-route.test.ts` "KO memory read failed" failures from the staged T-423 code, none mentioning the secret check.
++
++## References
++- `docs/ARCHITECTURE.md` §3, §5
++- `src/features/ko-account/data/approval.ts` (`issueApproval`/`verifyApproval`), `execute.ts` (issuance), `route.ts` (verification + meal receipt), `usage.ts:35` (warning proof), `meal-receipt.ts`
++- `src/features/ko-entry/config.ts` (`koAccountConfig`, `koConfigProblems`)
++- `supabase/migrations/0071_ko_account_actions.sql` (`ko_approval_config`, `verified_approval`), `0088_meal_check_receipt.sql` (`app_secrets`, `award_meal_check`), `0158_ko_usage.sql:143` (`ko_usage_claim_warning`)
++- `.env.example`, `scripts/release-audit-rules.mjs` (`exampleRule`)
+diff --git a/src/features/ko-account/data/numeric-swap.ts b/src/features/ko-account/data/numeric-swap.ts
+new file mode 100644
+index 00000000..b472623c
+--- /dev/null
++++ b/src/features/ko-account/data/numeric-swap.ts
+@@ -0,0 +1,30 @@
++import type { KoTurn } from '@/features/ko-agent';
++import type { Approval } from './approval';
++import { verifyApproval } from './approval';
++import { swapPayloadSchema } from './swap';
++
++const swapCookie = 'ko_swap_options';
++
++// The signed swap_options approval behind the ko_swap_options cookie (or the
++// token form field), verified exactly as the confirm branch verifies its own.
++export function readSwapApproval(request: Request, token: unknown, actorId: string, now: number, secret: string): Approval | null {
++  const cookie = request.headers.get('cookie')?.split(';').map(part => part.trim())
++    .find(part => part.startsWith(`${swapCookie}=`))?.slice(swapCookie.length + 1);
++  const signed = typeof token === 'string' ? token : cookie;
++  return signed ? verifyApproval(signed, actorId, now, secret) : null;
++}
++
++// A bare number is a swap choice only when a valid swap_options approval
++// exists for this player, the number is a valid choice for its options, and
++// it is not an answer to a previous KO question. The swap question itself
++// ends with a full stop, so a trailing '?' means the number answers
++// something else. Anything else falls through to normal answering.
++export function isValidSwapChoice(action: Approval | null, actorId: string, text: string, history: readonly KoTurn[]): boolean {
++  if (!action || action.kind !== 'swap_options' || action.player !== actorId) return false;
++  const lastTurn = history.at(-1);
++  if (lastTurn?.role === 'ko' && /[?؟]\s*$/.test(lastTurn.text)) return false;
++  // Same Latin-digit normalisation as chooseSwap; no second mapping.
++  const choice = text.trim().replace(/[١٢٣]/g, digit => String('١٢٣'.indexOf(digit) + 1));
++  const parsed = swapPayloadSchema.safeParse(action.payload);
++  return parsed.success && /^[1-9]$/.test(choice) && Number(choice) <= parsed.data.options.length;
++}
+diff --git a/src/features/ko-account/data/secret-check.ts b/src/features/ko-account/data/secret-check.ts
+new file mode 100644
+index 00000000..8b9785a0
+--- /dev/null
++++ b/src/features/ko-account/data/secret-check.ts
+@@ -0,0 +1,41 @@
++import 'server-only';
++import { createHash, createHmac } from 'node:crypto';
++import type { KoActor } from './account';
++
++// Fixed challenge the app HMACs with each env secret; the DB HMACs the same
++// challenge with its stored key and answers only whether they match, so no
++// secret value ever leaves its own side. The check RPC lives in public like
++// the other ko RPCs: PostgREST only serves exposed schemas, and ko_private
++// is deliberately not exposed, so a ko_private function would be unreachable.
++const challenge = 'ko-secret-check';
++
++// Cached per process per secret value, keyed by a hash of the values (never
++// the values themselves): a DB secret rotation needs a restart, which is
++// already true for env secrets.
++let cached: { key: string; mismatches: string[] } | null = null;
++
++async function checkSecret(actor: KoActor, kind: 'approval' | 'meal_receipt', secret: string): Promise<boolean> {
++  try {
++    const mac = createHmac('sha256', secret).update(challenge).digest('hex');
++    const { data, error } = await actor.db.rpc(
++      'ko_secret_check', { p_kind: kind, p_challenge: challenge, p_mac: mac });
++    if (error) return false;
++    return data === true;
++  } catch {
++    // Fail closed: an unreachable check is a mismatch, never a silent pass.
++    return false;
++  }
++}
++
++// Names only, never values: the caller warns with these and KO stays unavailable.
++export async function verifyKoSecrets(actor: KoActor, config: { secret: string }): Promise<string[]> {
++  const mealSecret = process.env.KO_MEAL_RECEIPT_SECRET;
++  const key = createHash('sha256').update(`${config.secret}\n${mealSecret ?? ''}`).digest('hex');
++  if (cached?.key === key) return cached.mismatches;
++  const mismatches: string[] = [];
++  if (!(await checkSecret(actor, 'approval', config.secret))) mismatches.push('KO_APPROVAL_SECRET');
++  if (!mealSecret || !(await checkSecret(actor, 'meal_receipt', mealSecret))) mismatches.push('KO_MEAL_RECEIPT_SECRET');
++  if (mismatches.length) console.warn('KO secrets do not match the database:', mismatches.join(', '));
++  cached = { key, mismatches };
++  return mismatches;
++}
+diff --git a/src/features/ko-account/data/usage.test.ts b/src/features/ko-account/data/usage.test.ts
+new file mode 100644
+index 00000000..2946b5c0
+--- /dev/null
++++ b/src/features/ko-account/data/usage.test.ts
+@@ -0,0 +1,115 @@
++import { afterEach, beforeEach, expect, it, vi } from 'vitest';
++import * as entry from '@/features/ko-entry/server';
++import * as account from './account';
++import type { KoActor } from './account';
++import { postKoAccountChat } from './route';
++import { refundCredit, refundTakenCredit, refundTakenUsage, refundUsage } from './usage';
++
++vi.mock('server-only', () => ({}));
++vi.mock('@/core/timezone/server', () => ({ getPlayerTimezone: async () => 'Africa/Cairo' }));
++vi.mock('./facts', () => ({ loadFacts: async () => undefined, appendMemoryFacts: (facts: string) => facts }));
++vi.mock('./memory', () => ({ loadChatMemory: async () => ({ learning: false, memories: [] }), saveMemory: async () => undefined }));
++
++beforeEach(() => vi.stubEnv('KO_ANSWER', ''));
++afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
++
++const actorWithRpc = (rpc: ReturnType<typeof vi.fn>) => ({ id: 'pilot', role: 'player', db: { rpc } }) as unknown as KoActor;
++
++it('refunds usage once and reports an already-refunded key as not applied', async () => {
++  const rpc = vi.fn(async (name: string) => ({ data: name === 'ko_usage_refund', error: null }));
++  const actor = actorWithRpc(rpc);
++  expect(await refundUsage(actor, { day: '2026-11-19', kind: 'message', key: '00000000-0000-7000-8000-000000000001' })).toBe(true);
++  expect(rpc).toHaveBeenCalledWith('ko_usage_refund', {
++    p_day: '2026-11-19', p_kind: 'message', p_key: '00000000-0000-7000-8000-000000000001',
++  });
++  rpc.mockResolvedValueOnce({ data: false, error: null });
++  expect(await refundUsage(actor, { day: '2026-11-19', kind: 'message', key: '00000000-0000-7000-8000-000000000001' })).toBe(false);
++});
++
++it('refunds a credit once and reports an already-refunded token as not applied', async () => {
++  const rpc = vi.fn(async () => ({ data: true, error: null }));
++  const actor = actorWithRpc(rpc);
++  expect(await refundCredit(actor, { month: '2026-11-01', token: 'token' })).toBe(true);
++  expect(rpc).toHaveBeenCalledWith('ko_credit_refund', { p_month: '2026-11-01', p_token: 'token' });
++  rpc.mockResolvedValueOnce({ data: false, error: null });
++  expect(await refundCredit(actor, { month: '2026-11-01', token: 'token' })).toBe(false);
++});
++
++it('swallows refund RPC failures instead of throwing', async () => {
++  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
++  const rpc = vi.fn(async () => ({ data: null, error: { code: 'XX000', message: 'boom' } }));
++  const actor = actorWithRpc(rpc);
++  expect(await refundUsage(actor, { day: '2026-11-19', kind: 'photo', key: '00000000-0000-7000-8000-000000000002' })).toBe(false);
++  expect(await refundCredit(actor, { month: '2026-11-01', token: 'token' })).toBe(false);
++  expect(warn).toHaveBeenCalledTimes(2);
++});
++
++it('does not refund usage that was never taken', async () => {
++  const rpc = vi.fn(async () => ({ data: true, error: null }));
++  const actor = actorWithRpc(rpc);
++  vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-11-19T12:00:00Z'));
++  expect(await refundTakenUsage(actor, false, Date.now(), false, '00000000-0000-7000-8000-000000000003')).toBe(false);
++  expect(await refundTakenCredit(actor, false, Date.now(), 'token')).toBe(false);
++  expect(rpc).not.toHaveBeenCalled();
++});
++
++it('refunds taken usage with the Cairo day and kind of the request', async () => {
++  const rpc = vi.fn(async () => ({ data: true, error: null }));
++  const actor = actorWithRpc(rpc);
++  vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-11-19T12:00:00Z'));
++  expect(await refundTakenUsage(actor, true, Date.now(), true, '00000000-0000-7000-8000-000000000004')).toBe(true);
++  expect(rpc).toHaveBeenCalledWith('ko_usage_refund', {
++    p_day: '2026-11-19', p_kind: 'photo', p_key: '00000000-0000-7000-8000-000000000004',
++  });
++  expect(await refundTakenCredit(actor, true, Date.now(), 'token')).toBe(true);
++  expect(rpc).toHaveBeenCalledWith('ko_credit_refund', { p_month: '2026-11-01', p_token: 'token' });
++});
++
++function setupRoute(status: number) {
++  vi.stubEnv('KO_MEAL_RECEIPT_SECRET', 'm'.repeat(32));
++  const rpc = vi.fn(async (name: string) => ({
++    data: name === 'ko_rate_take' ? true : name === 'ko_usage_tier' ? [{ captain_id: 'captain', tier: 'entry' }]
++      : name === 'my_captain_id' ? null : name === 'ko_usage_refund' ? true : name === 'ko_secret_check' ? true : 'ok',
++    error: null,
++  }));
++  vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-11-19T12:00:00Z'));
++  const query = { select: vi.fn(() => query), eq: vi.fn(() => query), is: vi.fn(() => query),
++    limit: async () => ({ data: [], error: null }),
++  };
++  vi.spyOn(account, 'getKoActor').mockResolvedValue({ id: 'pilot', role: 'player', db: { rpc, from: () => query } } as unknown as KoActor);
++  vi.spyOn(entry, 'koAccountConfig').mockReturnValue({
++    origin: new URL('https://ko.test'), pilots: new Set(['pilot']), secret: 's'.repeat(32), key: 'key',
++  });
++  vi.stubGlobal('fetch', vi.fn(async () => new Response(null, { status })));
++  return rpc;
++}
++
++function post(text: string) {
++  const body = new FormData();
++  body.set('locale', 'en');
++  body.set('text', text);
++  return postKoAccountChat(new Request('https://ko.test/api/ko', {
++    method: 'POST', body, headers: { origin: 'https://ko.test', host: 'ko.test', 'content-length': '1000' },
++  }));
++}
++
++it.each([429, 503])('refunds the taken usage exactly once when Gemini answers %s', async status => {
++  const rpc = setupRoute(status);
++  const response = await post('Help');
++  expect(response.status).toBe(200);
++  expect(await response.json()).toEqual(status === 429 ? {
++    kind: 'message', text: 'KO is busy today. Try again in a bit. If it still doesn’t work, try tomorrow morning.',
++    quick: ['Today’s workout', 'Today’s meals', 'My progress'],
++  } : { kind: 'message', text: 'KO is busy right now. Try again in a minute.' });
++  const refunds = rpc.mock.calls.filter(([name]) => name === 'ko_usage_refund');
++  expect(refunds).toEqual([['ko_usage_refund', { p_day: '2026-11-19', p_kind: 'message', p_key: expect.any(String) }]]);
++  expect(rpc.mock.calls.filter(([name]) => name === 'ko_usage_take')).toHaveLength(1);
++});
++
++it('refunds the taken usage exactly once when Gemini throws', async () => {
++  const rpc = setupRoute(500);
++  const response = await post('Help');
++  expect(response.status).toBe(502);
++  expect(await response.json()).toEqual({ error: 'failed' });
++  expect(rpc.mock.calls.filter(([name]) => name === 'ko_usage_refund')).toHaveLength(1);
++});
+diff --git a/src/features/ko-account/secret-check.test.ts b/src/features/ko-account/secret-check.test.ts
+new file mode 100644
+index 00000000..a6a84438
+--- /dev/null
++++ b/src/features/ko-account/secret-check.test.ts
+@@ -0,0 +1,96 @@
++import { createHmac } from 'node:crypto';
++import { afterEach, expect, it, vi } from 'vitest';
++import type { KoActor } from './data/account';
++import { verifyKoSecrets } from './data/secret-check';
++
++vi.mock('server-only', () => ({}));
++
++const challenge = 'ko-secret-check';
++const approval = (n: string) => 'a'.repeat(31) + n;
++const meal = (n: string) => 'm'.repeat(31) + n;
++
++afterEach(() => { vi.restoreAllMocks(); vi.unstubAllEnvs(); });
++
++// The mocked RPC answers the way the real ko_secret_check does: true only
++// when the MAC matches the database-side secret for the requested kind.
++function setup(dbSecrets: { approval: string; meal: string }, fail?: 'error' | 'throws') {
++  const rpc = vi.fn(async (name: string, args: { p_kind: string; p_challenge: string; p_mac: string }) => {
++    if (fail === 'throws') throw new Error('Connection failed');
++    if (fail === 'error') return { data: null, error: { message: 'boom' } };
++    const expected = createHmac('sha256', args.p_kind === 'approval' ? dbSecrets.approval : dbSecrets.meal)
++      .update(args.p_challenge).digest('hex');
++    return { data: args.p_mac === expected, error: null };
++  });
++  const actor = { id: 'pilot', role: 'player', db: { rpc } } as unknown as KoActor;
++  return { actor, rpc };
++}
++
++function expectMac(rpc: ReturnType<typeof vi.fn>, kind: 'approval' | 'meal_receipt', secret: string) {
++  const call = rpc.mock.calls.find(([, args]) => (args as { p_kind: string }).p_kind === kind);
++  expect(call?.[0]).toBe('ko_secret_check');
++  expect(call?.[1]).toEqual({
++    p_kind: kind, p_challenge: challenge,
++    p_mac: createHmac('sha256', secret).update(challenge).digest('hex'),
++  });
++}
++
++it('returns [] when both secrets match the database', async () => {
++  vi.stubEnv('KO_MEAL_RECEIPT_SECRET', meal('1'));
++  const { actor, rpc } = setup({ approval: approval('1'), meal: meal('1') });
++  expect(await verifyKoSecrets(actor, { secret: approval('1') })).toEqual([]);
++  expect(rpc).toHaveBeenCalledTimes(2);
++  expectMac(rpc, 'approval', approval('1'));
++  expectMac(rpc, 'meal_receipt', meal('1'));
++});
++
++it('returns the mismatching name when only the approval secret disagrees', async () => {
++  vi.stubEnv('KO_MEAL_RECEIPT_SECRET', meal('2'));
++  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
++  const { actor } = setup({ approval: approval('9'), meal: meal('2') });
++  expect(await verifyKoSecrets(actor, { secret: approval('2') })).toEqual(['KO_APPROVAL_SECRET']);
++  expect(warn).toHaveBeenCalledWith('KO secrets do not match the database:', 'KO_APPROVAL_SECRET');
++});
++
++it('returns both names when both secrets disagree', async () => {
++  vi.stubEnv('KO_MEAL_RECEIPT_SECRET', meal('3'));
++  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
++  const { actor } = setup({ approval: approval('9'), meal: meal('9') });
++  expect(await verifyKoSecrets(actor, { secret: approval('3') }))
++    .toEqual(['KO_APPROVAL_SECRET', 'KO_MEAL_RECEIPT_SECRET']);
++  expect(warn).toHaveBeenCalledWith(
++    'KO secrets do not match the database:', 'KO_APPROVAL_SECRET, KO_MEAL_RECEIPT_SECRET');
++});
++
++it('treats a missing meal secret as a mismatch without calling the RPC for it', async () => {
++  vi.stubEnv('KO_MEAL_RECEIPT_SECRET', '');
++  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
++  const { actor, rpc } = setup({ approval: approval('4'), meal: meal('4') });
++  expect(await verifyKoSecrets(actor, { secret: approval('4') })).toEqual(['KO_MEAL_RECEIPT_SECRET']);
++  expect(rpc).toHaveBeenCalledTimes(1);
++  expect(warn).toHaveBeenCalledWith('KO secrets do not match the database:', 'KO_MEAL_RECEIPT_SECRET');
++});
++
++it('checks once per process per secret value and re-checks when a secret changes', async () => {
++  vi.stubEnv('KO_MEAL_RECEIPT_SECRET', meal('5'));
++  const dbSecrets = { approval: approval('5'), meal: meal('5') };
++  const { actor, rpc } = setup(dbSecrets);
++  expect(await verifyKoSecrets(actor, { secret: approval('5') })).toEqual([]);
++  expect(await verifyKoSecrets(actor, { secret: approval('5') })).toEqual([]);
++  expect(rpc).toHaveBeenCalledTimes(2);
++  // The secret rotated on both sides: the new value is checked once, then cached again.
++  vi.stubEnv('KO_MEAL_RECEIPT_SECRET', meal('6'));
++  dbSecrets.meal = meal('6');
++  expect(await verifyKoSecrets(actor, { secret: approval('5') })).toEqual([]);
++  expect(await verifyKoSecrets(actor, { secret: approval('5') })).toEqual([]);
++  expect(rpc).toHaveBeenCalledTimes(4);
++});
++
++it.each(['error', 'throws'] as const)('swallows RPC %s as a mismatch instead of throwing', async fail => {
++  vi.stubEnv('KO_MEAL_RECEIPT_SECRET', fail === 'error' ? meal('7') : meal('8'));
++  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
++  const secret = fail === 'error' ? approval('7') : approval('8');
++  const { actor } = setup({ approval: secret, meal: meal('7') }, fail);
++  expect(await verifyKoSecrets(actor, { secret })).toEqual(['KO_APPROVAL_SECRET', 'KO_MEAL_RECEIPT_SECRET']);
++  expect(warn).toHaveBeenCalledWith(
++    'KO secrets do not match the database:', 'KO_APPROVAL_SECRET, KO_MEAL_RECEIPT_SECRET');
++});
+diff --git a/supabase/migrations/0165_ko_usage_refund.sql b/supabase/migrations/0165_ko_usage_refund.sql
+new file mode 100644
+index 00000000..ce8932a0
+--- /dev/null
++++ b/supabase/migrations/0165_ko_usage_refund.sql
+@@ -0,0 +1,75 @@
++create table security_private.ko_usage_refunds (
++  key uuid not null primary key,
++  user_id uuid not null,
++  day date not null,
++  kind text not null check (kind in ('message', 'photo')),
++  created_at timestamptz not null default now()
++);
++alter table security_private.ko_usage_refunds enable row level security;
++revoke all on security_private.ko_usage_refunds from public, anon, authenticated;
++
++-- Refund one taken KO message/photo. The key is the idempotency key: a second
++-- call with the same key is a no-op. The key is recorded even when no counter
++-- moves, so an unknown-key refund still applies exactly once (and the floor of
++-- 0 keeps the counters from going negative); the route only refunds after
++-- ko_usage_take returned 'ok', so in practice every refund balances a take.
++create function public.ko_usage_refund(p_day date, p_kind text, p_key uuid) returns boolean
++language plpgsql security definer set search_path = '' as $$
++declare
++  owner_id uuid := security_private.ko_usage_owner(false);
++  month_start date := date_trunc('month', now() at time zone 'Africa/Cairo')::date;
++begin
++  if p_key is null or p_kind is null or p_kind not in ('message', 'photo')
++    or p_day is null or p_day not between (now() at time zone 'UTC')::date - 1 and (now() at time zone 'UTC')::date + 1 then
++    raise exception 'invalid usage refund parameters' using errcode = '22023';
++  end if;
++  insert into security_private.ko_usage_refunds(key, user_id, day, kind)
++    values (p_key, auth.uid(), p_day, p_kind) on conflict do nothing;
++  if not found then return false; end if;
++  if p_kind = 'message' then
++    update security_private.ko_usage_daily set messages = greatest(messages - 1, 0)
++      where user_id = auth.uid() and day = p_day;
++  else
++    update security_private.ko_usage_daily set photos = greatest(photos - 1, 0)
++      where user_id = auth.uid() and day = p_day;
++  end if;
++  update security_private.ko_usage_monthly set calls = greatest(calls - 1, 0)
++    where captain_id = owner_id and month = month_start;
++  return true;
++end;
++$$;
++
++-- Refund one taken big-action credit. Only when the action did not apply: a
++-- receipt in ko_action_receipts means it did. A failed ko_apply_action rolls
++-- its whole call back, receipt included, so an error such as 40001 (the
++-- prescription changed before anything was written) leaves no receipt and
++-- the credit is refunded; a replayed confirmation leaves the receipt behind
++-- and is never refunded. Deleting the approval row makes the refund itself
++-- idempotent and lets a later retry of the same token take a fresh credit.
++create function public.ko_credit_refund(p_month date, p_token text) returns boolean
++language plpgsql security definer set search_path = '' as $$
++declare
++  owner_id uuid := security_private.ko_usage_owner(true);
++  approved jsonb := ko_private.verified_approval(p_token);
++  approval_id uuid := (approved ->> 'id')::uuid;
++begin
++  if p_month is distinct from date_trunc('month', now() at time zone 'Africa/Cairo')::date then
++    raise exception 'invalid credit refund parameters' using errcode = '22023';
++  end if;
++  if exists (select 1 from ko_private.ko_action_receipts
++    where captain_id = owner_id and action_id = approval_id) then
++    return false;
++  end if;
++  delete from security_private.ko_credit_approvals
++    where captain_id = owner_id and action_id = approval_id;
++  if not found then return false; end if;
++  update security_private.ko_usage_monthly set credits = greatest(credits - 1, 0)
++    where captain_id = owner_id and month = p_month;
++  return true;
++end;
++$$;
++
++revoke all on function public.ko_usage_refund(date, text, uuid),
++  public.ko_credit_refund(date, text) from public, anon, authenticated;
++grant execute on function public.ko_usage_refund(date, text, uuid),
++  public.ko_credit_refund(date, text) to authenticated;
+diff --git a/supabase/migrations/0166_ko_memory_scope.sql b/supabase/migrations/0166_ko_memory_scope.sql
+new file mode 100644
+index 00000000..5aed74c8
+--- /dev/null
++++ b/supabase/migrations/0166_ko_memory_scope.sql
+@@ -0,0 +1,20 @@
++-- T-423: scope KO memory uniqueness per (user, player).
++--
++-- The old index on (user_id, lower(text)) treated a note saved for one player
++-- as a collision for every other player, and let two general (NULL-player)
++-- notes with the same text both insert, because Postgres treats NULLs as
++-- distinct in a unique index. NULLS NOT DISTINCT makes NULL player_id a
++-- value, so the same text exists at most once per (user, player) — including
++-- once for general notes. It needs Postgres 15+; Supabase runs Postgres 15
++-- or 17 and the PGlite test database is 18, so no coalesce fallback is used.
++--
++-- Backfill is a no-op by construction: every existing row already carries the
++-- player_id it was saved with (a resolved roster player, or NULL for a
++-- general note). Creating the new index cannot fail on existing data either:
++-- the old index already forbade two rows with the same user and text, so no
++-- (user, player, text) collision can exist. The 30-row trim trigger stays
++-- per-user and is unchanged.
++begin;
++drop index if exists public.ko_memories_text_idx;
++create unique index ko_memories_text_idx on public.ko_memories (user_id, player_id, lower(text)) nulls not distinct;
++commit;
+diff --git a/supabase/migrations/0167_ko_secret_check.sql b/supabase/migrations/0167_ko_secret_check.sql
+new file mode 100644
+index 00000000..521c5ce6
+--- /dev/null
++++ b/supabase/migrations/0167_ko_secret_check.sql
+@@ -0,0 +1,39 @@
++-- T-426: one enforced source of truth for KO secrets.
++--
++-- The app signs approval tokens with env KO_APPROVAL_SECRET while the DB
++-- verifies them against security_private.ko_approval_config.signing_key,
++-- and signs meal receipts with env KO_MEAL_RECEIPT_SECRET while the DB
++-- verifies against security_private.app_secrets ('meal_receipt'). Nothing
++-- seeded either side or checked they match, so a disagreement silently
++-- broke every KO confirmation and skipped meal points. This function
++-- proves agreement without ever revealing a secret value: the app HMACs
++-- a fixed challenge with its env secret and the DB compares it with an
++-- HMAC from its stored key, returning only a boolean. It lives in public
++-- like the other ko RPCs: PostgREST only serves exposed schemas and
++-- ko_private is deliberately not exposed (T-116), so a ko_private function
++-- would be unreachable from the app and KO would fail closed everywhere.
++-- Kind 'approval'
++-- also covers the usage-warning proof, which is signed with the same
++-- approval key (ko_usage_claim_warning).
++begin;
++create function public.ko_secret_check(p_kind text, p_challenge text, p_mac text) returns boolean
++language plpgsql security definer set search_path = '' as $$
++declare
++  v_secret text;
++begin
++  if p_kind = 'approval' then
++    select signing_key into v_secret from security_private.ko_approval_config where singleton;
++  elsif p_kind = 'meal_receipt' then
++    select value into v_secret from security_private.app_secrets where name = 'meal_receipt';
++  else
++    return false;
++  end if;
++  if v_secret is null or p_challenge is null or p_mac is null then
++    return false;
++  end if;
++  return p_mac = encode(extensions.hmac(convert_to(p_challenge, 'UTF8'), convert_to(v_secret, 'UTF8'), 'sha256'), 'hex');
++end;
++$$;
++revoke all on function public.ko_secret_check(text, text, text) from public, anon, authenticated;
++grant execute on function public.ko_secret_check(text, text, text) to authenticated;
++commit;
+diff --git a/supabase/tests/ko-secret-check.test.ts b/supabase/tests/ko-secret-check.test.ts
+new file mode 100644
+index 00000000..4a17f1be
+--- /dev/null
++++ b/supabase/tests/ko-secret-check.test.ts
+@@ -0,0 +1,55 @@
++import { createHmac } from 'node:crypto';
++import type { PGlite } from '@electric-sql/pglite';
++import { afterAll, beforeAll, beforeEach, expect, it } from 'vitest';
++import { asUser, createTestDb, createUser } from './harness';
++
++const challenge = 'ko-secret-check';
++const approvalSecret = 'approval-test-secret-0123456789ab';
++const mealSecret = 'meal-receipt-test-secret-01234567';
++let db: PGlite;
++let player: string;
++beforeAll(async () => { db = await createTestDb(); });
++afterAll(async () => { await db.close(); });
++beforeEach(async () => {
++  player = await createUser(db, 'player');
++  await db.query(`insert into security_private.ko_approval_config(signing_key) values ($1)
++    on conflict (singleton) do update set signing_key = excluded.signing_key`, [approvalSecret]);
++  await db.query(`insert into security_private.app_secrets(name, value) values ('meal_receipt', $1)
++    on conflict (name) do update set value = excluded.value`, [mealSecret]);
++});
++
++const mac = (secret: string) => createHmac('sha256', secret).update(challenge).digest('hex');
++async function check(kind: string, secret: string, who = player) {
++  const result = await asUser(db, who, tx => tx.query<{ ko_secret_check: boolean }>(
++    'select public.ko_secret_check($1, $2, $3) as ko_secret_check', [kind, challenge, mac(secret)]));
++  return result.rows[0]?.ko_secret_check;
++}
++
++it('returns true for the stored approval and meal-receipt keys', async () => {
++  expect(await check('approval', approvalSecret)).toBe(true);
++  expect(await check('meal_receipt', mealSecret)).toBe(true);
++});
++
++it('returns false for a wrong key', async () => {
++  expect(await check('approval', 'wrong-approval-secret-012345678')).toBe(false);
++  expect(await check('meal_receipt', 'wrong-meal-secret-012345678901')).toBe(false);
++});
++
++it('returns false for an unknown kind', async () => {
++  expect(await check('usage_warning', approvalSecret)).toBe(false);
++});
++
++it('returns false when the database key is missing', async () => {
++  await db.query('delete from security_private.ko_approval_config');
++  expect(await check('approval', approvalSecret)).toBe(false);
++  await db.query("delete from security_private.app_secrets where name = 'meal_receipt'");
++  expect(await check('meal_receipt', mealSecret)).toBe(false);
++});
++
++it('denies anon execution', async () => {
++  await expect(db.transaction(async tx => {
++    await tx.exec('set local role anon');
++    await tx.query('select public.ko_secret_check($1, $2, $3)',
++      ['approval', challenge, mac(approvalSecret)]);
++  })).rejects.toMatchObject({ code: '42501' });
++});
+diff --git a/supabase/tests/ko-usage-refund.test.ts b/supabase/tests/ko-usage-refund.test.ts
+new file mode 100644
+index 00000000..e9cdfb0f
+--- /dev/null
++++ b/supabase/tests/ko-usage-refund.test.ts
+@@ -0,0 +1,116 @@
++import type { PGlite } from '@electric-sql/pglite';
++import { createHmac } from 'node:crypto';
++import { afterAll, beforeAll, expect, it } from 'vitest';
++import { asUser, createCaptainWithPlayer, createTestDb, createUser, dayOffset, TEST_NOW } from './harness';
++
++let db: PGlite;
++let first: Awaited<ReturnType<typeof createCaptainWithPlayer>>;
++const month = '2026-11-01';
++const secret = 'ko-test-signing-key-123456789012345';
++
++beforeAll(async () => {
++  db = await createTestDb(async (file, instance) => {
++    if (file !== '0158_ko_usage.sql') return;
++    await instance.exec(`
++      create or replace function pg_catalog.now() returns timestamptz language sql stable as $$
++        select coalesce(nullif(current_setting('test.usage_now', true), '')::timestamptz, timestamptz '${TEST_NOW}')
++      $$;
++    `);
++  });
++  first = await createCaptainWithPlayer(db);
++  await db.query('insert into security_private.ko_approval_config(signing_key) values ($1)', [secret]);
++});
++afterAll(async () => db?.close());
++
++async function usage(id: string, day: string, kind = 'message', caps = [2, 1, 5]) {
++  const { rows } = await asUser(db, id, tx => tx.query<{ result: string }>(
++    'select public.ko_usage_take($1,$2,$3,$4,$5) as result', [day, kind, ...caps]));
++  return rows[0]?.result;
++}
++
++async function refundUsage(id: string, day: string, kind: string, key: string, anonymous = false) {
++  const { rows } = await asUser(db, id, tx => tx.query<{ result: boolean }>(
++    'select public.ko_usage_refund($1,$2,$3) as result', [day, kind, key]), anonymous);
++  return rows[0]?.result;
++}
++
++async function counters(captain: string, user: string, day: string) {
++  const { rows } = await db.query(
++    `select (select messages from security_private.ko_usage_daily where user_id=$2 and day=$3) as messages,
++      (select photos from security_private.ko_usage_daily where user_id=$2 and day=$3) as photos,
++      (select calls from security_private.ko_usage_monthly where captain_id=$1 and month=$4) as calls,
++      (select credits from security_private.ko_usage_monthly where captain_id=$1 and month=$4) as credits`,
++    [captain, user, day, month]);
++  return rows[0] as { messages: number | null; photos: number | null; calls: number | null; credits: number | null };
++}
++
++const tokenFor = (captain: string, index: number) => {
++  const body = Buffer.from(JSON.stringify({
++    id: `00000000-0000-7000-8000-00000000000${index}`, actor: captain,
++    kind: 'training', expires: Date.parse(TEST_NOW) + 60_000,
++  })).toString('base64url');
++  return body + '.' + createHmac('sha256', secret).update(body).digest('hex');
++};
++
++async function takeCredit(captain: string, signed: string, cap = 2) {
++  const { rows } = await asUser(db, captain, tx => tx.query<{ result: boolean }>(
++    'select public.ko_credit_take($1,$2,$3) as result', [month, cap, signed]));
++  return rows[0]?.result;
++}
++
++async function refundCredit(captain: string, signed: string, anonymous = false) {
++  const { rows } = await asUser(db, captain, tx => tx.query<{ result: boolean }>(
++    'select public.ko_credit_refund($1,$2) as result', [month, signed]), anonymous);
++  return rows[0]?.result;
++}
++
++const key = (index: number) => `00000000-0000-7000-8000-0000000000${index}0`;
++
++it('returns message and photo counters to their prior values and refunds each key once', async () => {
++  const today = await dayOffset(db, 0);
++  expect(await usage(first.player, today)).toBe('ok');
++  expect(await usage(first.player, today, 'photo')).toBe('ok');
++  expect(await counters(first.captain, first.player, today)).toEqual({ messages: 1, photos: 1, calls: 2, credits: 0 });
++  expect(await refundUsage(first.player, today, 'message', key(1))).toBe(true);
++  expect(await refundUsage(first.player, today, 'message', key(1))).toBe(false);
++  expect(await counters(first.captain, first.player, today)).toEqual({ messages: 0, photos: 1, calls: 1, credits: 0 });
++  expect(await refundUsage(first.player, today, 'photo', key(2))).toBe(true);
++  expect(await counters(first.captain, first.player, today)).toEqual({ messages: 0, photos: 0, calls: 0, credits: 0 });
++});
++
++it('refunds a second take with a different key but never drives a counter below 0', async () => {
++  const today = await dayOffset(db, 0);
++  expect(await usage(first.player, today)).toBe('ok');
++  expect(await usage(first.player, today)).toBe('ok');
++  expect(await refundUsage(first.player, today, 'message', key(3))).toBe(true);
++  expect(await refundUsage(first.player, today, 'message', key(4))).toBe(true);
++  expect(await counters(first.captain, first.player, today)).toEqual({ messages: 0, photos: 0, calls: 0, credits: 0 });
++  // Unknown-key refund: no take backs it, so it applies once, records the key,
++  // and the floor of 0 keeps the counters where they were.
++  expect(await refundUsage(first.player, today, 'message', key(5))).toBe(true);
++  expect(await refundUsage(first.player, today, 'message', key(5))).toBe(false);
++  expect(await counters(first.captain, first.player, today)).toEqual({ messages: 0, photos: 0, calls: 0, credits: 0 });
++});
++
++it('restores a taken credit once and is blocked when a receipt exists', async () => {
++  const captain = await createUser(db, 'captain');
++  const signed = tokenFor(captain, 1);
++  expect(await takeCredit(captain, signed)).toBe(true);
++  expect((await counters(captain, captain, await dayOffset(db, 0))).credits).toBe(1);
++  expect(await refundCredit(captain, signed)).toBe(true);
++  expect((await counters(captain, captain, await dayOffset(db, 0))).credits).toBe(0);
++  expect(await refundCredit(captain, signed)).toBe(false);
++  // A fresh take followed by a receipt blocks the refund: the action applied.
++  const applied = tokenFor(captain, 2);
++  expect(await takeCredit(captain, applied)).toBe(true);
++  await db.query('insert into ko_private.ko_action_receipts(captain_id, action_id) values ($1, $2)',
++    [captain, '00000000-0000-7000-8000-000000000002']);
++  expect(await refundCredit(captain, applied)).toBe(false);
++  expect((await counters(captain, captain, await dayOffset(db, 0))).credits).toBe(1);
++});
++
++it('refuses anonymous callers for both refund RPCs', async () => {
++  const today = await dayOffset(db, 0);
++  await expect(refundUsage(first.player, today, 'message', key(6), true)).rejects.toMatchObject({ code: '42501' });
++  await expect(refundCredit(first.captain, tokenFor(first.captain, 3), true)).rejects.toMatchObject({ code: '42501' });
++});

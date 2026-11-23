@@ -47,12 +47,6 @@ export function CheckinSheet({ latest, open, onClose, onSent }: {
     if (open) dialog.current?.showModal();
     else dialog.current?.close();
   }, [open]);
-  useEffect(() => {
-    const update = () => { if (!navigator.onLine) setError(t('goOnlineToSendPhotos')); };
-    update();
-    window.addEventListener('offline', update);
-    return () => window.removeEventListener('offline', update);
-  }, [t]);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy) return;
@@ -66,7 +60,9 @@ export function CheckinSheet({ latest, open, onClose, onSent }: {
         photo_poses: poses.filter((_, index) => photos[index] !== null),
         onProgress: (completed, total) => setProgress(Math.round(completed / total * 100)),
       }, t);
-      if (result.error) {
+      if (result.status === 'already-sent') {
+        setError(result.error ?? t('youveAlreadySentThisWeeksCheckin'));
+      } else if (result.error) {
         setError(result.error);
       } else onSent(today);
     } catch {

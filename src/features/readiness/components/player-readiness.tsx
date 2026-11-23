@@ -11,7 +11,7 @@ const DailyPanel = dynamic(() => import('./daily-panel').then(module => module.D
 });
 
 export function PlayerReadiness(props: { playerId?: string; today: string; rest: boolean; coachRest?: boolean;
-  tomorrow?: string; tomorrowRest?: boolean; weightKg?: number; onDecisionChange?: (decision: Decision | null) => void }) {
+  tomorrow?: string; tomorrowRest?: boolean; weightKg?: number; hideWaterStrip?: boolean; onDecisionChange?: (decision: Decision | null) => void }) {
   const decision = useTodayDecision(props.playerId, props.today);
   const onChange = props.onDecisionChange;
   useEffect(() => { onChange?.(decision); }, [decision, onChange]);

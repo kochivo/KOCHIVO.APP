@@ -72,6 +72,27 @@ it('renders water and readiness immediately below the training hero', () => {
   expect(html).toContain('Add 250 ml water');
 });
 
+it('links home to the weekly check-in with a visible label', () => {
+  state.rest = false;
+  state.decision = null;
+  const html = home();
+  expect(html).toContain('Weekly check-in');
+  expect(html).toContain('href="/player/progress?checkin=1"');
+});
+
+it('renders the morning questions without a second water control when the strip is hidden', () => {
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' },
+    createElement(DailyPanel, { playerId: 'player', today: '2026-11-04', rest: false, hideWaterStrip: true })));
+  expect(html).not.toContain('data-testid="water-strip"');
+  expect(html).toContain('Answer the two morning questions');
+});
+
+it('keeps the water strip in the morning details by default', () => {
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' },
+    createElement(DailyPanel, { playerId: 'player', today: '2026-11-04', rest: false })));
+  expect(html).toContain('data-testid="water-strip"');
+});
+
 it('applies coach rest on a scheduled training day', () => {
   state.rest = false;
   state.decision = 'rest';

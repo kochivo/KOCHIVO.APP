@@ -25,9 +25,12 @@ const secret = 's'.repeat(32);
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 function setup(role: KoActor['role'], usage = 'ok', credit = true) {
+  // A configured environment has both KO secrets set; without the meal secret
+  // the secret pre-check would make KO unavailable in every route test.
+  vi.stubEnv('KO_MEAL_RECEIPT_SECRET', 'm'.repeat(32));
   let warned = false;
   const rpc = vi.fn(async (name: string) => ({
-    data: name === 'ko_rate_take' ? true : name === 'ko_apply_action' ? { sent: true }
+    data: name === 'ko_rate_take' ? true : name === 'ko_secret_check' ? true : name === 'ko_apply_action' ? { sent: true }
       : name === 'ko_usage_tier' ? [{ captain_id: actorId, tier: 'entry' }]
       : name === 'ko_usage_take' ? usage
       : name === 'my_captain_id' ? null

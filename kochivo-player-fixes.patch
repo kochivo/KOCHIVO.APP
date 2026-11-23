@@ -1,0 +1,651 @@
+diff --git a/src/app/[locale]/(player)/player/layout.test.ts b/src/app/[locale]/(player)/player/layout.test.ts
+new file mode 100644
+index 00000000..341f562a
+--- /dev/null
++++ b/src/app/[locale]/(player)/player/layout.test.ts
+@@ -0,0 +1,50 @@
++import { createElement } from 'react';
++import type { ReactNode } from 'react';
++import { renderToString } from 'react-dom/server';
++import { expect, it, vi } from 'vitest';
++import PlayerLayout from './layout';
++
++const path = vi.hoisted(() => ({ value: '/player' }));
++
++vi.mock('next/headers', () => ({
++  headers: async () => ({ get: (name: string) => (name === 'x-kochivo-path' ? path.value : null) }),
++}));
++vi.mock('@/ui', () => ({ PageContainer: ({ children }: { children: ReactNode }) => children }));
++vi.mock('@/features/player-shell', () => ({
++  PlayerShell: ({ children }: { children: ReactNode }) => createElement('main', null, children),
++}));
++vi.mock('@/features/demo', () => ({
++  DemoMode: ({ children }: { children: ReactNode }) => children,
++}));
++vi.mock('@/features/product-tour', () => ({ ProductTour: () => null }));
++vi.mock('@/features/auth', () => ({ SignOutButton: () => null }));
++vi.mock('@/features/ko-preview/server', () => ({ KoAccountLink: () => null }));
++vi.mock('@/core/timezone/boundary', () => ({ TimezoneBoundary: ({ children }: { children: ReactNode }) => children }));
++
++const render = async (value: string) => {
++  path.value = value;
++  return renderToString(await PlayerLayout({ children: createElement('h1', null, 'player-page-content') }));
++};
++
++it('renders player page content', async () => {
++  const html = await render('/player');
++  expect(html).toContain('<h1>player-page-content</h1>');
++});
++
++// P1: the shell's inner div never renders for its loading, error and
++// no-captain states, while the KO launcher (mounted in the layout, outside
++// the shell) floats over those screens too — so the layout, the one place
++// that owns every player page, supplies the shared launcher clearance.
++it('pads player pages with the shared launcher clearance', async () => {
++  const html = await render('/player/nutrition');
++  expect(html).toContain('class="player-content"');
++  expect(html).toContain('<h1>player-page-content</h1>');
++});
++
++// Workout/onboarding never mount the launcher (KoAccountLink returns null
++// there), so they get no clearance — mirroring its gate exactly.
++it.each(['/player/workout/day-1', '/player/onboarding'])('does not pad %s, where the launcher never mounts', async (value) => {
++  const html = await render(value);
++  expect(html).not.toContain('player-content');
++  expect(html).toContain('<h1>player-page-content</h1>');
++});
+diff --git a/src/app/[locale]/(player)/player/layout.tsx b/src/app/[locale]/(player)/player/layout.tsx
+index fc25e16b..72290d08 100644
+--- a/src/app/[locale]/(player)/player/layout.tsx
++++ b/src/app/[locale]/(player)/player/layout.tsx
+@@ -1,4 +1,5 @@
+ import type { ReactNode } from 'react';
++import { headers } from 'next/headers';
+ import { PageContainer } from '@/ui';
+ import { PlayerShell } from '@/features/player-shell';
+ import { ProductTour } from '@/features/product-tour';
+@@ -7,6 +8,15 @@ import { KoAccountLink } from '@/features/ko-preview/server';
+ import { SignOutButton } from '@/features/auth';
+ import { TimezoneBoundary } from '@/core/timezone/boundary';
+ 
+-export default function PlayerLayout({ children }: { children: ReactNode }) {
+-  return <TimezoneBoundary><div className="bg-glow min-h-dvh"><PageContainer><PlayerShell unassignedAction={<SignOutButton className="min-h-12 w-full" />}><DemoMode failOpen>{children}<ProductTour role="player" /></DemoMode></PlayerShell></PageContainer><KoAccountLink player /></div></TimezoneBoundary>;
++export default async function PlayerLayout({ children }: { children: ReactNode }) {
++  // P1: the shared launcher clearance lives here, in the one place that owns
++  // every player page. The shell's inner div never renders for its loading,
++  // error and no-captain states, while the KO launcher (mounted below, outside
++  // the shell) floats over those screens too — so the shell alone cannot own
++  // it. Workout/onboarding never mount the launcher (KoAccountLink returns
++  // null there), so they get no clearance, mirroring its gate exactly.
++  const path = (await headers()).get('x-kochivo-path') ?? '';
++  const shell = <PlayerShell unassignedAction={<SignOutButton className="min-h-12 w-full" />}><DemoMode failOpen>{children}<ProductTour role="player" /></DemoMode></PlayerShell>;
++  const page = /^\/player\/(?:workout|onboarding)(?:\/|$)/.test(path) ? shell : <div className="player-content">{shell}</div>;
++  return <TimezoneBoundary><div className="bg-glow min-h-dvh"><PageContainer>{page}</PageContainer><KoAccountLink player /></div></TimezoneBoundary>;
+ }
+diff --git a/src/app/[locale]/(player)/player/progress/page.tsx b/src/app/[locale]/(player)/player/progress/page.tsx
+index 8d5bf96b..ea2f0e25 100644
+--- a/src/app/[locale]/(player)/player/progress/page.tsx
++++ b/src/app/[locale]/(player)/player/progress/page.tsx
+@@ -5,9 +5,10 @@ import { ProgressScreen } from '@/features/progress';
+ import { fetchPlayerIdentity } from '@/features/player-home/server';
+ import { AnalyticsLoader } from '@/features/muscle-analytics';
+ 
+-export default async function ProgressPage() {
++export default async function ProgressPage({ searchParams }: { searchParams: Promise<{ checkin?: string }> }) {
+   const { playerId } = await fetchPlayerIdentity();
+-  return <ProgressScreen analytics={playerId ? <AnalyticsLoader playerId={playerId} self /> : null} />;
++  const autoOpenCheckin = (await searchParams).checkin === '1';
++  return <ProgressScreen autoOpenCheckin={autoOpenCheckin} analytics={playerId ? <AnalyticsLoader playerId={playerId} self /> : null} />;
+ }
+ 
+ export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+diff --git a/src/app/globals.css b/src/app/globals.css
+index 595b61b9..16831745 100644
+--- a/src/app/globals.css
++++ b/src/app/globals.css
+@@ -447,6 +447,9 @@ html[data-keyboard='open'] dialog:modal { inset-block-end: var(--keyboard-inset)
+ .toast-stack { inset-inline: 0; bottom: calc(10.5rem + var(--safe-bottom)); }
+ /* Includes the launcher, its tooltip and a gap above the fixed navigation. */
+ .captain-content { padding-block-end: var(--captain-content-clearance); }
++/* Same shared clearance for player pages: the launcher floats over every
++   player screen, so the layout — not each screen — reserves room for it. */
++.player-content { padding-block-end: var(--player-content-clearance); }
+ @media (min-width: 1024px) {
+   .captain-content { --captain-content-clearance: calc(1.5rem + 3.25rem + 3rem + var(--spacing-card-gap)); }
+ }
+diff --git a/src/features/ko-preview/ko-launcher-clearance.test.ts b/src/features/ko-preview/ko-launcher-clearance.test.ts
+index 81a121c2..df7921bd 100644
+--- a/src/features/ko-preview/ko-launcher-clearance.test.ts
++++ b/src/features/ko-preview/ko-launcher-clearance.test.ts
+@@ -78,6 +78,63 @@ it('keeps the shared captain clearance taller than the launcher in every positio
+   expect(css).toContain('--captain-content-clearance: calc(1.5rem + 3.25rem + 3rem + var(--spacing-card-gap));');
+ });
+ 
++// P1: the player launchers sit in exactly the same phone spot as the captain
++// ones (fixed, start side, above the nav, 52px), but they never take the
++// captain desktop shift to the end side — there is no captain workspace on
++// player screens, and the teaser desktop branch is captain-gated.
++it.each(['ar', 'en'] as const)('keeps the player widget launcher fixed above the nav, labelled and at least 48px in %s', locale => {
++  const html = render(createElement(KoWidget, { role: 'player', account: true }), locale);
++  const button = launcherButton(html);
++  expect(button).toContain('fixed');
++  expect(button).toContain('start-[max(1rem,var(--safe-start))]');
++  expect(button).toContain('bottom-[calc(var(--nav-clearance)+0.5rem)]');
++  expect(button).toContain('lg:bottom-6');
++  expect(button).toContain('size-13');
++  expect(button).toContain('min-h-12');
++  expect(button).toContain('min-w-12');
++  expect(button).toContain('aria-haspopup="dialog"');
++  expect(button).toContain(`aria-label="${createT(previewMessages, locale)('accountChatTitle')}"`);
++  expect(button).not.toContain('end-20');
++  expect(button).not.toMatch(/left-|right-/);
++});
++
++it.each(['ar', 'en'] as const)('keeps the player teaser launcher fixed above the nav, labelled and at least 48px in %s', locale => {
++  const html = render(createElement(KoTeaser, { role: 'player', userId: 'user', joined: false }), locale);
++  const button = launcherButton(html);
++  expect(button).toContain('fixed');
++  expect(button).toContain('start-[max(1rem,var(--safe-start))]');
++  expect(button).toContain('bottom-[calc(var(--nav-clearance)+0.5rem)]');
++  expect(button).toContain('size-13');
++  expect(button).toContain('min-h-12');
++  expect(button).toContain('min-w-12');
++  expect(button).toContain('aria-haspopup="dialog"');
++  expect(button).toContain(`aria-label="${createT(koEntryMessages, locale)('teaserOpen')}"`);
++  expect(button).not.toContain('end-20');
++  expect(button).not.toContain('end-page-x');
++  expect(button).not.toMatch(/left-|right-/);
++});
++
++it('never enables the teaser desktop branch for players', () => {
++  const teaser = readFileSync(new URL('./components/ko-teaser.tsx', import.meta.url), 'utf8');
++  expect(teaser).toContain("const captainPhone = role === 'captain' && captainWorkspaceEnabled();");
++  expect(teaser).toContain('captainPhone ? subscribeViewport : ignoreViewport');
++});
++
++// P1: the shared player clearance is the same token as the captain one, and
++// the player layout — the one place that owns every player page, including
++// the shell states that never render its inner div — applies it once.
++it('keeps the shared player clearance taller than the launcher and applied once', () => {
++  const css = readFileSync(new URL('../../app/globals.css', import.meta.url), 'utf8');
++  expect(css).toContain('calc(var(--nav-clearance) + 0.5rem + 3.25rem + 3rem + var(--spacing-card-gap))');
++  expect(css).toContain('.player-content { padding-block-end: var(--player-content-clearance); }');
++  expect(css).toContain('--player-content-clearance: max(var(--page-bottom-clearance), calc(var(--nav-clearance) + 0.5rem + 3.25rem + 3rem + var(--spacing-card-gap)));');
++  const layout = readFileSync(new URL('../../app/[locale]/(player)/player/layout.tsx', import.meta.url), 'utf8');
++  expect(layout).toContain('className="player-content"');
++  expect(layout).toContain('/^\\/player\\/(?:workout|onboarding)(?:\\/|$)/');
++  const shell = readFileSync(new URL('../../features/player-shell/components/player-shell.tsx', import.meta.url), 'utf8');
++  expect(shell).not.toContain('pb-[var(--player-content-clearance)]');
++});
++
+ // The desktop branch is client-only (the server snapshot is 'phone', see
+ // use-teaser-desktop), so no SSR render can reach it; assert on the source
+ // instead. On workspace desktop the teaser button sits at the end side
+@@ -92,3 +149,4 @@ it('keeps the teaser desktop branch fixed at the end side, labelled and at least
+   const corner = read('./components/ko-teaser-corner.tsx');
+   expect(corner).toContain('fixed end-page-x bottom-page-y z-50');
+ });
++
+diff --git a/src/features/nutrition/components/meal-card.tsx b/src/features/nutrition/components/meal-card.tsx
+index e67c9424..ad9628bd 100644
+--- a/src/features/nutrition/components/meal-card.tsx
++++ b/src/features/nutrition/components/meal-card.tsx
+@@ -110,6 +110,9 @@ export function MealCard({ meal, log, today, planTitle, primary = false }: { mea
+       {meal.items.some(item => item.alternatives.length > 0) && <Button type="button" aria-expanded={open} variant="secondary" onClick={() => setOpen(value => !value)}>{v4t('swap')}</Button>}
+       <Button type="button" block={false} className="min-w-0 flex-1" disabled={busy || !meal.items.length} onClick={() => void save(true, swaps, Date.now())}><Check aria-hidden className="size-5" />{t('mealEaten')}</Button>
+     </div>}
++    {!featuredAction && !eaten && <div className="mt-stack flex flex-wrap gap-inline">
++      <Button type="button" variant="secondary" block={false} className="min-w-0 flex-1" disabled={busy || !meal.items.length} onClick={() => void save(true, swaps, Date.now())}>{t('mealEaten')}</Button>
++    </div>}
+     {error && <p role="alert" className="text-sm text-danger">{t('saveFailedTryAgain')}</p>}
+     {open && <div className="mt-stack">{details}</div>}
+   </article>;
+diff --git a/src/features/nutrition/food-interactions.test.ts b/src/features/nutrition/food-interactions.test.ts
+index 2199dc6d..36725102 100644
+--- a/src/features/nutrition/food-interactions.test.ts
++++ b/src/features/nutrition/food-interactions.test.ts
+@@ -15,7 +15,7 @@ import type * as Readiness from '@/features/readiness';
+ 
+ const state = vi.hoisted(() => ({
+   db: undefined as KochivoDB | undefined,
+-  buttons: [] as { 'aria-label'?: string; onClick?: () => void }[],
++  buttons: [] as { 'aria-label'?: string; children?: unknown; onClick?: () => void }[],
+   pending: undefined as Promise<unknown> | undefined,
+ }));
+ vi.mock('react/jsx-runtime', async original => {
+@@ -64,6 +64,11 @@ afterEach(async () => {
+   vi.unstubAllEnvs();
+ });
+ const now = Date.parse('2026-11-13T10:00:00Z');
++const textOf = (children: unknown): string => {
++  if (typeof children === 'string') return children;
++  if (Array.isArray(children)) return children.map(textOf).join('');
++  return '';
++};
+ 
+ it('shows the logged calories on a checked card after a portion edit', () => {
+   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+@@ -109,6 +114,34 @@ it('the meal check logs and reverses completion through the offline queue', asyn
+   expect(await state.db.meal_logs.toArray()).toMatchObject([{ meal_id: 'meal', completed_at: null }]);
+ });
+ 
++it('every uneaten meal shows a labelled log button, not only the due meal', async () => {
++  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
++  vi.spyOn(Date, 'now').mockReturnValue(now);
++  state.db = new KochivoDB('food-log-label');
++  const meal = { id: 'meal', name: 'Lunch', position: 1, items: [{
++    id: 'rice', position: 1, name: 'Rice', grams: 200, photo_path: null, alternatives: [],
++    per100g: { kcal: 100, protein: 2, carbs: 20, fat: 1 },
++  }] };
++  const props = { today: '2026-11-13', meal };
++  // The due meal keeps the primary labelled button.
++  const due = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(MealCard, { ...props, primary: true })));
++  expect(due).toContain('Meal eaten');
++  expect(due).toContain('control-primary');
++  // A later meal keeps its small circle but also gets a visible secondary labelled button.
++  state.buttons = [];
++  const later = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(MealCard, props)));
++  expect(later).toContain('Meal eaten');
++  expect(later).toContain('control-secondary');
++  expect(state.buttons.find(button => button['aria-label'] === 'Ate Lunch')).toBeDefined();
++  const labelled = state.buttons.find(button => textOf(button.children).includes('Meal eaten'));
++  expect(labelled).toBeDefined();
++  labelled?.onClick?.();
++  await state.pending;
++  expect(setMealEaten).toHaveBeenCalled();
++  expect(await state.db.meal_logs.toArray()).toMatchObject([{ meal_id: 'meal', log_date: '2026-11-13', completed_at: '2026-11-13T10:00:00.000Z' }]);
++  expect(await state.db.outbox.toArray()).toMatchObject([{ table: 'meal_logs' }]);
++});
++
+ it('the water plus adds 250 ml without replacing readiness answers', async () => {
+   vi.spyOn(Date, 'now').mockReturnValue(now);
+   state.db = new KochivoDB('food-water');
+diff --git a/src/features/player-home/components/checkin-entry.test.ts b/src/features/player-home/components/checkin-entry.test.ts
+new file mode 100644
+index 00000000..d9aa2cbd
+--- /dev/null
++++ b/src/features/player-home/components/checkin-entry.test.ts
+@@ -0,0 +1,13 @@
++import { createElement } from 'react';
++import { renderToStaticMarkup } from 'react-dom/server';
++import { expect, it } from 'vitest';
++import { LocaleProvider } from '@/core/i18n/client';
++import { CheckinEntry } from './checkin-entry';
++
++it.each(['ar', 'en'] as const)('renders a labelled weekly check-in entry linking to the existing check-in in %s', locale => {
++  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale }, createElement(CheckinEntry)));
++  expect(html).toContain(locale === 'ar' ? 'تحديث الأسبوع' : 'Weekly check-in');
++  expect(html).toContain(locale === 'ar' ? 'ابعت وزنك ومقاساتك وصورك للكابتن' : 'Send your weight, measurements and photos to your coach');
++  expect(html).toContain('href="/player/progress?checkin=1"');
++  expect(html).toContain('min-h-12');
++});
+diff --git a/src/features/player-home/components/checkin-entry.tsx b/src/features/player-home/components/checkin-entry.tsx
+new file mode 100644
+index 00000000..7ad09189
+--- /dev/null
++++ b/src/features/player-home/components/checkin-entry.tsx
+@@ -0,0 +1,21 @@
++'use client';
++
++import Link from 'next/link';
++import { CalendarCheck, ChevronLeft } from 'lucide-react';
++import { useT } from '@/core/i18n/client';
++import { messages } from '../messages';
++
++// The weekly check-in lives on the Progress tab; this is its labelled doorway
++// from Home, opening the same sheet instead of a new flow.
++export function CheckinEntry() {
++  const t = useT(messages);
++  return <Link href="/player/progress?checkin=1" data-home-section="checkin"
++    className="press glass flex min-h-12 items-center gap-stack rounded-card p-card">
++    <CalendarCheck aria-hidden className="size-5 shrink-0 text-lime" />
++    <span className="min-w-0 flex-1">
++      <span className="block text-sm font-bold">{t('weeklyCheckinEntry')}</span>
++      <span className="block text-xs text-muted">{t('weeklyCheckinHint')}</span>
++    </span>
++    <ChevronLeft aria-hidden className="size-4 shrink-0 text-faint ltr:rotate-180" />
++  </Link>;
++}
+diff --git a/src/features/player-home/components/home-screen.tsx b/src/features/player-home/components/home-screen.tsx
+index 78b704aa..78fb7fc8 100644
+--- a/src/features/player-home/components/home-screen.tsx
++++ b/src/features/player-home/components/home-screen.tsx
+@@ -33,6 +33,7 @@ import { DayPreviewCard } from './day-preview-card';
+ import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+ import { MorningRow } from './morning-row';
+ import { CycleEntry } from './cycle-entry';
++import { CheckinEntry } from './checkin-entry';
+ 
+ const readPending = () => pendingCount(localDb());
+ const RamadanSlot = dynamic(() => import('./ramadan-slot').then(m => m.RamadanSlot));
+@@ -117,9 +118,10 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
+     {showError ? <ErrorState message={t('couldntLoadYourProgram')} retryLabel={t('tryAgain')} onRetry={retryProgram} /> : loading || !now ? <LoadingState variant="cards" /> : <>
+       {v6 && <V3Home weightKg={weightKg} now={now} today={today} firstName={firstName} playerId={playerId} snapshot={snapshot} day={day}
+         rest={rest} nutritionRest={nutritionRest} sessions={sessions ?? []} onPreview={date => setSelection({ today, date })} week={weekStrip} showToday={selectedDate === today}
+-        readiness={<MorningRow playerId={playerId} today={today} rest={rest}><PlayerReadiness weightKg={weightKg} playerId={playerId} today={today} rest={rest} coachRest={decision === 'rest'}
++        readiness={<MorningRow playerId={playerId} today={today} rest={rest}><PlayerReadiness weightKg={weightKg} playerId={playerId} today={today} rest={rest} coachRest={decision === 'rest'} hideWaterStrip
+           tomorrowRest={Boolean(tomorrowRest || (weekly && !tomorrow))}
+           tomorrow={tomorrow && !tomorrowRest && !tomorrow.is_rest_day ? starterText(tomorrow.title, locale) : undefined} /></MorningRow>} />}
++      <CheckinEntry />
+       <div hidden={selectedDate !== today} className="space-y-card-gap">
+       {v6 ? <NextTaskSlot rest={rest} nutritionRest={nutritionRest} snapshot={snapshot ?? null} sessions={sessions ?? []} today={today} playerId={playerId}
+         retryKey={retryKey} onRetry={() => setRetryKey(value => value + 1)} workoutInHero={!rest && Boolean(day?.exercises.length)} />
+diff --git a/src/features/player-home/messages.ts b/src/features/player-home/messages.ts
+index 1bded2a3..e3000fa6 100644
+--- a/src/features/player-home/messages.ts
++++ b/src/features/player-home/messages.ts
+@@ -44,6 +44,8 @@ export const messages = defineMessages({
+     'task.continue': "كمّل تمرين النهارده: {name}",
+     'task.meal': "سجّل وجبتك الجاية: {name}",
+     'task.checkin': "ابعت متابعة الأسبوع ده",
++    weeklyCheckinEntry: 'تحديث الأسبوع',
++    weeklyCheckinHint: 'ابعت وزنك ومقاساتك وصورك للكابتن',
+     'task.voice': "اسمع رسالة الكابتن",
+     'task.done': "راحة / خلّصت كل حاجة النهارده",
+     taskContext: "خطوة واحدة دلوقتي، والباقي بعدها",
+@@ -140,6 +142,8 @@ export const messages = defineMessages({
+     'task.continue': "Continue today's workout: {name}",
+     'task.meal': "Log your next meal: {name}",
+     'task.checkin': "Send this week's check-in",
++    weeklyCheckinEntry: 'Weekly check-in',
++    weeklyCheckinHint: 'Send your weight, measurements and photos to your coach',
+     'task.voice': "Listen to your coach's note",
+     'task.done': "Rest day / all done today",
+     taskContext: "One step now, then the next",
+diff --git a/src/features/player-home/standard/messages.ts b/src/features/player-home/standard/messages.ts
+index 39921508..1b10529f 100644
+--- a/src/features/player-home/standard/messages.ts
++++ b/src/features/player-home/standard/messages.ts
+@@ -31,7 +31,8 @@ export const arStd = {
+   programFinished: 'انتهى الأسبوع', renewProgram: 'سيجدّد الكابتن برنامجك لتواصل التمرين', messageCoach: 'أرسل للكابتن',
+   'task.intake': 'أكمل أسئلة البداية', 'task.start': 'ابدأ تمرين اليوم: {name}',
+   'task.continue': 'أكمل تمرين اليوم: {name}', 'task.meal': 'سجّل وجبتك القادمة: {name}',
+-  'task.checkin': 'أرسل Check-in هذا الأسبوع', 'task.voice': 'استمع لرسالة الكابتن',
++  'task.checkin': 'أرسل Check-in هذا الأسبوع', weeklyCheckinEntry: 'تحديث الأسبوع',
++  weeklyCheckinHint: 'أرسل وزنك وقياساتك وصورك إلى الكابتن', 'task.voice': 'استمع لرسالة الكابتن',
+   'task.done': 'راحة / أكملت كل مهام اليوم', taskContext: 'خطوة واحدة الآن، ثم الخطوة التالية',
+   taskTomorrow: 'تمرين الغد: {name}', taskDoneContext: 'خذ وقتك للراحة', taskAction: 'ابدأ',
+   taskLoadFailed: 'تعذّر تحديد خطوتك القادمة. حاول مجدداً', pageTitle: 'الرئيسية', captainTitle: 'الكابتن',
+diff --git a/src/features/player-shell/components/player-shell.tsx b/src/features/player-shell/components/player-shell.tsx
+index 7ad164ea..a146373b 100644
+--- a/src/features/player-shell/components/player-shell.tsx
++++ b/src/features/player-shell/components/player-shell.tsx
+@@ -67,7 +67,9 @@ export function PlayerShell({ children, unassignedAction }: { children?: ReactNo
+     <SyncRunner />
+     <div aria-hidden className="viewport-pinned pointer-events-none fixed inset-x-0 top-0 z-40 h-[var(--safe-top)] bg-bg" />
+     {!workout && <RestMoodSync onChange={setRestMood} />}
+-    <div className={workout ? undefined : showsNav(pathname) ? (v6 ? 'pt-[var(--safe-top)] pb-[var(--player-content-clearance)]' : 'pb-[var(--player-content-clearance)]') : 'pt-[var(--safe-top)]'}>
++    {/* P1: no bottom padding here — the player layout owns the shared launcher
++      clearance (.player-content), so this div must not pad a second time. */}
++    <div className={workout ? undefined : showsNav(pathname) ? (v6 ? 'pt-[var(--safe-top)]' : undefined) : 'pt-[var(--safe-top)]'}>
+     {showsNav(pathname) && !v6 && <div className="sticky top-0 z-30 bg-bg/70 pb-stack pt-[max(0.75rem,var(--safe-top))] backdrop-blur-md"><div className="mx-auto flex max-w-lg justify-end gap-inline px-page-x">
+       <Link href="/player/settings" aria-label={t(v6 ? 'v6Account' : 'settings')} aria-current={pathname === '/player/settings' ? 'page' : undefined}
+         className={`${v6 ? 'glass border border-line-soft ' : ''}flex min-h-12 min-w-12 items-center justify-center rounded-control ${pathname === '/player/settings' ? 'bg-lime-soft text-lime' : 'text-muted'}`}>
+diff --git a/src/features/player-shell/phone-fixes.test.ts b/src/features/player-shell/phone-fixes.test.ts
+index 0c550fc2..aacf45b1 100644
+--- a/src/features/player-shell/phone-fixes.test.ts
++++ b/src/features/player-shell/phone-fixes.test.ts
+@@ -6,7 +6,12 @@ const source = (path: string) => readFileSync(`src/${path}`, 'utf8');
+ it('reserves room above the navigation for floating controls and their tooltip', () => {
+   const css = source('app/globals.css');
+   expect(css).toContain('--player-content-clearance: max(var(--page-bottom-clearance), calc(var(--nav-clearance) + 0.5rem + 3.25rem + 3rem + var(--spacing-card-gap)))');
+-  expect(source('features/player-shell/components/player-shell.tsx')).toContain('pb-[var(--player-content-clearance)]');
++  // P1: the player layout owns the shared clearance (.player-content) once —
++  // the shell must not pad a second time, and the layout is the one place
++  // that covers the shell states whose inner div never renders.
++  expect(css).toContain('.player-content { padding-block-end: var(--player-content-clearance); }');
++  expect(source('app/[locale]/(player)/player/layout.tsx')).toContain('className="player-content"');
++  expect(source('features/player-shell/components/player-shell.tsx')).not.toContain('pb-[var(--player-content-clearance)]');
+ });
+ 
+ it('keeps an opaque safe-area strip above scrolling player content', () => {
+diff --git a/src/features/progress/components/progress-screen.tsx b/src/features/progress/components/progress-screen.tsx
+index fd1ce0f7..9f8bca88 100644
+--- a/src/features/progress/components/progress-screen.tsx
++++ b/src/features/progress/components/progress-screen.tsx
+@@ -3,7 +3,7 @@ import { useTimezone } from '@/core/timezone/client';
+ import { useLocale, useT } from '@/core/i18n/client';
+ import { messages } from '../messages';
+ 
+-import { useCallback, useEffect, useState } from 'react';
++import { useCallback, useEffect, useRef, useState } from 'react';
+ import type { ReactNode } from 'react';
+ import dynamic from 'next/dynamic';
+ import Link from 'next/link';
+@@ -37,7 +37,7 @@ const LineChart = dynamic(() => import('./line-chart').then(module => module.Lin
+   ssr: false, loading: () => <div aria-hidden className="aspect-[350/155] w-full" />,
+ });
+ 
+-export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
++export function ProgressScreen({ analytics, autoOpenCheckin }: { analytics?: ReactNode; autoOpenCheckin?: boolean }) {
+   const timezone = useTimezone();
+   const t = useT(messages);
+   const v6 = captainWorkspaceEnabled();
+@@ -135,6 +135,15 @@ export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
+     setSheetLoaded(true);
+     setSheet(true);
+   }
++  // Deep link from Home (?checkin=1) opens the same sheet once it can open;
++  // when this week is already sent, eligibility stays false and nothing opens.
++  const openedCheckin = useRef(false);
++  useEffect(() => {
++    if (!autoOpenCheckin || openedCheckin.current || !eligible) return;
++    openedCheckin.current = true;
++    setSheetLoaded(true);
++    setSheet(true);
++  }, [autoOpenCheckin, eligible]);
+   const partialStrength = remoteStrengthError && <div className="flex flex-wrap items-center gap-stack">
+     <p role="status" className="flex-1 text-sm text-muted">{t('partialStrength')}</p>
+     <Button variant="secondary" block={false} onClick={() => setStrengthRetry(value => value + 1)}>{t('tryAgain')}</Button>
+diff --git a/src/features/readiness/components/daily-panel.tsx b/src/features/readiness/components/daily-panel.tsx
+index 9ff981f9..99ce3292 100644
+--- a/src/features/readiness/components/daily-panel.tsx
++++ b/src/features/readiness/components/daily-panel.tsx
+@@ -17,8 +17,8 @@ const RestHero = dynamic(() => import('./rest-hero').then(module => module.RestH
+ const MorningQuestions = dynamic(() => import('./morning-questions').then(module => module.MorningQuestions));
+ const WaterGlass = dynamic(() => import('./water-glass').then(module => module.WaterGlass));
+ 
+-export function DailyPanel({ playerId, today, rest, coachRest, tomorrow, tomorrowRest, weightKg }: {
+-  playerId?: string; today: string; rest: boolean; coachRest?: boolean; tomorrow?: string; tomorrowRest?: boolean; weightKg?: number;
++export function DailyPanel({ playerId, today, rest, coachRest, tomorrow, tomorrowRest, weightKg, hideWaterStrip }: {
++  playerId?: string; today: string; rest: boolean; coachRest?: boolean; tomorrow?: string; tomorrowRest?: boolean; weightKg?: number; hideWaterStrip?: boolean;
+ }) {
+   const t = useT(messages);
+   const check = useDailyCheck(playerId, today);
+@@ -36,7 +36,7 @@ export function DailyPanel({ playerId, today, rest, coachRest, tomorrow, tomorro
+         {tomorrowRest ? <p className="text-sm text-muted">{t('tomorrowRest')}</p> :
+           tomorrow && <p className="text-sm text-muted">{t('tomorrow', { name: tomorrow })}</p>}
+       </> : <>
+-        <WaterStrip waterMl={check.row?.water_ml ?? 0} goal={goal} onAdd={() => void check.save({}, 250)} disabled={!playerId} />
++        {!hideWaterStrip && <WaterStrip waterMl={check.row?.water_ml ?? 0} goal={goal} onAdd={() => void check.save({}, 250)} disabled={!playerId} />}
+         <ReadinessRow row={check.row} goal={goal} onChange={patch => void check.save(patch)} />
+       </>}
+       {check.saved && <p role="status" className="text-sm text-muted">{t(check.pending ? 'savedLocal' : 'sent')}</p>}
+diff --git a/src/features/readiness/components/player-readiness.tsx b/src/features/readiness/components/player-readiness.tsx
+index 770aa744..35b3a063 100644
+--- a/src/features/readiness/components/player-readiness.tsx
++++ b/src/features/readiness/components/player-readiness.tsx
+@@ -11,7 +11,7 @@ const DailyPanel = dynamic(() => import('./daily-panel').then(module => module.D
+ });
+ 
+ export function PlayerReadiness(props: { playerId?: string; today: string; rest: boolean; coachRest?: boolean;
+-  tomorrow?: string; tomorrowRest?: boolean; weightKg?: number; onDecisionChange?: (decision: Decision | null) => void }) {
++  tomorrow?: string; tomorrowRest?: boolean; weightKg?: number; hideWaterStrip?: boolean; onDecisionChange?: (decision: Decision | null) => void }) {
+   const decision = useTodayDecision(props.playerId, props.today);
+   const onChange = props.onDecisionChange;
+   useEffect(() => { onChange?.(decision); }, [decision, onChange]);
+diff --git a/src/features/readiness/player-ui.test.ts b/src/features/readiness/player-ui.test.ts
+index f0cbe3c5..6ce70deb 100644
+--- a/src/features/readiness/player-ui.test.ts
++++ b/src/features/readiness/player-ui.test.ts
+@@ -72,6 +72,27 @@ it('renders water and readiness immediately below the training hero', () => {
+   expect(html).toContain('Add 250 ml water');
+ });
+ 
++it('links home to the weekly check-in with a visible label', () => {
++  state.rest = false;
++  state.decision = null;
++  const html = home();
++  expect(html).toContain('Weekly check-in');
++  expect(html).toContain('href="/player/progress?checkin=1"');
++});
++
++it('renders the morning questions without a second water control when the strip is hidden', () => {
++  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' },
++    createElement(DailyPanel, { playerId: 'player', today: '2026-11-04', rest: false, hideWaterStrip: true })));
++  expect(html).not.toContain('data-testid="water-strip"');
++  expect(html).toContain('Answer the two morning questions');
++});
++
++it('keeps the water strip in the morning details by default', () => {
++  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' },
++    createElement(DailyPanel, { playerId: 'player', today: '2026-11-04', rest: false })));
++  expect(html).toContain('data-testid="water-strip"');
++});
++
+ it('applies coach rest on a scheduled training day', () => {
+   state.rest = false;
+   state.decision = 'rest';
+diff --git a/src/features/workout/components/set-controls.tsx b/src/features/workout/components/set-controls.tsx
+index c2fc559d..18c24e94 100644
+--- a/src/features/workout/components/set-controls.tsx
++++ b/src/features/workout/components/set-controls.tsx
+@@ -26,14 +26,19 @@ export function SetControls({ state, secondary = false }: { state: ReturnType<ty
+         hint={state.performance?.weight_kg != null ? t('lastTimeWeight', { value: formatNumber(state.performance.weight_kg, locale) }) : undefined} />
+     </div>}
+     <Chip pressed={state.bodyweight} onClick={() => state.setBodyweight(!state.bodyweight)}>{t('bodyweight')}</Chip>
+-    <div ref={repsRef} tabIndex={-1} role="group" aria-label={t('reps')}
+-      aria-describedby={repsInvalid ? 'set-error' : undefined} className={repsInvalid ? 'rounded-card ring-2 ring-danger' : undefined}>
+-      <Stepper format={value => formatNumber(value, locale)} label={t('reps')} value={state.reps} step={1} min={0} onChange={state.setReps}
+-        hint={state.performance?.reps != null ? t('lastTimeReps', { n: state.performance.reps, value: formatNumber(state.performance.reps, locale) }) : undefined} />
++    {/* The reps stepper and the finish button live in one sticky bar, so the player logs the set
++        without scrolling on every set. The weight stepper stays in the flow above: it is set once
++        per exercise, and stacking both gym steppers in the bar would cover the phone screen. */}
++    <div className="glass-strong sticky bottom-page-y z-10 space-y-stack rounded-card border border-line-soft p-card">
++      <div ref={repsRef} tabIndex={-1} role="group" aria-label={t('reps')}
++        aria-describedby={repsInvalid ? 'set-error' : undefined} className={repsInvalid ? 'rounded-card ring-2 ring-danger' : undefined}>
++        <Stepper format={value => formatNumber(value, locale)} label={t('reps')} value={state.reps} step={1} min={0} onChange={state.setReps}
++          hint={state.performance?.reps != null ? t('lastTimeReps', { n: state.performance.reps, value: formatNumber(state.performance.reps, locale) }) : undefined} />
++      </div>
++      {state.invalid && <p id="set-error" role="alert" className="text-danger">{t(issue === 'reps' ? 'enterReps' : 'enterWeightAndReps')}</p>}
++      <Button variant={secondary ? 'secondary' : 'primary'} size="lg" className="min-h-17 w-full px-page-x text-xl" disabled={state.disabled || state.typedWeightInvalid || state.typedRepsInvalid} onClick={() => void state.complete()}>
++        <Check aria-hidden />{t('completeSet')}
++      </Button>
+     </div>
+-    {state.invalid && <p id="set-error" role="alert" className="text-danger">{t(issue === 'reps' ? 'enterReps' : 'enterWeightAndReps')}</p>}
+-    <Button variant={secondary ? 'secondary' : 'primary'} size="lg" className="min-h-17 w-full px-page-x text-xl" disabled={state.disabled || state.typedWeightInvalid || state.typedRepsInvalid} onClick={() => void state.complete()}>
+-      <Check aria-hidden />{t('completeSet')}
+-    </Button>
+   </>;
+ }
+diff --git a/src/features/workout/components/workout-set.tsx b/src/features/workout/components/workout-set.tsx
+index 282283c1..c9c457ca 100644
+--- a/src/features/workout/components/workout-set.tsx
++++ b/src/features/workout/components/workout-set.tsx
+@@ -93,13 +93,6 @@ export function WorkoutSet({ state, v4 = false }: { state: ReturnType<typeof use
+       <FocusSetTable state={state} v4={v4} />
+       {targetForSet(current.exercise, current.setIndex - 1).drop && <span className="self-start rounded-full bg-warn-soft px-stack py-inline text-xs text-warn">{st('drop')}</span>}
+       <DropProgress state={state} />
+-      <div className={current.exercise.superset_group !== null || dropping ? 'glass-strong grid gap-stack rounded-card p-card' : 'grid grid-cols-2 gap-stack'}>
+-        <WorkoutValue key={`${exerciseId}:${current.setIndex}:${current.dropIndex ?? 0}:weight`} inline={current.exercise.superset_group !== null || dropping} kind="weight" value={state.weight} disabled={blocked || state.bodyweight}
+-          invalid={state.invalid?.result === 'weight' || state.invalid?.result === 'both'} draft={state.bodyweight ? undefined : state.typedValues?.weight} onDraft={text => state.setTypedValue('weight', text)} onChange={state.setWeight} />
+-        <WorkoutValue key={`${exerciseId}:${current.setIndex}:${current.dropIndex ?? 0}:reps`} inline={current.exercise.superset_group !== null || dropping} kind="reps" value={state.reps} disabled={blocked}
+-          invalid={state.invalid?.result === 'reps' || state.invalid?.result === 'both'}
+-          focusInvalid={state.invalid?.result === 'reps' || Boolean(state.bodyweight && state.invalid)} draft={state.typedValues?.reps} onDraft={text => state.setTypedValue('reps', text)} onChange={state.setReps} />
+-      </div>
+       {!dropping && <WorkoutHint last={state.performance} history={history ?? []} weight={state.weight} reps={state.reps} />}
+       {historyFailed && <button type="button" className="min-h-12 text-xs text-muted" onClick={() => { setHistoryFailed(false); setAttempt(value => value + 1); }}>{t('tryAgain')}</button>}
+       {state.invalid && <p id="set-error" role="alert" className="text-danger">{t(state.invalid.result === 'reps' ? 'enterReps' : 'enterWeightAndReps')}</p>}
+@@ -107,15 +100,26 @@ export function WorkoutSet({ state, v4 = false }: { state: ReturnType<typeof use
+       {!v4 && state.rest.remaining > 0 && <RestPanel remaining={state.rest.remaining} total={state.rest.total} sound={state.rest.sound} onToggleSound={state.rest.toggleSound}
+         flashing={state.rest.flashing} onExtend={state.rest.extend} onSkip={state.rest.skip} />}
+       <SupersetCue state={state} next />
+-      <Button type="button" data-action-bar={v4 || undefined} style={{ fontFamily: 'inherit' }} disabled={blocked || state.typedWeightInvalid || state.typedRepsInvalid} onClick={() => void state.complete()}
+-        variant={state.painCarried?.length ? 'secondary' : 'primary'} block={false} className={v4 ?
+-          'sticky bottom-page-y z-10 mt-auto flex min-h-14 w-full items-center justify-center gap-inline text-md font-bold disabled:opacity-50' :
+-          'mt-auto flex min-h-[68px] w-full items-center justify-center gap-stack text-xl font-black disabled:opacity-50'}>
+-        <KoTraining aria-hidden className="size-6" />{dropping ? st('finishDrop') : nextMember && state.next ? st('finishMember', {
+-          current: supersetTag(state.day.exercises, current.exercise) ?? '', next: supersetTag(state.day.exercises, state.next.exercise) ?? '',
+-        }) : v4 && state.progress !== state.queue.length ? vt('doneSet', { set: formatNumber(current.setIndex, locale) }) :
+-          t(state.progress === state.queue.length ? 'v3CompleteWorkout' : 'v3CompleteSet')}
+-      </Button>
++      {/* The steppers and the finish button live in one sticky bar at the bottom of the set card,
++          so the player logs the set without scrolling on every set. */}
++      <div data-action-bar={v4 || undefined} className="glass-strong sticky bottom-page-y z-10 space-y-stack rounded-card border border-line-soft p-card">
++        <div className={current.exercise.superset_group !== null || dropping ? 'grid gap-stack' : 'grid grid-cols-2 gap-stack'}>
++          <WorkoutValue key={`${exerciseId}:${current.setIndex}:${current.dropIndex ?? 0}:weight`} inline={current.exercise.superset_group !== null || dropping} kind="weight" value={state.weight} disabled={blocked || state.bodyweight}
++            invalid={state.invalid?.result === 'weight' || state.invalid?.result === 'both'} draft={state.bodyweight ? undefined : state.typedValues?.weight} onDraft={text => state.setTypedValue('weight', text)} onChange={state.setWeight} />
++          <WorkoutValue key={`${exerciseId}:${current.setIndex}:${current.dropIndex ?? 0}:reps`} inline={current.exercise.superset_group !== null || dropping} kind="reps" value={state.reps} disabled={blocked}
++            invalid={state.invalid?.result === 'reps' || state.invalid?.result === 'both'}
++            focusInvalid={state.invalid?.result === 'reps' || Boolean(state.bodyweight && state.invalid)} draft={state.typedValues?.reps} onDraft={text => state.setTypedValue('reps', text)} onChange={state.setReps} />
++        </div>
++        <Button type="button" style={{ fontFamily: 'inherit' }} disabled={blocked || state.typedWeightInvalid || state.typedRepsInvalid} onClick={() => void state.complete()}
++          variant={state.painCarried?.length ? 'secondary' : 'primary'} block={false} className={v4 ?
++            'flex min-h-14 w-full items-center justify-center gap-inline text-md font-bold disabled:opacity-50' :
++            'flex min-h-[68px] w-full items-center justify-center gap-stack text-xl font-black disabled:opacity-50'}>
++          <KoTraining aria-hidden className="size-6" />{dropping ? st('finishDrop') : nextMember && state.next ? st('finishMember', {
++            current: supersetTag(state.day.exercises, current.exercise) ?? '', next: supersetTag(state.day.exercises, state.next.exercise) ?? '',
++          }) : v4 && state.progress !== state.queue.length ? vt('doneSet', { set: formatNumber(current.setIndex, locale) }) :
++            t(state.progress === state.queue.length ? 'v3CompleteWorkout' : 'v3CompleteSet')}
++        </Button>
++      </div>
+     </div>
+     <details className="glass rounded-card p-card">
+       <summary className="flex min-h-12 cursor-pointer items-center text-muted">{t('v3Details')}</summary>
+diff --git a/src/features/workout/player-v3-screens.test.ts b/src/features/workout/player-v3-screens.test.ts
+index f4b02b1f..9e3bfa2e 100644
+--- a/src/features/workout/player-v3-screens.test.ts
++++ b/src/features/workout/player-v3-screens.test.ts
+@@ -9,6 +9,7 @@ import type { useFocusSession } from './hooks/use-focus-session';
+ import type { useWarmupSession } from './hooks/use-warmup-session';
+ import { WorkoutOverview } from './components/workout-overview';
+ import { WorkoutSet } from './components/workout-set';
++import { SetControls } from './components/set-controls';
+ import { SessionFeedback } from './components/session-feedback';
+ import { WorkoutValue } from './components/workout-value';
+ import { PlayerWorkoutV3 } from './components/player-workout-v3';
+@@ -62,6 +63,13 @@ function elementsOf(node: ReactNode, type: unknown): ReactElement<Record<string,
+   if (!isValidElement<{ children?: ReactNode }>(node)) return [];
+   return node.type === type ? [node as ReactElement<Record<string, unknown>>] : elementsOf(node.props.children, type);
+ }
++type BarProps = { className?: string; children?: ReactNode; 'data-action-bar'?: boolean };
++function stickyBars(node: ReactNode): ReactElement<BarProps>[] {
++  if (Array.isArray(node)) return node.flatMap(child => stickyBars(child));
++  if (!isValidElement<BarProps>(node)) return [];
++  const self = typeof node.props.className === 'string' && node.props.className.includes('sticky') ? [node] : [];
++  return [...self, ...stickyBars(node.props.children)];
++}
+ it('has exactly one lime action on each of the three screens', () => {
+   for (const element of [createElement(WorkoutOverview, { state, progress, onStart() {}, onBack() {} }),
+     createElement(WorkoutSet, { state }), createElement(SessionFeedback, { sessionId: 's', hasFeedback: false })]) {
+@@ -175,3 +183,30 @@ it('focuses the heading when the player enters a set step', () => {
+   ref({ focus });
+   expect(focus).toHaveBeenCalledOnce();
+ });
++
++it('keeps the weight/reps steppers and the finish button in one sticky action bar', () => {
++  for (const [panel, label] of [[WorkoutSet({ state }), 'خلصت المجموعة'],
++    [WorkoutSet({ state, v4: true }), 'خلصت الست 1']] as const) {
++    const bars = stickyBars(panel);
++    expect(bars).toHaveLength(1);
++    const bar = bars[0];
++    expect(bar?.props.className).toContain('sticky');
++    expect(bar?.props.className).toContain('bottom-page-y');
++    expect(elementsOf(bar, WorkoutValue).map(element => element.props.kind)).toEqual(['weight', 'reps']);
++    expect(renderToStaticMarkup(bar as ReactElement)).toContain(label);
++  }
++  expect(stickyBars(WorkoutSet({ state, v4: true }))[0]?.props['data-action-bar']).toBe(true);
++  expect(stickyBars(WorkoutSet({ state }))[0]?.props['data-action-bar']).toBeUndefined();
++});
++
++it('keeps the reps stepper and the finish button in one sticky action bar', () => {
++  const bars = stickyBars(SetControls({ state }));
++  expect(bars).toHaveLength(1);
++  const bar = bars[0];
++  expect(bar?.props.className).toContain('sticky');
++  expect(bar?.props.className).toContain('bottom-page-y');
++  const html = renderToStaticMarkup(bar as ReactElement);
++  expect(html).toContain('العدّات');
++  expect(html).toContain('إنهاء المجموعة');
++  expect(html).not.toContain('الوزن كجم');
++});

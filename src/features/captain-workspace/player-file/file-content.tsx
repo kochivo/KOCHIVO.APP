@@ -51,10 +51,14 @@ export async function FileContent({ playerId, tab, locale, children }: {
     const claims = await currentClaims();
     if (claims.error || !claims.data?.claims.sub) throw new Error('Unauthenticated');
     captainId = claims.data.claims.sub;
-    [summary, counts] = await Promise.all([loadSummary(playerId, today), unreadCounts(await supabaseServer(), captainId)
+    // Activity starts with the summary instead of after it: it only needs
+    // (playerId, today), so awaiting it after the summary added a whole
+    // sequential stage to every overview/nutrition open (T-435b).
+    const needsActivity = tab === 'overview' || tab === 'nutrition';
+    [summary, counts, activity] = await Promise.all([loadSummary(playerId, today), unreadCounts(await supabaseServer(), captainId)
       // The tab count is secondary; a chat failure must not hide the whole player file.
-      .catch((error: unknown) => { console.warn('Chat counts unavailable', error); return {}; })]);
-    if (tab === 'overview' || tab === 'nutrition') activity = await loadActivity(playerId, today);
+      .catch((error: unknown) => { console.warn('Chat counts unavailable', error); return {}; }),
+      needsActivity ? loadActivity(playerId, today) : Promise.resolve(undefined)]);
     if (tab === 'assessments') {
       const client = await supabaseServer();
       const [requests, pending] = await Promise.all([loadPlayerRequests(client, playerId),

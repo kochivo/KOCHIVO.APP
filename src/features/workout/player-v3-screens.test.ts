@@ -9,6 +9,7 @@ import type { useFocusSession } from './hooks/use-focus-session';
 import type { useWarmupSession } from './hooks/use-warmup-session';
 import { WorkoutOverview } from './components/workout-overview';
 import { WorkoutSet } from './components/workout-set';
+import { SetControls } from './components/set-controls';
 import { SessionFeedback } from './components/session-feedback';
 import { WorkoutValue } from './components/workout-value';
 import { PlayerWorkoutV3 } from './components/player-workout-v3';
@@ -61,6 +62,13 @@ function elementsOf(node: ReactNode, type: unknown): ReactElement<Record<string,
   if (Array.isArray(node)) return node.flatMap(child => elementsOf(child, type));
   if (!isValidElement<{ children?: ReactNode }>(node)) return [];
   return node.type === type ? [node as ReactElement<Record<string, unknown>>] : elementsOf(node.props.children, type);
+}
+type BarProps = { className?: string; children?: ReactNode; 'data-action-bar'?: boolean };
+function stickyBars(node: ReactNode): ReactElement<BarProps>[] {
+  if (Array.isArray(node)) return node.flatMap(child => stickyBars(child));
+  if (!isValidElement<BarProps>(node)) return [];
+  const self = typeof node.props.className === 'string' && node.props.className.includes('sticky') ? [node] : [];
+  return [...self, ...stickyBars(node.props.children)];
 }
 it('has exactly one lime action on each of the three screens', () => {
   for (const element of [createElement(WorkoutOverview, { state, progress, onStart() {}, onBack() {} }),
@@ -174,4 +182,31 @@ it('focuses the heading when the player enters a set step', () => {
   if (typeof ref !== 'function') throw new Error('Missing set step focus target');
   ref({ focus });
   expect(focus).toHaveBeenCalledOnce();
+});
+
+it('keeps the weight/reps steppers and the finish button in one sticky action bar', () => {
+  for (const [panel, label] of [[WorkoutSet({ state }), 'خلصت المجموعة'],
+    [WorkoutSet({ state, v4: true }), 'خلصت الست 1']] as const) {
+    const bars = stickyBars(panel);
+    expect(bars).toHaveLength(1);
+    const bar = bars[0];
+    expect(bar?.props.className).toContain('sticky');
+    expect(bar?.props.className).toContain('bottom-page-y');
+    expect(elementsOf(bar, WorkoutValue).map(element => element.props.kind)).toEqual(['weight', 'reps']);
+    expect(renderToStaticMarkup(bar as ReactElement)).toContain(label);
+  }
+  expect(stickyBars(WorkoutSet({ state, v4: true }))[0]?.props['data-action-bar']).toBe(true);
+  expect(stickyBars(WorkoutSet({ state }))[0]?.props['data-action-bar']).toBeUndefined();
+});
+
+it('keeps the reps stepper and the finish button in one sticky action bar', () => {
+  const bars = stickyBars(SetControls({ state }));
+  expect(bars).toHaveLength(1);
+  const bar = bars[0];
+  expect(bar?.props.className).toContain('sticky');
+  expect(bar?.props.className).toContain('bottom-page-y');
+  const html = renderToStaticMarkup(bar as ReactElement);
+  expect(html).toContain('العدّات');
+  expect(html).toContain('إنهاء المجموعة');
+  expect(html).not.toContain('الوزن كجم');
 });

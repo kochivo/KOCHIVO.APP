@@ -47,6 +47,29 @@ describe('captain notification list', () => {
     expect(html.match(/>Unread<\/span>/g)).toHaveLength(1);
   });
 
+  it('collapses repeated pain and inactivity alerts to the latest and never stitches the inactivity line to its timestamp', () => {
+    vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-11-14T10:00:00Z'));
+    state.current = {
+      rows: [
+        { id: 'pain-new', type: 'player_pain', payload: { player_id: 'p', display_name: 'Mariam' }, created_at: '2026-11-14T09:00:00Z', is_read: false },
+        { id: 'pain-old', type: 'player_pain', payload: { player_id: 'p', display_name: 'Mariam' }, created_at: '2026-11-13T09:00:00Z', is_read: true },
+        { id: 'inactive-new', type: 'player_inactive', payload: { player_id: 'p', name: 'Mariam' }, created_at: '2026-11-14T05:00:00Z', is_read: false },
+        { id: 'inactive-old', type: 'player_inactive', payload: { player_id: 'p', name: 'Mariam' }, created_at: '2026-11-11T05:00:00Z', is_read: true },
+        { id: 'checkin-new', type: 'checkin_submitted', payload: { player_id: 'p', display_name: 'Mariam' }, created_at: '2026-11-14T08:00:00Z', is_read: false },
+        { id: 'checkin-old', type: 'checkin_submitted', payload: { player_id: 'p', display_name: 'Mariam' }, created_at: '2026-11-13T08:00:00Z', is_read: false },
+      ],
+      count: 4, status: 'ready', pending: false, saveError: false,
+      refresh: async () => {}, read: async () => true,
+    };
+    const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, createElement(CaptainNotificationsEntry)));
+    expect(html.match(/بلّغ عن وجع/g)).toHaveLength(1);
+    expect(html.match(/متمرّنش من 3 أيام/g)).toHaveLength(1);
+    expect(html).not.toContain('أو أكتر');
+    expect(html).not.toContain('متمرّنش من 3 أيام من 5 ساعات');
+    expect(html).toContain('من 5 ساعات');
+    expect(html.match(/بعت المتابعة/g)).toHaveLength(2);
+  });
+
   it('reports read failures without hiding the list', () => {
     const html = render({ saveError: true });
     expect(html).toContain('role="alert"');

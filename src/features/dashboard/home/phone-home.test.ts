@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, it } from 'vitest';
 import { createT } from '@/core/i18n/messages';
 import { HomeHeroView } from './home-hero-view';
+import { PhoneHomeHero } from './phone-home-hero';
 import { HomeTilesView } from './home-tiles-view';
 import { PhoneHomeNeeds } from './phone-home-needs';
 import { PhoneHomeStats } from './phone-home-stats';
@@ -50,6 +51,37 @@ it('keeps one visible phone empty state when tasks and alerts are both empty', (
   expect(tasks).toMatch(/^<section class="[^"]*md:hidden/);
   expect(alerts).toMatch(/^<div[^>]*class="[^"]*max-md:hidden/);
 });
+it('shows the empty hero with no progress bar or percentage when there are zero tasks', () => {
+  const props = { t: createT(homeV11Messages, 'en'), locale: 'en' as const, tasks: [], count: 0, completed: 0, adherence: 0 };
+  const desktop = renderToStaticMarkup(createElement(HomeHeroView, props));
+  expect(desktop).toContain('Today’s tasks are done.');
+  expect(desktop).not.toContain('role="progressbar"');
+  expect(desktop).not.toContain('aria-valuenow="100"');
+  const phone = renderToStaticMarkup(createElement(HomeHeroView, { ...props, phone: true }));
+  expect(phone).toContain('Today’s tasks are done.');
+  expect(phone).not.toContain('role="progressbar"');
+  const phoneSection = phone.slice(phone.indexOf('md:hidden'));
+  expect(phoneSection).not.toContain('%');
+});
+
+it('shows 50% progress for one done task and one still pending', () => {
+  const html = renderToStaticMarkup(createElement(HomeHeroView, { t: createT(homeV11Messages, 'en'), locale: 'en' as const,
+    tasks: [{ id: 'checkin:1', playerId: 'p', name: 'Sara', kind: 'checkin' as const, href: '/captain/tasks', urgent: false }],
+    count: 1, completed: 1, adherence: 78 }));
+  expect(html).toContain('role="progressbar"');
+  expect(html).toContain('aria-valuenow="50"');
+});
+
+it('keeps the phone hero watermark inside the section instead of scaling it past the edge', () => {
+  for (const count of [0, 12]) {
+    const html = renderToStaticMarkup(createElement(PhoneHomeHero, { tasks: [], count, locale: 'en' as const }));
+    expect(html).toMatch(/^<section class="glass-strong ko-strip cut-corner relative overflow-hidden rounded-card p-card md:hidden">/);
+    expect(html).toContain('class="engraved pointer-events-none absolute end-0 top-0 font-display text-stat-large-wide leading-none opacity-50"');
+    expect(html).not.toContain('scale-150');
+    expect(html).not.toContain('role="progressbar"');
+  }
+});
+
 it('opens the selected review, an absent player’s chat and the payment workflow', () => {
   const html = renderToStaticMarkup(createElement(PhoneHomeNeeds, { locale: 'en', contacts: new Map(),
     tasks: [

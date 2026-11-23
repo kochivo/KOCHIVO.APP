@@ -219,11 +219,15 @@ export type AppDatabase = Omit<Database, 'public'> & {
       submit_custom_form_answers: { Args: { p_request: string; p_answers: Json }; Returns: undefined };
       save_custom_form: { Args: { p_form: Json; p_questions: Json }; Returns: undefined };
       ko_rate_take: { Args: { p_limit: number; p_window_seconds: number }; Returns: boolean };
+      ko_usage_refund: { Args: { p_day: string; p_kind: string; p_key: string }; Returns: boolean };
+      ko_credit_refund: { Args: { p_month: string; p_token: string }; Returns: boolean };
+      ko_secret_check: { Args: { p_kind: string; p_challenge: string; p_mac: string }; Returns: boolean };
       ko_feedback_submit: { Args: {
         p_id: string; p_helpful: boolean; p_reason: string | null; p_intent: string; p_sources: string[];
         p_question: string; p_answer: string;
       }; Returns: boolean };
       sync_pain_reports: { Args: { p_rows: Json }; Returns: undefined };
+      sync_check_ins: { Args: { p_rows: Json }; Returns: undefined };
       expire_pain_swaps: { Args: never; Returns: undefined };
       answer_pain: { Args: { p_report: string; p_reply: PainReply }; Returns: undefined };
       pain_repeat_count: { Args: { p_player: string; p_area: string }; Returns: number };

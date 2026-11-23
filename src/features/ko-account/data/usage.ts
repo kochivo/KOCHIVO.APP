@@ -61,6 +61,46 @@ export async function takeCredit(actor: KoActor, credits: Awaited<ReturnType<typ
   return data === true;
 }
 
+// Refund one taken message/photo. Returns false when the key was already
+// refunded. A failed refund never throws: the warning is logged here (the
+// only place that sees the error) and the caller continues without the refund.
+export async function refundUsage(actor: KoActor, { day, kind, key }: { day: string; kind: 'message' | 'photo'; key: string }) {
+  try {
+    const { data, error } = await actor.db.rpc('ko_usage_refund', { p_day: day, p_kind: kind, p_key: key });
+    if (error) throw error;
+    return data === true;
+  } catch (error) {
+    console.warn('KO usage refund failed', error);
+    return false;
+  }
+}
+
+export async function refundCredit(actor: KoActor, { month, token }: { month: string; token: string }) {
+  try {
+    const { data, error } = await actor.db.rpc('ko_credit_refund', { p_month: month, p_token: token });
+    if (error) throw error;
+    return data === true;
+  } catch (error) {
+    console.warn('KO credit refund failed', error);
+    return false;
+  }
+}
+
+// Refund only usage that was actually taken: ko_usage_take returns 'ok' only
+// when it incremented the counters, so a 'daily'/'monthly' reply has nothing
+// to give back. The day/kind are recomputed here from the same inputs
+// takeUsage used, so the route never has to track them.
+export async function refundTakenUsage(actor: KoActor, taken: boolean, now: number, photo: boolean, key: string) {
+  if (!taken) return false;
+  const timezone = await getPlayerTimezone(actor.id);
+  return refundUsage(actor, { day: localDate(new Date(now), timezone), kind: photo ? 'photo' : 'message', key });
+}
+
+export async function refundTakenCredit(actor: KoActor, taken: boolean, now: number, token: string) {
+  if (!taken) return false;
+  return refundCredit(actor, { month: monthStart(now), token });
+}
+
 export function creditsOut(credits: Awaited<ReturnType<typeof readCredits>>, t: Translate): Extract<AccountReply, { kind: 'message' }> {
   const next = (Object.entries(limits) as [KoTier, (typeof limits)[KoTier]][])
     .find(([, limit]) => limit.credits > credits.cap);

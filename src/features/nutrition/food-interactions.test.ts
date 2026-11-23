@@ -15,7 +15,7 @@ import type * as Readiness from '@/features/readiness';
 
 const state = vi.hoisted(() => ({
   db: undefined as KochivoDB | undefined,
-  buttons: [] as { 'aria-label'?: string; onClick?: () => void }[],
+  buttons: [] as { 'aria-label'?: string; children?: unknown; onClick?: () => void }[],
   pending: undefined as Promise<unknown> | undefined,
 }));
 vi.mock('react/jsx-runtime', async original => {
@@ -64,6 +64,11 @@ afterEach(async () => {
   vi.unstubAllEnvs();
 });
 const now = Date.parse('2026-11-13T10:00:00Z');
+const textOf = (children: unknown): string => {
+  if (typeof children === 'string') return children;
+  if (Array.isArray(children)) return children.map(textOf).join('');
+  return '';
+};
 
 it('shows the logged calories on a checked card after a portion edit', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
@@ -107,6 +112,34 @@ it('the meal check logs and reverses completion through the offline queue', asyn
   undo?.onClick?.();
   await state.pending;
   expect(await state.db.meal_logs.toArray()).toMatchObject([{ meal_id: 'meal', completed_at: null }]);
+});
+
+it('every uneaten meal shows a labelled log button, not only the due meal', async () => {
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+  vi.spyOn(Date, 'now').mockReturnValue(now);
+  state.db = new KochivoDB('food-log-label');
+  const meal = { id: 'meal', name: 'Lunch', position: 1, items: [{
+    id: 'rice', position: 1, name: 'Rice', grams: 200, photo_path: null, alternatives: [],
+    per100g: { kcal: 100, protein: 2, carbs: 20, fat: 1 },
+  }] };
+  const props = { today: '2026-11-13', meal };
+  // The due meal keeps the primary labelled button.
+  const due = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(MealCard, { ...props, primary: true })));
+  expect(due).toContain('Meal eaten');
+  expect(due).toContain('control-primary');
+  // A later meal keeps its small circle but also gets a visible secondary labelled button.
+  state.buttons = [];
+  const later = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(MealCard, props)));
+  expect(later).toContain('Meal eaten');
+  expect(later).toContain('control-secondary');
+  expect(state.buttons.find(button => button['aria-label'] === 'Ate Lunch')).toBeDefined();
+  const labelled = state.buttons.find(button => textOf(button.children).includes('Meal eaten'));
+  expect(labelled).toBeDefined();
+  labelled?.onClick?.();
+  await state.pending;
+  expect(setMealEaten).toHaveBeenCalled();
+  expect(await state.db.meal_logs.toArray()).toMatchObject([{ meal_id: 'meal', log_date: '2026-11-13', completed_at: '2026-11-13T10:00:00.000Z' }]);
+  expect(await state.db.outbox.toArray()).toMatchObject([{ table: 'meal_logs' }]);
 });
 
 it('the water plus adds 250 ml without replacing readiness answers', async () => {

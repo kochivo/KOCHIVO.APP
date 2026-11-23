@@ -1,10 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useSyncExternalStore } from 'react';
+import { useLocale } from '@/core/i18n/client';
 import { dismissFeedItem, snoozeOptimistically } from '../data/dismiss';
 import { loadFeed } from '../data/load-feed';
+import { loadTaskCount } from '../data/load-task-count';
 import type { KoFeedItem } from '../types';
-import { urgentCount } from '../rank';
 import type { DigestExtras } from '../digest';
 
 type State = { rows: KoFeedItem[]; status: 'loading' | 'ready' | 'error'; saveError: boolean; extras: DigestExtras | null };
@@ -92,6 +93,61 @@ export function useKoFeed(open = true, enabled = true, digest = false) {
   return { ...data, refresh: refreshFeed, dismiss };
 }
 export function useKoFeedCount(enabled = true) {
-  const { rows } = useKoFeed(false, enabled);
-  return enabled ? urgentCount(rows) : 0;
+  const locale = useLocale();
+  const count = useSyncExternalStore(subscribeTaskCount, getTaskCountState, serverTaskCountSnapshot);
+  useEffect(() => {
+    if (!enabled) return undefined;
+    return watchTaskCount(locale);
+  }, [enabled, locale]);
+  // Unknown while loading (null) shows no badge, same as zero: the launcher
+  // renders the count only when it is greater than zero.
+  return enabled ? count ?? 0 : 0;
+}
+
+// The KO launcher badge counts pending queue tasks (T-429), not urgent feed
+// rows: the feed and the queue count different sets, so the badge disagreed
+// with the dashboard and the queue. This store polls the same task-count
+// endpoint the sidebar badge reads, on the same 120s cadence as the feed.
+type TaskCountState = { count: number | null };
+const initialTaskCount: TaskCountState = { count: null };
+let taskCountState = initialTaskCount;
+let taskCountVersion = 0;
+let taskCountUsers = 0;
+let stopTaskCountPolling: (() => void) | undefined;
+const taskCountListeners = new Set<() => void>();
+function publishTaskCount(next: number | null) {
+  taskCountState = { count: next };
+  taskCountListeners.forEach(listener => listener());
+}
+function subscribeTaskCount(listener: () => void) {
+  taskCountListeners.add(listener);
+  return () => { taskCountListeners.delete(listener); };
+}
+export const getTaskCountState = () => taskCountState.count;
+const serverTaskCountSnapshot = () => null;
+export async function refreshTaskCount(locale: string, fetcher: typeof fetch = fetch) {
+  const current = taskCountVersion;
+  const count = await loadTaskCount(locale, fetcher);
+  if (count !== null && current === taskCountVersion) publishTaskCount(count);
+}
+export function watchTaskCount(locale: string, fetcher: typeof fetch = fetch) {
+  taskCountUsers++;
+  const update = () => { if (document.visibilityState === 'visible') void refreshTaskCount(locale, fetcher); };
+  update();
+  if (!stopTaskCountPolling) {
+    const timer = window.setInterval(update, 120_000);
+    window.addEventListener('focus', update);
+    document.addEventListener('visibilitychange', update);
+    stopTaskCountPolling = () => {
+      window.clearInterval(timer);
+      window.removeEventListener('focus', update);
+      document.removeEventListener('visibilitychange', update);
+    };
+  }
+  return () => {
+    if (--taskCountUsers === 0) {
+      stopTaskCountPolling?.(); stopTaskCountPolling = undefined;
+      taskCountVersion++; taskCountState = initialTaskCount;
+    }
+  };
 }

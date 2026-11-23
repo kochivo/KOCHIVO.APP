@@ -52,8 +52,10 @@ export function CaptainReceipts({ workspace = false }: { workspace?: boolean }) 
     {resource.error || resource.data?.error ? <div data-billing-feedback role="alert" className="px-card text-sm">
       {t('loadError')}<button type="button" className="min-h-12 px-page-x underline" onClick={() => void resource.retry()}>{t('retry')}</button>
     </div> : !rows ? <p data-billing-feedback role="status" className="px-card text-sm text-muted">{t('loading')}</p>
-      : rows.length > 0 && <WorkspaceBillingTask label={t('title')} count={formatNumber(rows.length, locale)}>
-        <ul aria-busy={busy}>{rows.map(receipt => <ReceiptReviewRow key={receipt.id} receipt={receipt} first={false} busy={busy} onDecide={decide} />)}</ul>
+      : <WorkspaceBillingTask label={t('title')} count={formatNumber(rows.length, locale)}>
+        {rows.length > 0
+          ? <ul aria-busy={busy}>{rows.map(receipt => <ReceiptReviewRow key={receipt.id} receipt={receipt} first={false} busy={busy} onDecide={decide} />)}</ul>
+          : <p className="py-page-y text-sm text-faint">{t('empty')}</p>}
       </WorkspaceBillingTask>}
   </>;
   return <section className="glass rounded-card border border-line-soft p-card" aria-busy={busy}>

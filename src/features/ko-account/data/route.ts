@@ -1,4 +1,5 @@
 import { getTimezone } from '@/core/timezone/server';
+import { uuidv7 } from '@/core/offline/ids';
 import 'server-only';
 import { createT } from '@/core/i18n/messages';
 import { getArabicStyle } from '@/core/i18n/server';
@@ -26,10 +27,12 @@ import { planIntent } from './intents';
 import { normalizeName } from './match';
 import { messages } from '../messages';
 import { mealReceipt } from './meal-receipt';
+import { verifyKoApprovalSecret } from './secret-check';
 import { chooseSwap } from './swap';
+import { isValidSwapChoice, readSwapApproval } from './numeric-swap';
 import type { AccountReply } from './execute';
 import { isBigAction } from './limits';
-import { creditsOut, readCredits, takeCredit, takeUsage } from './usage';
+import { creditsOut, readCredits, refundTakenCredit, refundTakenUsage, takeCredit, takeUsage } from './usage';
 import { quickKeys, readQuick } from './quick';
 
 export { resolveContext } from './context';
@@ -68,6 +71,12 @@ export async function postKoAccountChat(request: Request) {
   try {
     const actor = await getKoActor();
     if (!actor || !config.pilots.has(actor.id)) return reply({ error: 'unauthorized' }, 403);
+    // The approval secret signs approval tokens and the usage-warning proof,
+    // so its mismatch fails KO loudly before any usage is taken. The
+    // meal-receipt secret only signs the meal-points award at the end of a
+    // meal reply, so a missing or mismatched meal secret never blocks the
+    // reply itself — the award is skipped with a warning instead.
+    if ((await verifyKoApprovalSecret(actor, config)).length) return reply({ error: 'unavailable' }, 404);
     const now = Date.now();
     const form = await request.formData().catch(() => null);
     if (!form) return reply({ error: 'invalid' }, 400);
@@ -117,24 +126,29 @@ export async function postKoAccountChat(request: Request) {
         return result.ok ? reply(say(actionT(eaten ? 'mealEaten' : 'mealSkipped', { name }))) : reply(say(actionT('mealLogFailed')), 409);
       }
       if (actor.role !== 'captain') return expired();
+      let creditTaken = false;
       try {
-        if (isBigAction(action.kind) && !(await takeCredit(actor, await readCredits(actor, locale), token)))
-          return reply(creditsOut(await readCredits(actor, locale), actionT), 409);
+        creditTaken = isBigAction(action.kind) && (await takeCredit(actor, await readCredits(actor, locale), token));
+        if (isBigAction(action.kind) && !creditTaken) return reply(creditsOut(await readCredits(actor, locale), actionT), 409);
         const result = await commitApproval(actor, action, token, locale, style);
+        // 40001 means the prescription changed before ko_apply_action wrote
+        // anything: its receipt insert rolls back with the failed call, so the
+        // action did not apply and the credit is refunded. An action applied
+        // by another device returns 'replayed', never 40001, so it is not
+        // refunded here (and the receipt would block the refund anyway).
+        if (creditTaken && result.text === actionT('changed')) await refundTakenCredit(actor, creditTaken, now, token);
         return reply(result, result.text === actionT('changed') ? 409 : 200);
       } catch {
+        await refundTakenCredit(actor, creditTaken, now, token);
         return reply(say(actionT('actionFailed')), 502);
       }
     }
     if (actor.role === 'player' && !audio && !photo && /^[0-9٠-٩]+$/.test(text)) {
-      const cookie = request.headers.get('cookie')?.split(';').map(part => part.trim())
-        .find(part => part.startsWith(`${swapCookie}=`))?.slice(swapCookie.length + 1);
-      const signed = typeof token === 'string' ? token : cookie;
-      const action = signed ? verifyApproval(signed, actor.id, now, config.secret) : null;
-      if (formPending && action?.kind === 'swap_options') return formReply();
-      const result = actor.role === 'player' && action?.kind === 'swap_options' && action.player === actor.id
-        ? await chooseSwap(actor, action.payload, text, locale) : say(t('expired'));
-      return playerReply(result, config.origin.protocol === 'https:');
+      const action = readSwapApproval(request, token, actor.id, now, config.secret);
+      if (isValidSwapChoice(action, actor.id, text, parseHistory(form.get('history')))) {
+        if (formPending) return formReply();
+        return playerReply(await chooseSwap(actor, action?.payload, text, locale), config.origin.protocol === 'https:');
+      }
     }
     const suggestions = createT(koPreviewMessages, locale);
     if (!audio && !photo && quick) {
@@ -151,8 +165,10 @@ export async function postKoAccountChat(request: Request) {
     if (status) return reply({ error: 'invalid' }, status);
     if (!text && !media) return reply({ error: 'invalid' }, 400);
     // Usage is taken before Gemini so an account at its cap never spends the shared free-tier quota.
-    // A busy Gemini (429/503) still counts; on a 429 the shared quota is gone for the day anyway.
-    if (await takeUsage(actor, now, photo !== null, config.secret) !== 'ok') {
+    // A busy or failing Gemini is refunded below, so it costs the user nothing.
+    const refundKey = uuidv7(now);
+    const usageTaken = await takeUsage(actor, now, photo !== null, config.secret) === 'ok';
+    if (!usageTaken) {
       return reply({ kind: 'message', text: actionT('limitReached'), quick: quickKeys.map(key => actionT(key)) });
     }
     const history = parseHistory(form.get('history'));
@@ -160,17 +176,27 @@ export async function postKoAccountChat(request: Request) {
     const [accountFacts, memoryState] = await Promise.all([
       process.env.KO_ANSWER === '0' || photo || formPending ? undefined
         : loadFacts(actor, now, request.signal, contextPlayer).catch(() => undefined),
-      readChatMemory(actor, !photo && !formPending),
+      readChatMemory(actor, !photo && !formPending, contextPlayer?.id),
     ]);
     const facts = accountFacts === undefined ? undefined : appendMemoryFacts(accountFacts, memoryState.memories.map(row => row.text));
     const planned = await planIntent(actor.role, { text, media }, config.key, request.signal, contextPlayer?.name, history, fetch, facts, memoryState.learning)
-      .catch((error: unknown) => {
-        if (!(error instanceof KoModelError) || (error.status !== 429 && error.status !== 503)) throw error;
+      .catch(async (error: unknown) => {
+        if (!(error instanceof KoModelError) || (error.status !== 429 && error.status !== 503)) {
+          // Any other planIntent throw (timeout, 502, network) is a Gemini
+          // failure too, so the taken usage is refunded here — not in the
+          // outer catch, which also covers executeIntent throws where intents
+          // may already have partially executed.
+          await refundTakenUsage(actor, usageTaken, now, photo !== null, refundKey);
+          throw error;
+        }
         console.warn('KO model busy', error.status);
         return error.status;
       });
-    if (planned === 429) return reply({ kind: 'message', text: actionT('koBusy'), quick: quickKeys.map(key => actionT(key)) });
-    if (planned === 503) return reply(say(actionT('koBusyNow')));
+    if (planned === 429 || planned === 503) {
+      await refundTakenUsage(actor, usageTaken, now, photo !== null, refundKey);
+      if (planned === 429) return reply({ kind: 'message', text: actionT('koBusy'), quick: quickKeys.map(key => actionT(key)) });
+      return reply(say(actionT('koBusyNow')));
+    }
     const lastTurn = history.at(-1);
     const question = lastTurn?.role === 'ko' && /[?؟]\s*$/.test(lastTurn.text) ? lastTurn.text : '';
     const exclusive = planned.find(intent => intent.kind === 'meal_photo' || intent.kind === 'swap_exercise');

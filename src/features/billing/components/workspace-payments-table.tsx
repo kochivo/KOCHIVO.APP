@@ -61,7 +61,7 @@ export function WorkspacePaymentsTable({ players, packages, today, rows = paymen
     <div className={`glass overflow-hidden rounded-card${phone ? ' max-md:hidden' : ''}`}>
       {filtered.length ? <table aria-label={t('title')} className="block w-full text-start text-row min-[1024px]:table min-[1280px]:table-fixed">
         <colgroup className="hidden min-[1280px]:table-column-group">
-          <col className="w-[23%]" /><col className="w-[18%]" /><col className="w-[12%]" />
+          <col className="w-[23%]" /><col className="w-[16%]" /><col className="w-[14%]" />
           <col className="w-[15%]" /><col className="w-[17%]" /><col className="w-[15%]" />
         </colgroup>
         <thead className="sr-only min-[1024px]:not-sr-only min-[1024px]:table-header-group"><tr className="text-xs text-faint">

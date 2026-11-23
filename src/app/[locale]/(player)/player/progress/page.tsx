@@ -5,9 +5,10 @@ import { ProgressScreen } from '@/features/progress';
 import { fetchPlayerIdentity } from '@/features/player-home/server';
 import { AnalyticsLoader } from '@/features/muscle-analytics';
 
-export default async function ProgressPage() {
+export default async function ProgressPage({ searchParams }: { searchParams: Promise<{ checkin?: string }> }) {
   const { playerId } = await fetchPlayerIdentity();
-  return <ProgressScreen analytics={playerId ? <AnalyticsLoader playerId={playerId} self /> : null} />;
+  const autoOpenCheckin = (await searchParams).checkin === '1';
+  return <ProgressScreen autoOpenCheckin={autoOpenCheckin} analytics={playerId ? <AnalyticsLoader playerId={playerId} self /> : null} />;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {

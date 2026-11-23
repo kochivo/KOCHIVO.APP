@@ -58,7 +58,7 @@ export function WorkspaceBillingPhonePlayer({ row, today, onOpen }: {
     {reminder ? <a href={reminder} target="_blank" rel="noopener noreferrer"
       className={buttonClass({ variant: 'secondary', block: false, className: 'min-w-12 shrink-0 px-stack text-row' })}>{t('remind')}</a>
       : showPaid ? <Button variant="ghost" block={false} className="min-w-12 shrink-0 px-0" onClick={onOpen}>
-        <span className="tone-lime rounded-md px-inline text-micro font-semibold">{t('paidTag')}</span>
+        <span className="tone-lime shrink-0 whitespace-nowrap rounded-md px-inline text-micro font-semibold">{t('paidTag')}</span>
       </Button>
       : <Button variant="secondary" block={false} className="min-w-12 shrink-0 px-stack text-row"
         onClick={onOpen}>{actionLabel}</Button>}

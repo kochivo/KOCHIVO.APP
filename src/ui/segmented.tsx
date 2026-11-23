@@ -20,7 +20,7 @@ export interface SegmentedProps extends Omit<HTMLAttributes<HTMLDivElement>, 'on
 
 export function Segmented({ options, value, onChange, className, phoneScroll, disabled, ...props }: SegmentedProps) {
   return (
-    <div {...props} role="radiogroup" aria-disabled={disabled} className={cn('glass flex gap-inline rounded-control p-inline', phoneScroll && 'max-md:max-w-full max-md:overflow-x-auto', className)}>
+    <div {...props} role="radiogroup" aria-disabled={disabled} className={cn('glass flex max-w-full gap-inline overflow-x-auto rounded-control p-inline', phoneScroll && 'max-md:max-w-full max-md:overflow-x-auto', className)}>
       {options.map((option, index) => (
         <button
           key={option.value}
@@ -46,7 +46,7 @@ export function Segmented({ options, value, onChange, className, phoneScroll, di
             const target = event.currentTarget.parentElement?.children.item(next);
             if (target instanceof HTMLButtonElement) target.focus();
           }}
-          className={cn('press min-h-12 min-w-0 flex-1 rounded-control px-stack text-sm', phoneScroll && 'max-md:shrink-0 max-md:basis-auto max-md:whitespace-nowrap', variants[option.value === value ? 'active' : 'idle'])}
+          className={cn('press min-h-12 min-w-fit shrink-0 flex-1 whitespace-nowrap rounded-control px-stack text-sm', phoneScroll && 'max-md:shrink-0 max-md:basis-auto max-md:whitespace-nowrap', variants[option.value === value ? 'active' : 'idle'])}
         >{option.label}</button>
       ))}
     </div>

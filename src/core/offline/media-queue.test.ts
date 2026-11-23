@@ -18,7 +18,18 @@ const entry = (setId: string | null = null) => ({
 });
 const transport = () => ({
   upload: vi.fn<MediaTransport['upload']>().mockResolvedValue('player/video.mp4'),
+  uploadCheckinPhoto: vi.fn<MediaTransport['uploadCheckinPhoto']>().mockResolvedValue('player/checkin.jpg'),
   insertFormCheck: vi.fn<MediaTransport['insertFormCheck']>().mockResolvedValue(undefined),
+});
+
+const checkinRow = (id = 'checkin-1', photoTotal = 2) => ({
+  id, week_start: '2026-10-31', body_weight_kg: 75, waist_cm: 90, notes: '',
+  photo_paths: Array<string | null>(photoTotal).fill(null),
+  body_fat_pct: null, photo_poses: ['front', 'side'].slice(0, photoTotal), photo_total: photoTotal,
+});
+const photoEntry = (position: number) => ({
+  kind: 'checkin_photo' as const, checkin_id: 'checkin-1', position,
+  blob: new Blob([position === 0 ? 'a' : 'b'], { type: 'image/jpeg' }), mime: 'image/jpeg',
 });
 
 beforeEach(() => { db = new KochivoDB(`media-test-${sequence++}`); });
@@ -127,13 +138,85 @@ describe('media queue', () => {
     const existingTables = old.tables.map(table => table.name);
     old.close();
     await db.open();
-    expect(db.verno).toBe(9);
+    expect(db.verno).toBe(10);
     for (const name of existingTables) expect(await db.table(name).count()).toBe(1);
     expect(await db.supplements.count()).toBe(0);
     expect(await db.supplement_logs.count()).toBe(0);
     expect(await db.daily_checks.count()).toBe(0);
     expect(await db.pain_reports.count()).toBe(0);
+    expect(await db.check_ins.count()).toBe(0);
     await enqueueMedia(db, entry(), 1000);
     expect(await mediaPending(db)).toBe(1);
+  });
+});
+
+describe('check-in photos', () => {
+  it('uploads photos in position order and queues the row once complete', async () => {
+    await db.check_ins.put(checkinRow());
+    await enqueueMedia(db, photoEntry(0), 1000);
+    await enqueueMedia(db, photoEntry(1), 1000);
+    const send = transport();
+    send.uploadCheckinPhoto.mockImplementation(async (blob) => `player/photo-${await blob.text()}.jpg`);
+    expect(await flushMediaQueue(db, send, 2000)).toEqual({ sent: 2, failed: 0, waiting: 0 });
+    expect((await db.check_ins.get('checkin-1'))?.photo_paths).toEqual(['player/photo-a.jpg', 'player/photo-b.jpg']);
+    expect(await mediaPending(db)).toBe(0);
+    const outbox = await db.outbox.toArray();
+    expect(outbox).toHaveLength(1);
+    expect(outbox[0]).toMatchObject({ table: 'check_ins', row_id: 'checkin-1' });
+    expect(send.upload).not.toHaveBeenCalled();
+    expect(send.insertFormCheck).not.toHaveBeenCalled();
+  });
+
+  it('waits for the remaining photo before queueing the row', async () => {
+    await db.check_ins.put(checkinRow());
+    await enqueueMedia(db, photoEntry(0), 1000);
+    await enqueueMedia(db, photoEntry(1), 1000);
+    const send = transport();
+    send.uploadCheckinPhoto.mockImplementation(async (blob) => `player/photo-${await blob.text()}.jpg`);
+    send.uploadCheckinPhoto.mockRejectedValueOnce(new Error('offline'));
+    expect(await flushMediaQueue(db, send, 2000)).toEqual({ sent: 1, failed: 1, waiting: 0 });
+    expect((await db.check_ins.get('checkin-1'))?.photo_paths.filter(Boolean)).toHaveLength(1);
+    expect(await db.outbox.count()).toBe(0);
+    expect(await db.media_queue.toArray()).toHaveLength(1);
+    expect((await db.media_queue.toArray())[0]).toMatchObject({ attempts: 1, next_attempt_at: 4000 });
+    expect(await flushMediaQueue(db, send, 4000)).toEqual({ sent: 1, failed: 0, waiting: 0 });
+    expect((await db.check_ins.get('checkin-1'))?.photo_paths).toEqual(['player/photo-a.jpg', 'player/photo-b.jpg']);
+    expect(await db.outbox.count()).toBe(1);
+  });
+
+  it('retries a failed check-in photo upload with backoff', async () => {
+    await db.check_ins.put(checkinRow('checkin-1', 1));
+    await enqueueMedia(db, photoEntry(0), 1000);
+    const send = transport();
+    send.uploadCheckinPhoto.mockRejectedValue({ code: '42501', message: 'private/path' });
+    await flushMediaQueue(db, send, 1000);
+    expect(await flushMediaQueue(db, send, 2999)).toEqual({ sent: 0, failed: 0, waiting: 1 });
+    expect(send.uploadCheckinPhoto).toHaveBeenCalledTimes(1);
+    await flushMediaQueue(db, send, 3000);
+    expect((await db.media_queue.toArray())[0]).toMatchObject({ attempts: 2, next_attempt_at: 7000, last_error: '42501' });
+    expect(await db.outbox.count()).toBe(0);
+  });
+
+  it('drops a check-in photo whose check-in is gone instead of blocking the queue', async () => {
+    await enqueueMedia(db, { ...photoEntry(0), checkin_id: 'missing' }, 1000);
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      const send = transport();
+      expect(await flushMediaQueue(db, send, 1000)).toEqual({ sent: 1, failed: 0, waiting: 0 });
+      expect(send.uploadCheckinPhoto).toHaveBeenCalledTimes(1);
+      expect(await mediaPending(db)).toBe(0);
+      expect(warn).toHaveBeenCalled();
+    } finally { warn.mockRestore(); }
+  });
+
+  it('uploads check-in photos to the checkin-photos bucket', async () => {
+    const upload = vi.fn().mockResolvedValue({ error: null });
+    const storageFrom = vi.fn().mockReturnValue({ upload });
+    const client = fakeClient({ storage: { from: storageFrom } });
+    const send = supabaseMediaTransport(client, 'player');
+    const path = await send.uploadCheckinPhoto(new Blob(['photo']), 'image/jpeg');
+    expect(path).toMatch(/^player\/[0-9a-f-]+\.jpg$/);
+    expect(storageFrom).toHaveBeenCalledWith('checkin-photos');
+    expect(upload).toHaveBeenCalledWith(path, expect.any(Blob), { contentType: 'image/jpeg', upsert: false });
   });
 });

@@ -6,7 +6,9 @@ import { beforeEach, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import { WorkspaceBilling } from './components/workspace-billing';
 import { WorkspaceBillingRow } from './components/workspace-billing-row';
+import { WorkspaceBillingPhonePlayer } from './components/workspace-billing-phone-player';
 import { WorkspacePaymentsTable } from './components/workspace-payments-table';
+import { paymentRows } from './components/workspace-billing-summary';
 import type { BillingResult } from './types';
 import type { ReceiptReview } from './receipts/types';
 
@@ -42,14 +44,16 @@ it('shows a single invite action with the exact empty copy', () => {
   expect(html).not.toContain('كبّر الباقة');
   expect(html).not.toContain('رقّي باقتك');
 });
-it('renders the four tiles and hides attention when all four lists are empty', () => {
+it('keeps the receipts section visible with its empty state when all four lists are empty', () => {
   if (!state.result.data) throw new Error('Missing fixture');
   state.result.data.players = [{ playerId: 'p', fullName: 'Ali', accessUntil: '2026-12-01', status: 'active',
     phone: null, lastPayment: null, due: 0, startedOn: '2026-10-01', lastTrainingDate: null, programTitle: null, openTasks: 0 }];
   const html = render();
   for (const label of ['الاشتراكات', 'دخل نوفمبر', 'بيخلص خلال 7 أيام', 'اشتراكات شغالة', 'بيخلص قريب', 'دوّر على لاعب', 'من 4,500 متوقعة']) expect(html).toContain(label);
   expect(html).toContain('group hidden has-[[data-billing-task]]:block');
-  expect(html).not.toContain('<details data-billing-task');
+  expect(html.match(/<details data-billing-task/g)).toHaveLength(1);
+  expect(html).toContain('إيصالات مستنية مراجعة');
+  expect(html).toContain('مفيش إيصالات مستنية مراجعة');
   expect(html).not.toContain('بعد 19 يوم');
   expect(html).toContain('4,500');
   expect(html).not.toContain('ج.م');
@@ -103,4 +107,27 @@ it.each(['instapay', null] as const)('shows a recorded payment method or the leg
     createElement(WorkspacePaymentsTable, { players: [player], packages: [], today: '2026-11-14' })));
   expect(html).toContain('Last payment');
   expect(html.includes('InstaPay')).toBe(Boolean(method));
+});
+
+it('keeps the fully-paid and no-package status pills on one line', () => {
+  const paid = { playerId: 'paid', fullName: 'Paid player', accessUntil: '2026-12-01', status: 'active' as const,
+    phone: null, due: 0, startedOn: '2026-10-01', lastTrainingDate: null, programTitle: null, openTasks: 0,
+    lastPayment: { id: 'payment', captain_id: 'captain', player_id: 'paid', period_start: '2026-11-13', period_end: '2026-12-13',
+      package_id: 'pkg', days: 30, price_egp: 800, amount_egp: 800, created_at: '2026-11-13T12:00:00Z' } };
+  const unpackaged = { playerId: 'free', fullName: 'Free player', accessUntil: '2026-12-01', status: 'active' as const,
+    phone: null, due: 0, startedOn: '2026-10-01', lastTrainingDate: null, programTitle: null, openTasks: 0, lastPayment: null };
+  const packages = [{ id: 'pkg', name: 'Monthly', price_egp: 800, days: 30 }];
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' },
+    createElement(WorkspacePaymentsTable, { players: [paid, unpackaged], packages, today: '2026-11-14' })));
+  expect(html).toMatch(/<span class="[^"]*whitespace-nowrap[^"]*">مدفوعة كاملة<\/span>/);
+  expect(html).toMatch(/<span class="[^"]*whitespace-nowrap[^"]*">من غير باقة<\/span>/);
+  // The fixed-layout desktop table gives the status column 14% (paid column 16%),
+  // so the non-wrapping pill fits at ~1288px instead of overflowing into the next column.
+  expect(html).toMatch(/<col class="w-\[16%\]" ?\/><col class="w-\[14%\]" ?\/>/);
+  const rows = paymentRows([paid], packages, '2026-11-14');
+  const row = rows[0];
+  if (!row) throw new Error('Missing fixture');
+  const phone = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' },
+    createElement(WorkspaceBillingPhonePlayer, { row, today: '2026-11-14', onOpen: () => {} })));
+  expect(phone).toMatch(/<span class="[^"]*whitespace-nowrap[^"]*">مدفوع<\/span>/);
 });

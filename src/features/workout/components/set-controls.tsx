@@ -26,14 +26,19 @@ export function SetControls({ state, secondary = false }: { state: ReturnType<ty
         hint={state.performance?.weight_kg != null ? t('lastTimeWeight', { value: formatNumber(state.performance.weight_kg, locale) }) : undefined} />
     </div>}
     <Chip pressed={state.bodyweight} onClick={() => state.setBodyweight(!state.bodyweight)}>{t('bodyweight')}</Chip>
-    <div ref={repsRef} tabIndex={-1} role="group" aria-label={t('reps')}
-      aria-describedby={repsInvalid ? 'set-error' : undefined} className={repsInvalid ? 'rounded-card ring-2 ring-danger' : undefined}>
-      <Stepper format={value => formatNumber(value, locale)} label={t('reps')} value={state.reps} step={1} min={0} onChange={state.setReps}
-        hint={state.performance?.reps != null ? t('lastTimeReps', { n: state.performance.reps, value: formatNumber(state.performance.reps, locale) }) : undefined} />
+    {/* The reps stepper and the finish button live in one sticky bar, so the player logs the set
+        without scrolling on every set. The weight stepper stays in the flow above: it is set once
+        per exercise, and stacking both gym steppers in the bar would cover the phone screen. */}
+    <div className="glass-strong sticky bottom-page-y z-10 space-y-stack rounded-card border border-line-soft p-card">
+      <div ref={repsRef} tabIndex={-1} role="group" aria-label={t('reps')}
+        aria-describedby={repsInvalid ? 'set-error' : undefined} className={repsInvalid ? 'rounded-card ring-2 ring-danger' : undefined}>
+        <Stepper format={value => formatNumber(value, locale)} label={t('reps')} value={state.reps} step={1} min={0} onChange={state.setReps}
+          hint={state.performance?.reps != null ? t('lastTimeReps', { n: state.performance.reps, value: formatNumber(state.performance.reps, locale) }) : undefined} />
+      </div>
+      {state.invalid && <p id="set-error" role="alert" className="text-danger">{t(issue === 'reps' ? 'enterReps' : 'enterWeightAndReps')}</p>}
+      <Button variant={secondary ? 'secondary' : 'primary'} size="lg" className="min-h-17 w-full px-page-x text-xl" disabled={state.disabled || state.typedWeightInvalid || state.typedRepsInvalid} onClick={() => void state.complete()}>
+        <Check aria-hidden />{t('completeSet')}
+      </Button>
     </div>
-    {state.invalid && <p id="set-error" role="alert" className="text-danger">{t(issue === 'reps' ? 'enterReps' : 'enterWeightAndReps')}</p>}
-    <Button variant={secondary ? 'secondary' : 'primary'} size="lg" className="min-h-17 w-full px-page-x text-xl" disabled={state.disabled || state.typedWeightInvalid || state.typedRepsInvalid} onClick={() => void state.complete()}>
-      <Check aria-hidden />{t('completeSet')}
-    </Button>
   </>;
 }

@@ -104,10 +104,11 @@ const optionsToken = (overrides: Partial<Approval> = {}) => issueApproval({
   actor: player, player, id: target, kind: 'swap_options', label: '', payload,
   expires: now + 600_000, ...overrides,
 }, secret);
-function chatRequest(text: string, cookie?: string, token?: string) {
+function chatRequest(text: string, cookie?: string, token?: string, history?: { role: 'ko' | 'user'; text: string }[]) {
   const form = new FormData();
   form.set('locale', 'en'); form.set('text', text);
   if (token) form.set('token', token);
+  if (history) form.set('history', JSON.stringify(history));
   const request = new Request('https://kochivo.test/api/ko', { method: 'POST', body: form });
   request.headers.set('origin', 'https://kochivo.test'); request.headers.set('host', 'kochivo.test');
   request.headers.set('content-length', '1000');
@@ -115,9 +116,10 @@ function chatRequest(text: string, cookie?: string, token?: string) {
   return request;
 }
 function authenticated(role: 'player' | 'captain' = 'player') {
+  vi.stubEnv('KO_MEAL_RECEIPT_SECRET', 'm'.repeat(32));
   const rpc = vi.fn().mockResolvedValue({ error: null });
-  const sharedRpc = (name: string, args: unknown) => name === 'ko_rate_take' || name === 'my_captain_id'
-    ? Promise.resolve({ data: name === 'ko_rate_take' ? true : null, error: null }) : rpc(name, args);
+  const sharedRpc = (name: string, args: unknown) => name === 'ko_rate_take' || name === 'my_captain_id' || name === 'ko_secret_check'
+    ? Promise.resolve({ data: name === 'my_captain_id' ? null : true, error: null }) : rpc(name, args);
   chat.actor = { id: player, role, db: { rpc: sharedRpc } } as unknown as KoActor;
   chat.pilots.add(player);
   vi.spyOn(Date, 'now').mockReturnValue(now);
@@ -152,17 +154,54 @@ it('routes a cookie-backed Arabic numeric choice only after signed token verific
   expect(response.headers.get('set-cookie')).toContain('Max-Age=0');
 });
 it.each(['missing', 'expired', 'foreign', 'wrong-player', 'tampered', 'wrong-kind'])(
-  'rejects %s options before a request RPC', async failure => {
+  'answers normally instead of expiring for %s options', async failure => {
     const rpc = authenticated();
+    chat.plan.mockResolvedValue([{ kind: 'clarify', args: { question: 'Which exercise?' } }]);
     const token = failure === 'missing' ? '' : failure === 'expired' ? optionsToken({ expires: now - 1 })
       : failure === 'foreign' ? optionsToken({ actor: target }) : failure === 'wrong-player' ? optionsToken({ player: target })
       : failure === 'wrong-kind' ? optionsToken({ kind: 'renew' })
       : optionsToken() + (failure === 'tampered' ? '0' : '');
     const response = await postKoAccountChat(chatRequest('1', `ko_swap_options=${token}`));
-    expect(await response.json()).toMatchObject({ kind: 'message', text: expect.stringContaining('expired') });
+    expect(await response.json()).toMatchObject({ kind: 'message', text: 'Which exercise?' });
     expect(rpc).not.toHaveBeenCalled();
-    expect(chat.plan).not.toHaveBeenCalled();
+    expect(chat.plan).toHaveBeenCalledTimes(1);
   });
+it('answers a bare number normally when no swap is pending', async () => {
+  const rpc = authenticated();
+  chat.plan.mockResolvedValue([{ kind: 'clarify', args: { question: 'Which exercise?' } }]);
+  expect(await (await postKoAccountChat(chatRequest('30'))).json()).toMatchObject({ kind: 'message', text: 'Which exercise?' });
+  expect(rpc).not.toHaveBeenCalled();
+  expect(chat.plan).toHaveBeenCalledTimes(1);
+});
+const secondTarget = '00000000-0000-7000-8000-000000000103';
+const thirdTarget = '00000000-0000-7000-8000-000000000104';
+const threeOptions = { programExercise, injury: 'knee', options: [target, secondTarget, thirdTarget] };
+it.each(['5', '٤', '0', '2'])('answers out-of-range %s normally with a valid pending swap', async text => {
+  const rpc = authenticated();
+  chat.plan.mockResolvedValue([{ kind: 'clarify', args: { question: 'Which exercise?' } }]);
+  const response = await postKoAccountChat(chatRequest(text, `ko_swap_options=${optionsToken()}`));
+  expect(await response.json()).toMatchObject({ kind: 'message', text: 'Which exercise?' });
+  expect(rpc).not.toHaveBeenCalled();
+  expect(chat.plan).toHaveBeenCalledTimes(1);
+});
+it('answers a number to a previous KO question normally while a swap is pending', async () => {
+  const rpc = authenticated();
+  chat.plan.mockResolvedValue([{ kind: 'clarify', args: { question: 'Which exercise?' } }]);
+  const response = await postKoAccountChat(chatRequest('2', `ko_swap_options=${optionsToken({ payload: threeOptions })}`,
+    undefined, [{ role: 'ko', text: 'How many sets did you do?' }]));
+  expect(await response.json()).toMatchObject({ kind: 'message', text: 'Which exercise?' });
+  expect(rpc).not.toHaveBeenCalled();
+  expect(chat.plan).toHaveBeenCalledTimes(1);
+});
+it('executes an in-range choice from the token form field for a three-option swap', async () => {
+  const rpc = authenticated();
+  const response = await postKoAccountChat(chatRequest('2', undefined, optionsToken({ payload: threeOptions })));
+  expect(await response.json()).toMatchObject({ kind: 'message', text: expect.stringContaining('sent to your coach') });
+  expect(rpc).toHaveBeenCalledExactlyOnceWith('request_exercise_swap', {
+    p_program_exercise_id: programExercise, p_to_exercise_id: secondTarget, p_injury: 'knee',
+  });
+  expect(chat.plan).not.toHaveBeenCalled();
+});
 it('keeps numeric requests behind the pilot gate', async () => {
   const rpc = authenticated(); chat.pilots.clear();
   expect((await postKoAccountChat(chatRequest('1', undefined, optionsToken()))).status).toBe(403);

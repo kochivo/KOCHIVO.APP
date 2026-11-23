@@ -6,6 +6,14 @@ vi.mock('@/core/i18n/server', () => ({ getLocale: async () => 'en', getT: async 
 import { HomeTiles } from './home-tiles';
 import { HomeInvite } from './home-invite';
 import { HomeWeekChart } from './home-week-chart';
+import { taskProgress } from './tasks';
+
+it('never claims 100% progress from an empty day', () => {
+  expect(taskProgress(0, 0)).toBe(0);
+  expect(taskProgress(3, 7)).toBe(0.3);
+  expect(taskProgress(1, 1)).toBe(0.5);
+  expect(taskProgress(0, 20)).toBe(0);
+});
 
 it.each([[undefined, null], [0, null], [2000, 25], [100, 100]] as const)(
   'renders thin revenue progress only with a real positive goal %s', async (incomeGoal, percent) => {

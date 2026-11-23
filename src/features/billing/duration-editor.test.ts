@@ -38,7 +38,7 @@ it('preselects quarter after month and explains disabled presets', () => {
   expect(html).not.toContain('value="90"');
 });
 it('keeps saved presets and custom numeric durations when editing', () => {
-  expect(editor([month], month)).toMatch(/aria-pressed="true"[^>]*>شهر<\/button>/);
+  expect(editor([month], month)).toMatch(/aria-pressed="true"[^>]*>شهر واحد<\/button>/);
   expect(editor([month], { ...month, days: 45 })).toContain('value="45"');
 });
 it('blocks the existing duplicate in the editor and marks every duplicate row in both cards', () => {

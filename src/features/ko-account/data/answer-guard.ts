@@ -17,13 +17,34 @@ function numbers(text: string) {
     .match(/(?:(?<!\d)[+-])?\d+(?:\.\d+)?(?:e[+-]?\d+)?/gi) ?? []).map(Number);
 }
 
-export function guardAnswer(text: string, facts: string, userText: string) {
+// A facts line starts with `[<source>] ` (facts.ts: one line per source, values
+// joined with `; `). Only numbers from lines whose source the answer cites can
+// justify a number in the answer, so a number from another source — or from an
+// unprefixed line — never counts. Within one cited line numbers are allowed as
+// a set: the lines mix several fields in free prose (see Notes for reviewer),
+// so key-aware matching inside a line is not attempted here.
+function citedNumbers(facts: string, sources: readonly AnswerSource[]) {
+  const cited = new Set<string>(sources);
+  const allowed = new Set<number>();
+  for (const line of facts.split('\n')) {
+    const match = /^\[([^\]]+)\] /.exec(line);
+    if (match && match[1] && cited.has(match[1])) {
+      for (const value of numbers(line)) allowed.add(value);
+    }
+  }
+  return allowed;
+}
+
+// userText stays in the signature so callers keep passing the question, but its
+// numbers never justify an answer: echoing a number the user asked about is
+// not evidence for it.
+export function guardAnswer(text: string, facts: string, userText: string, sources: readonly AnswerSource[]) {
   if (!text.trim() || text.length > 700) return 'length';
   const normalized = latinDigits(text.normalize('NFKC').replace(/[\p{Cf}\u0640\u064b-\u065f]/gu, ''));
   if (normalized.match(link)) return 'link';
   if (normalized.replace(isoDate, '').match(phone)) return 'phone';
   if (actionClaim.test(normalized)) return 'action_claim';
-  const allowed = new Set(numbers(facts + '\n' + userText));
+  const allowed = citedNumbers(facts, sources);
   return numbers(normalized).some(value => !(Number.isInteger(value) && value >= 0 && value <= 10) && !allowed.has(value))
     ? 'number' : null;
 }
@@ -44,7 +65,7 @@ function answerInFacts(source: AnswerSource, facts: string) {
 }
 
 export function reviewAnswer(args: Extract<Intent, { kind: 'answer' }>['args'], facts: string, userText: string) {
-  const reason = guardAnswer(args.text, facts, userText) ??
+  const reason = guardAnswer(args.text, facts, userText, args.sources) ??
     (args.sources.some(source => !answerInFacts(source, facts)) ? 'source' : null);
   if (!reason) return { ok: true as const, ...args };
   const first = args.sources[0];

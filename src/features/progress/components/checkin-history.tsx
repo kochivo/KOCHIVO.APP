@@ -44,6 +44,7 @@ export function CheckinHistory({ checkins, now = currentTime }: { checkins: Chec
     {load.status === 'error' && <ErrorState message={t('voiceLoadFailed')} retryLabel={t('tryAgain')} onRetry={() => setRetry(value => value + 1)} />}
     <ul className="space-y-stack">{checkins.map(row => <li key={row.id} className="glass space-y-stack rounded-card p-card">
       <time dateTime={row.week_start} className="text-sm text-muted">{formatDateAr(row.week_start, { day: 'numeric', month: 'long' }, locale)}</time>
+      {row.pending && <p className="text-sm text-muted"><span className="rounded-full bg-ink/5 px-inline text-xs font-bold">{t('checkinPending')}</span> {t('checkinSavedOnDevice')}</p>}
       <p className="whitespace-pre-wrap">{row.reviewed_at ? row.captain_reply || t('voiceReply') : t('noReplyYet')}</p>
       {row.reviewed_at && load.status === 'ready' && ((load.groups[row.id]?.length ?? 0) > 0 ?
         <VoiceNoteList notes={load.groups[row.id] ?? []} onPlay={played} /> : <p className="text-sm text-muted">{t('noVoiceReply')}</p>)}
