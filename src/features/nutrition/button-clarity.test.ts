@@ -41,6 +41,11 @@ it.each([{ completed: [], next: 0 }, { completed: ['first'], next: 1 }, { comple
     for (const name of ['first', 'second', 'third']) {
       expect(html).toContain(`aria-label="${name} · Meal details and swaps"`);
     }
-    if (next !== null) expect(html).not.toContain(`aria-label="Ate ${['first', 'second', 'third'][next]}"`);
+    if (next !== null) {
+      expect(html).not.toContain(`aria-label="Ate ${['first', 'second', 'third'][next]}"`);
+      expect(html.indexOf('data-food-section="next-meal"')).toBeLessThan(html.indexOf('data-food-section="water"'));
+    } else {
+      expect(html).not.toContain('data-food-section="next-meal"');
+    }
   },
 );

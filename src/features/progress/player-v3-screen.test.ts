@@ -20,6 +20,13 @@ vi.mock('react', async original => ({ ...await original<typeof React>(), useStat
 beforeEach(() => { state.index = 0; state.values = []; state.setters = []; });
 const props = { today: '2026-11-13', checkins: [] as CheckIn[], strength: { sets: [], names: {} }, count: 7,
   checkinError: false, strengthError: false, retry() {}, onLog: vi.fn() };
+it('uses the latest weight once and explains why a single point has no chart', () => {
+  const html = renderToStaticMarkup(createElement(ProgressV3, { ...props,
+    checkins: [{ week_start: '2026-11-13', body_weight_kg: 75 }] as CheckIn[] }));
+  expect(html).toContain('التغيّر هيظهر بعد القياس الجاي');
+  expect(html.match(/>75</g)).toHaveLength(1);
+  expect(html).not.toContain('<svg width="100%"');
+});
 function find(node: ReactNode, type: unknown): React.ReactElement<Record<string, unknown>>[] {
   if (Array.isArray(node)) return node.flatMap(child => find(child, type));
   if (!isValidElement<{ children?: ReactNode }>(node)) return [];
@@ -34,9 +41,12 @@ it('shows the exact empty copy and a real history count without sample chart val
   expect(html).not.toContain('<svg width="100%"');
 });
 it('opens the existing sheet and changes the pressed range control', () => {
-  const tree = ProgressV3(props);
+  const tree = ProgressV3({ ...props, checkins: [
+    { week_start: '2026-11-13', body_weight_kg: 75 },
+    { week_start: '2026-10-30', body_weight_kg: 76 },
+  ] as CheckIn[] });
   const buttons = [...find(tree, 'button'), ...find(tree, Button)];
-  const log = buttons.find(button => button.props['aria-label'] === createT(legacyMessages, 'ar')('sendWeeklyCheckin'));
+  const log = buttons.find(button => button.props.children === createT(legacyMessages, 'ar')('sendWeeklyCheckin'));
   if (typeof log?.props.onClick !== 'function') throw new Error('Missing log control');
   log.props.onClick();
   expect(props.onLog).toHaveBeenCalledOnce();
@@ -53,7 +63,7 @@ it('feeds the selected range into both charts and keeps the program baseline for
   expect(html).toContain('hairline-cells');
   expect(html).toContain('+1.4');
   expect(html).toContain('1,680');
-  expect(html.indexOf('dateTime="2026-10-20"')).toBeLessThan(html.indexOf('dateTime="2026-11-13"'));
+  expect(html.indexOf('dateTime="2026-10-20"')).toBeLessThan(html.lastIndexOf('dateTime="2026-11-13"'));
   expect(html).toContain('النهارده');
   state.index = 0;
   const charts = find(ProgressV3(data), LineChart);

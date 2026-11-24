@@ -14,7 +14,7 @@ import { PlayerGallery } from './player-gallery';
 
 const CheckinHistory = dynamic(() => import('./checkin-history').then(module => module.CheckinHistory), { ssr: false, loading: () => <LoadingState variant="list" /> });
 
-export function ProgressRecords({ checkins }: { checkins: CheckIn[] }) {
+export function ProgressRecords({ checkins, kind }: { checkins: CheckIn[]; kind?: 'photos' | 'history' }) {
   const t = useT(messages), locale = useLocale();
   const progress = useT(progressMessages);
   const [open, setOpen] = useState<'photos' | 'history' | null>(null);
@@ -24,9 +24,9 @@ export function ProgressRecords({ checkins }: { checkins: CheckIn[] }) {
     { key: 'history', Icon: History, count: checkins.length },
   ] as const;
   return <section className="space-y-stack" data-progress-section="records">
-    <div className="grid grid-cols-2 gap-inline">
-      {options.map(({ key, Icon, count }) => <Button key={key} type="button" variant="secondary" aria-expanded={open === key}
-        className="min-w-0 justify-start px-stack text-start" onClick={() => setOpen(value => value === key ? null : key)}>
+    <div className={kind ? undefined : 'grid grid-cols-2 gap-inline'}>
+      {options.filter(option => !kind || option.key === kind).map(({ key, Icon, count }) => <Button key={key} type="button" variant="secondary" aria-expanded={open === key}
+        block={Boolean(kind)} className="min-w-0 justify-start px-stack text-start" onClick={() => setOpen(value => value === key ? null : key)}>
         <Icon aria-hidden className="size-5 shrink-0 text-lime" /><span className="min-w-0 flex-1">{t(key)}</span>
         <bdi className="font-display text-muted">{formatNumber(count, locale)}</bdi>
       </Button>)}

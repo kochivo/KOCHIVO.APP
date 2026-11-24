@@ -32,7 +32,7 @@ export const arStd = {
   'task.intake': 'أكمل أسئلة البداية', 'task.start': 'ابدأ تمرين اليوم: {name}',
   'task.continue': 'أكمل تمرين اليوم: {name}', 'task.meal': 'سجّل وجبتك القادمة: {name}',
   'task.checkin': 'أرسل Check-in هذا الأسبوع', weeklyCheckinEntry: 'تحديث الأسبوع',
-  weeklyCheckinHint: 'أرسل وزنك وقياساتك وصورك إلى الكابتن', 'task.voice': 'استمع لرسالة الكابتن',
+  'task.voice': 'استمع لرسالة الكابتن',
   'task.done': 'راحة / أكملت كل مهام اليوم', taskContext: 'خطوة واحدة الآن، ثم الخطوة التالية',
   taskTomorrow: 'تمرين الغد: {name}', taskDoneContext: 'خذ وقتك للراحة', taskAction: 'ابدأ',
   taskLoadFailed: 'تعذّر تحديد خطوتك القادمة. حاول مجدداً', pageTitle: 'الرئيسية', captainTitle: 'الكابتن',

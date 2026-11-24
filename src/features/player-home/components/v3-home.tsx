@@ -19,9 +19,10 @@ import { HomeHeader } from './home-header';
 import { HomeHero } from './home-hero';
 import { HomeTiles } from './home-tiles';
 import { TomorrowCard } from './tomorrow-card';
-import { CaptainRow } from './captain-row';
 import { buttonClass } from '@/ui/button';
 import { HomeRankCard } from './home-rank-card';
+import { CheckinEntry } from './checkin-entry';
+import { CaptainRow } from './captain-row';
 
 const StreakSheet = dynamic(() => import('./streak-sheet').then(module => module.StreakSheet), { ssr: false });
 
@@ -67,6 +68,9 @@ export function V3Home({ weightKg, now, today, firstName, playerId, snapshot, da
         {canPreview && <a href="#home-day-preview" onClick={() => onPreview(tomorrow)}
           className={buttonClass({ variant: 'secondary', block: false, className: 'self-start' })}>{v4('tomorrow')}</a>}
       </>} /></div>
+    <CheckinEntry />
+    {showToday && !rest && playerId && captain.data?.captainId &&
+      <CaptainRow name={captain.data.fullName} playerId={playerId} captainId={captain.data.captainId} />}
     {!rest && <>{dailyCheck}{rank}</>}
     <div data-home-section="nutrition"><HomeTiles weightKg={weightKg} today={today} playerId={playerId} rest={rest} nutritionRest={nutritionRest} /></div>
     {rest && <>
@@ -77,6 +81,5 @@ export function V3Home({ weightKg, now, today, firstName, playerId, snapshot, da
     </>}
     </div>
     {!rest && weekStrip}
-    {showToday && !rest && <CaptainRow name={captain.data?.fullName} playerId={playerId} captainId={captain.data?.captainId} />}
   </section>;
 }

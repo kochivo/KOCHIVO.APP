@@ -123,6 +123,12 @@ it('uses the finish label only for the last queued set and disables logging duri
   expect(html).toContain('خلصت التمرين');
   expect(html).toMatch(/<button[^>]*disabled=""[^>]*class="[^"]*control-primary/);
 });
+it('keeps the actual group number on the final v4 action', () => {
+  const html = renderToStaticMarkup(createElement(WorkoutSet, {
+    v4: true, state: { ...state, current: state.queue[1], progress: 2 },
+  }));
+  expect(html).toContain('خلصت المجموعة 2');
+});
 it('renders the v4 countdown and wires both adjustments to the active rest', () => {
   const adjust = vi.fn(), skip = vi.fn();
   const props = { state: { ...state, selectedExercises: {}, rest: {
@@ -186,7 +192,7 @@ it('focuses the heading when the player enters a set step', () => {
 
 it('keeps the weight/reps steppers and the finish button in one sticky action bar', () => {
   for (const [panel, label] of [[WorkoutSet({ state }), 'خلصت المجموعة'],
-    [WorkoutSet({ state, v4: true }), 'خلصت الست 1']] as const) {
+    [WorkoutSet({ state, v4: true }), 'خلصت المجموعة 1']] as const) {
     const bars = stickyBars(panel);
     expect(bars).toHaveLength(1);
     const bar = bars[0];

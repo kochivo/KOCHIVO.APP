@@ -121,7 +121,7 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
         readiness={<MorningRow playerId={playerId} today={today} rest={rest}><PlayerReadiness weightKg={weightKg} playerId={playerId} today={today} rest={rest} coachRest={decision === 'rest'} hideWaterStrip
           tomorrowRest={Boolean(tomorrowRest || (weekly && !tomorrow))}
           tomorrow={tomorrow && !tomorrowRest && !tomorrow.is_rest_day ? starterText(tomorrow.title, locale) : undefined} /></MorningRow>} />}
-      <CheckinEntry />
+      {!v6 && <CheckinEntry />}
       <div hidden={selectedDate !== today} className="space-y-card-gap">
       {v6 ? <NextTaskSlot rest={rest} nutritionRest={nutritionRest} snapshot={snapshot ?? null} sessions={sessions ?? []} today={today} playerId={playerId}
         retryKey={retryKey} onRetry={() => setRetryKey(value => value + 1)} workoutInHero={!rest && Boolean(day?.exercises.length)} />

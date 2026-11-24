@@ -31,12 +31,12 @@ it('offers the first workout and first check-in from empty progress', () => {
 it('gives an empty chart a way to record measurements', () => {
  expect(render(createElement(LineChart, { points: [], title: 'Weight', unit: 'kg' }))).toMatch(/href="\/player\/progress"[^>]*>Send weekly check-in<\/a>/);
 });
-it('orders the v4 weight, strength, muscle and record sections with no weight yet', () => {
+it('organizes v4 progress into body, training and history with no weight yet', () => {
  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
  state.values = ['2026-11-03', 0, false, [], false];
  const html = render(createElement(ProgressScreen, { analytics: createElement('p', null, 'Muscle data') }));
  expect(html.match(/data-progress-section="[^"]+"/g)).toEqual([
-   'data-progress-section="weight"', 'data-progress-section="strength"', 'data-progress-section="muscles"', 'data-progress-section="records"',
+   'data-progress-section="weight"', 'data-progress-section="records"', 'data-progress-section="strength"', 'data-progress-section="muscles"', 'data-progress-section="records"',
  ]);
  expect(html).toContain('Log your first weight');
  expect(html).toContain('My photos');

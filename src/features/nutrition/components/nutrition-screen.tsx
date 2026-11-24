@@ -50,10 +50,13 @@ export function NutritionScreen() {
     ? <FoodMacroSummary eaten={eaten} target={target ?? { kcal: 0, protein: 0, carbs: 0, fat: 0 }} />
     : <MacroRing eaten={eaten} target={target ?? { kcal: 0, protein: 0, carbs: 0, fat: 0 }} />);
   const sync = <SyncPill state={!online ? 'offline' : parked && parked > 0 ? 'attention' : pending === undefined || pending > 0 ? 'pending' : 'synced'} pending={pending} onRetry={retrySync} />;
+  const mealLog = (id: string) => logs?.find(row => row.meal_id === id && row.log_date === today && !row.deleted_at);
+  const nextMeal = v6 && !ramadan.data?.active && visible?.meals.find(meal => meal.items.length > 0 && !mealLog(meal.id)?.completed_at);
+  const water = <div data-food-section="water"><FoodWater playerId={snapshot?.player_id} today={today} /></div>;
   const budget = status !== 'error' && status !== 'loading' && visible?.meals.length && logs
     ? <BudgetSummary showShopping={!v6} meals={visible.meals} swaps={Object.assign({}, ...logs.filter(log => log.log_date === today && !log.deleted_at).map(log => log.swaps))} />
     : null;
-  return <main data-mood={v6 && rest ? 'rest' : undefined} className={v6 ? 'mx-auto flex max-w-lg flex-col gap-card-gap px-page-x pt-card pb-[104px]' : 'mx-auto max-w-lg space-y-card-gap px-page-x pt-section pb-32'}>
+  return <main data-mood={v6 && rest ? 'rest' : undefined} className={v6 ? 'mx-auto flex max-w-lg flex-col gap-card-gap px-page-x pt-card' : 'mx-auto max-w-lg space-y-card-gap px-page-x pt-section pb-32'}>
     {v6 ? <header className="flex min-h-12 items-center gap-inline">
       <div className="min-w-0 flex-1"><h1 className="text-h font-extrabold">{v4t('food')}</h1>
         {snapshot && <p className="text-xs text-muted">{calories > 0 ? v4t('target', { plan: planTitle, goal: formatNumber(calories, locale) }) : planTitle}</p>}</div>
@@ -70,18 +73,20 @@ export function NutritionScreen() {
           {stale && <div className="flex items-center justify-between gap-inline text-sm text-muted">
             <p>{t('lastUpdatedAWhileAgo')}</p><Button variant={v6 ? 'secondary' : 'ghost'} onClick={retry}>{t('tryAgain')}</Button>
           </div>}
+          {nextMeal && <div data-food-section="next-meal"><MealCard key={`${today}-${nextMeal.id}`} meal={nextMeal}
+            today={today} planTitle={visible.title} primary log={mealLog(nextMeal.id)} /></div>}
+          {v6 && water}
           {summary}
           {!v6 && budget}
-          {ramadan.data?.active ? <RamadanMeals meals={visible.meals} logs={logs} today={today} title={visible.title} /> : v6 ? <ol data-food-section="meals" className="flex list-none flex-col gap-card-gap" aria-label={v6t('meals')}>{visible.meals.map(meal => <li key={`${today}-${meal.id}`}>
+          {ramadan.data?.active ? <RamadanMeals meals={visible.meals} logs={logs} today={today} title={visible.title} /> : v6 ? <ol data-food-section="meals" className="flex list-none flex-col gap-card-gap" aria-label={v6t('meals')}>{visible.meals.filter(meal => meal.id !== (nextMeal || undefined)?.id).map(meal => <li key={`${today}-${meal.id}`}>
             <MealCard meal={meal} today={today} planTitle={visible.title}
-              primary={meal.id === visible.meals.find(candidate => candidate.items.length > 0 && !logs.some(row => row.meal_id === candidate.id && row.log_date === today && row.completed_at && !row.deleted_at))?.id}
-              log={logs.find(row => row.meal_id === meal.id && row.log_date === today && !row.deleted_at)} />
+              log={mealLog(meal.id)} />
           </li>)}</ol> : <ul className="space-y-card-gap" aria-label={t('todaysMealsList')}>{visible.meals.map(meal => <li key={`${today}-${meal.id}`}>
             <MealCard meal={meal} today={today} planTitle={visible.title} log={logs.find(row => row.meal_id === meal.id && row.log_date === today && !row.deleted_at)} />
           </li>)}</ul>}
         </>}
     {v6 && <>
-      <div data-food-section="water"><FoodWater playerId={snapshot?.player_id} today={today} /></div>
+      {(status === 'error' || status === 'loading' || logs === undefined || !visible?.meals.length) && water}
       {budget}
       <div className="flex flex-wrap items-center justify-between gap-stack">
         <DayType key={today} today={today} playerId={snapshot?.player_id} onRestChange={setRest} />{sync}

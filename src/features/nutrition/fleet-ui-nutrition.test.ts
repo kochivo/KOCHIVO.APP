@@ -11,7 +11,7 @@ vi.mock('./hooks/use-nutrition-snapshot', () => ({ useNutritionSnapshot: () => (
 vi.mock('./hooks/use-meal-logs', () => ({ useMealLogs: () => [] }));
 vi.mock('@/features/supplements', () => ({ PlayerSupplements: () => null }));
 const render = (locale: 'ar' | 'en') => renderToStaticMarkup(createElement(LocaleProvider, { locale }, createElement(NutritionScreen)));
-it('orders the v4 calorie summary, meals and water, and keeps the empty plan message', () => {
+it('keeps water near the top and preserves the calorie summary and empty plan message', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   try {
     state.status = 'ready';
@@ -20,7 +20,7 @@ it('orders the v4 calorie summary, meals and water, and keeps the empty plan mes
       targets: { kcal: 1500, protein: 120, carbs: 150, fat: 50 } };
     const html = render('en');
     expect(html.match(/data-food-section="[^"]+"/g)).toEqual([
-      'data-food-section="macros"', 'data-food-section="meals"', 'data-food-section="water"',
+      'data-food-section="water"', 'data-food-section="macros"', 'data-food-section="meals"',
     ]);
     state.snapshot = null;
     expect(render('en')).toContain('href="/player/captain"');

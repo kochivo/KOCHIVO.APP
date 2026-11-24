@@ -29,7 +29,7 @@ export function WorkoutRest({ state, onBack }: { state: ReturnType<typeof useFoc
     alternativeStep(previousStep, state.selectedExercises[previousStep?.exercise.id ?? '']);
   const nextName = current && exerciseName(current.exercise, locale);
   const elapsed = rest.total > 0 ? Math.min(1, rest.remaining / rest.total) : 0;
-  return <section className="flex min-h-[calc(100dvh-5rem)] flex-col gap-card-gap">
+  return <section className="flex flex-col gap-card-gap">
     <header className="flex items-center gap-stack">
       <IconButton aria-label={t('back')} onClick={onBack}><ChevronRight aria-hidden className="dir-icon size-5" /></IconButton>
       <div className="min-w-0 flex-1">
@@ -42,8 +42,8 @@ export function WorkoutRest({ state, onBack }: { state: ReturnType<typeof useFoc
         {rest.sound ? <Volume2 aria-hidden className="size-5" /> : <VolumeX aria-hidden className="size-5" />}
       </IconButton>
     </header>
-    <div className="grid flex-1 place-items-center py-section">
-      <div className={cn('relative grid aspect-square w-64 max-w-full place-items-center rounded-full',
+    <div className="grid place-items-center py-inline">
+      <div className={cn('relative grid aspect-square w-44 max-w-full place-items-center rounded-full',
         rest.flashing && 'motion-safe:animate-pulse')}>
         <svg aria-hidden viewBox="0 0 120 120" className="absolute inset-0 size-full -rotate-90" fill="none" strokeWidth="10">
           <circle cx="60" cy="60" r="52" stroke="currentColor" className="text-line" />
@@ -69,6 +69,7 @@ export function WorkoutRest({ state, onBack }: { state: ReturnType<typeof useFoc
         <p className="text-micro text-muted">{vt('nextNumbers', { weight: formatNumber(state.weight, locale), reps: formatNumber(state.reps, locale) })}</p>
       </div>
     </aside>}
-    <Button block size="lg" onClick={rest.skip}>{vt('ready')}</Button>
+    <Button block size="lg" onClick={rest.skip}>{current && previous ? current.exercise.id === previous.exercise.id
+      ? vt('startSet', { set: formatNumber(current.setIndex, locale) }) : vt('startNext') : vt('ready')}</Button>
   </section>;
 }

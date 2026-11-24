@@ -28,10 +28,10 @@ it('puts the assessment counts before waiting requests and history', () => {
   expect(html.indexOf('Waiting form')).toBeLessThan(html.indexOf('History form'));
   expect(html).toContain('/ar/player/forms/history-0');
 });
-it('shows both empty states on the workspace assessment page', () => {
+it('shows one compact empty state when no workspace assessments exist', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   expect(render()).toContain('مفيش تقييمات مطلوبة دلوقتي');
-  expect(render()).toContain('لسه مسجلتش تقييمات');
+  expect(render()).not.toContain('لسه مسجلتش تقييمات');
 });
 it('renders separate empty due and past sections', () => {
   expect(render()).toContain('مطلوب منك');

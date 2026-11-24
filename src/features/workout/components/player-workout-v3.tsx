@@ -42,7 +42,7 @@ export function PlayerWorkoutV3({ state, progress, workout, online, playerId, on
   if (!state.day) return null;
   const index = state.day.exercises.findIndex(exercise => exercise.id === state.current?.exercise.id);
   // PlayerShell already contributes 12px above workout routes.
-  return <Container style={{ fontFamily: 'var(--font-alexandria), var(--font-manrope), sans-serif' }} className={`mx-auto flex min-h-[calc(100dvh-12px)] max-w-lg flex-col gap-card-gap px-page-x pt-[max(4px,calc(env(safe-area-inset-top)_-_12px))] ${inFocus || state.finished ? 'pb-section' : 'pb-[120px]'}`}>
+  return <Container style={{ fontFamily: 'var(--font-alexandria), var(--font-manrope), sans-serif' }} className={`mx-auto flex max-w-lg flex-col gap-card-gap px-page-x pt-[max(4px,calc(env(safe-area-inset-top)_-_12px))] ${inFocus || state.finished ? 'pb-section' : 'pb-[120px]'}`}>
     <p role="status" aria-live="polite" aria-atomic="true" className="sr-only">{restAnnouncement(state.rest.remaining, state.rest.endsAt !== null, t)}</p>
     <CycleEntry playerId={playerId} workout />
     {state.pr && <PrBurst key={state.pr.id} pr={state.pr} onDismiss={state.dismissPr} />}
@@ -73,7 +73,7 @@ export function PlayerWorkoutV3({ state, progress, workout, online, playerId, on
     <div className="flex flex-wrap items-center gap-stack">
       <SyncPill state={!online ? 'offline' : state.parked && state.parked > 0 ? 'attention' : state.pending === undefined || state.pending > 0 ? 'pending' : 'synced'} pending={state.pending} onRetry={state.retrySync} />
       <MediaStatus />
-      <Link href="/player/history" className="flex min-h-12 items-center text-sm text-muted underline">{t('seeHistory')}</Link>
+      {!inFocus && <Link href="/player/history" className="flex min-h-12 items-center text-sm text-muted underline">{t('seeHistory')}</Link>}
     </div>
     {!inFocus && !state.finished && !state.loading && !state.error && Boolean(state.day.warmup?.items.length) && <WarmupNav />}
   </Container>;

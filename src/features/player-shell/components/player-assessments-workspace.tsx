@@ -25,6 +25,7 @@ export function PlayerAssessmentsWorkspace({ due, past, actionable }: PlayerAsse
   const count = (n: number) => formatNumber(n, locale);
   const date = (stamp: string) => formatTimestampAr(stamp, { day: 'numeric', month: 'long', year: 'numeric' }, locale, timezone);
   const requestHref = (id: string) => `/${locale}/player/forms/${id}`;
+  if (!due.length && !past.length) return <p className="glass rounded-card p-card text-sm text-muted">{s('noAssessments')}</p>;
   return <div className="space-y-card-gap">
     <StatStrip className="max-sm:grid-cols-3! [&>div]:px-inline [&>div>div]:justify-center [&>div>div>span]:whitespace-normal [&>div>p]:justify-center [&>div>p]:text-center"
       items={[
