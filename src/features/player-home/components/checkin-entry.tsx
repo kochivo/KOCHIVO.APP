@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { CalendarCheck } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
@@ -10,8 +9,5 @@ import { messages } from '../messages';
 export function CheckinEntry() {
   const t = useT(messages);
   return <Link href="/player/progress?checkin=1" data-home-section="checkin"
-    className="press glass flex min-h-12 items-center gap-stack rounded-card p-card">
-    <CalendarCheck aria-hidden className="size-5 shrink-0 text-lime" />
-    <span className="text-sm font-bold">{t('weeklyCheckinEntry')}</span>
-  </Link>;
+    className="press glass flex min-h-12 items-center rounded-card px-card text-sm font-bold">{t('weeklyCheckinEntry')}</Link>;
 }
