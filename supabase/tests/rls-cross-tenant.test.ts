@@ -162,9 +162,15 @@ it('keeps anon off all tables, private helpers inaccessible and the inbox subjec
           and c.relname in ('captain_package_tiers', 'captain_offers', 'captain_packages')))
         or (n.nspname = 'security_private' and has_table_privilege('authenticated', c.oid, 'SELECT,INSERT,UPDATE,DELETE'))) `)).rows)
     .toEqual([]);
+  expect((await db.query(`select role from (values ('anon'), ('authenticated')) as roles(role)
+    where has_schema_privilege(role, 'security_private', 'USAGE')`)).rows).toEqual([]);
+  // The two SQL-standard import entrypoints bind their private helpers by OID.
+  // The helpers need EXECUTE through that binding and callers lack schema USAGE.
   expect((await db.query(`select p.proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
     where n.nspname = 'security_private' and (has_function_privilege('anon', p.oid, 'EXECUTE')
-      or has_function_privilege('authenticated', p.oid, 'EXECUTE'))`)).rows).toEqual([]);
+      or (has_function_privilege('authenticated', p.oid, 'EXECUTE')
+        and p.oid not in ('security_private.admin_import_plan(uuid,uuid,text,text,jsonb)'::regprocedure,
+          'security_private.admin_find_import_captain(text)'::regprocedure)))`)).rows).toEqual([]);
   expect((await db.query(`select reloptions from pg_class where oid = 'public.inbox_items'::regclass`)).rows)
     .toEqual([{ reloptions: ['security_invoker=true'] }]);
 });
