@@ -14,8 +14,9 @@ export function MediaStatus() {
   const [error, setError] = useState(false);
   const onError = useCallback(() => setError(true), []);
   const pending = useLiveQuery(readPending, onError);
+  if (!error && pending === 0) return null;
   return <p role={error ? 'alert' : 'status'} className="text-xs text-muted">
     {error ? t('couldntReadSavedVideos') : pending === undefined ? t('checkingVideos') :
-      pending > 0 ? t('pendingVideos', { n: pending, count: formatNumber(pending, locale) }) : t('noVideosWaiting')}
+      t('pendingVideos', { n: pending, count: formatNumber(pending, locale) })}
   </p>;
 }

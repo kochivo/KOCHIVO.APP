@@ -36,8 +36,18 @@ afterEach(() => vi.unstubAllGlobals());
 it('keeps the player shell at its existing mobile-first width', () => {
   const html = renderToStaticMarkup(createElement(PlayerShell, null, null));
   expect(html).toContain('mx-auto flex max-w-lg justify-end gap-inline px-page-x');
-  expect(html).toContain('mx-auto max-w-lg space-y-stack px-page-x pt-stack');
   expect(html).not.toContain('lg:max-w-[1600px]');
+});
+
+it('keeps launcher clearance inside the viewport-height shell and removes it upon entering a workout', () => {
+  state.path = '/player/nutrition';
+  const render = () => renderToStaticMarkup(createElement(PlayerShell, null, null));
+  expect(render()).toMatch(/class="(?=[^"]*\bmin-h-dvh\b)[^"]*\bplayer-content\b[^"]*"/);
+  state.path = '/player/workout/day';
+  expect(render()).not.toContain('player-content');
+  expect(render()).not.toContain('aria-live="polite"');
+  state.path = '/player/assessments';
+  expect(render()).toContain('player-content');
 });
 
 it.each(['/player', '/player/nutrition', '/player/progress', '/player/captain', '/player/settings'])('shows accessible settings on %s', path => {

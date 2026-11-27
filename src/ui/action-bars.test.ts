@@ -10,7 +10,7 @@ const bars = [
   'onboarding/components/intake-wizard',
   'player-shell/components/start-gate-screen',
   'player-shell/components/captain-question',
-  'workout/components/workout-overview',
+  'workout/components/player-workout-v3',
   'workout/components/workout-set',
   'coach-page/components/public-dock',
   'programs/components/builder-header',

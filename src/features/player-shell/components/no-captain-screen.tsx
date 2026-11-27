@@ -6,7 +6,7 @@ import { Button } from '@/ui/button';
 
 export function NoCaptainScreen({ onRetry, signOut }: { onRetry: () => void; signOut: ReactNode }) {
   const t = useT(messages);
-  return <main className="mx-auto flex min-h-dvh max-w-lg flex-col justify-center gap-card-gap px-page-x py-section text-start">
+  return <main className="mx-auto flex w-full max-w-lg flex-1 flex-col justify-center gap-card-gap px-page-x py-section text-start">
     <h1 className="text-2xl font-extrabold">{t('youReNotWorkingWithA')}</h1>
     <p className="text-muted">{t('openCoachInvite')}</p>
     {signOut}

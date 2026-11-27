@@ -43,6 +43,8 @@ export function PlayerShell({ children, unassignedAction }: { children?: ReactNo
   const captain = useMyCaptain();
   const online = useOnline();
   const workout = /\/player\/workout(?:\/|$)/.test(pathname);
+  const navigation = showsNav(pathname);
+  const frame = `min-h-dvh bg-bg text-ink transition-colors motion-reduce:transition-none${navigation ? ' player-content' : ''}`;
   const [restMood, setRestMood] = useState(false);
   const today = localDate(new Date(), profileTimezone(captain.data?.timezone));
   const state = captain.data ? accessState({ ...captain.data, today }) : 'active';
@@ -58,25 +60,24 @@ export function PlayerShell({ children, unassignedAction }: { children?: ReactNo
     state === 'ended' ? t('yourSubscriptionEndedContactYourCoach') :
     state === 'archived' ? t('yourCoachPausedYourCoaching') : null;
   if (!captain.data && !/\/player\/settings(?:\/|$)/.test(pathname)) {
-    if (captain.status === 'loading') return <LoadingState variant="cards" />;
-    if (captain.status === 'error') return <ErrorState message={t('couldnTLoadYourCoach')} retryLabel={t('tryAgain')} onRetry={() => void captain.retry()} />;
-    if (captain.status === 'ready') return <NoCaptainScreen signOut={unassignedAction} onRetry={() => void captain.retry()} />;
+    const fallback = captain.status === 'loading' ? <LoadingState variant="cards" /> : captain.status === 'error'
+      ? <ErrorState message={t('couldnTLoadYourCoach')} retryLabel={t('tryAgain')} onRetry={() => void captain.retry()} />
+      : captain.status === 'ready' ? <NoCaptainScreen signOut={unassignedAction} onRetry={() => void captain.retry()} /> : null;
+    if (fallback) return <div className={`${frame} flex flex-col pt-[var(--safe-top)]`}>{fallback}</div>;
   }
   return <MyCaptainContext.Provider value={captain}>
-    <div data-mood={!workout && restMood ? 'rest' : undefined} className="min-h-dvh bg-bg text-ink transition-colors motion-reduce:transition-none">
+    <div data-mood={!workout && restMood ? 'rest' : undefined} className={frame}>
     <SyncRunner />
     <div aria-hidden className="viewport-pinned pointer-events-none fixed inset-x-0 top-0 z-40 h-[var(--safe-top)] bg-bg" />
     {!workout && <RestMoodSync onChange={setRestMood} />}
-    {/* P1: no bottom padding here — the player layout owns the shared launcher
-      clearance (.player-content), so this div must not pad a second time. */}
-    <div className={workout ? undefined : showsNav(pathname) ? (v6 ? 'pt-[var(--safe-top)]' : undefined) : 'pt-[var(--safe-top)]'}>
-    {showsNav(pathname) && !v6 && <div className="sticky top-0 z-30 bg-bg/70 pb-stack pt-[max(0.75rem,var(--safe-top))] backdrop-blur-md"><div className="mx-auto flex max-w-lg justify-end gap-inline px-page-x">
+    <div className={workout ? 'pt-[var(--safe-top)] [--workout-safe-top:0px]' : !navigation || v6 ? 'pt-[var(--safe-top)]' : undefined}>
+    {navigation && !v6 && <div className="sticky top-0 z-30 bg-bg/70 pb-stack pt-[max(0.75rem,var(--safe-top))] backdrop-blur-md"><div className="mx-auto flex max-w-lg justify-end gap-inline px-page-x">
       <Link href="/player/settings" aria-label={t(v6 ? 'v6Account' : 'settings')} aria-current={pathname === '/player/settings' ? 'page' : undefined}
         className={`${v6 ? 'glass border border-line-soft ' : ''}flex min-h-12 min-w-12 items-center justify-center rounded-control ${pathname === '/player/settings' ? 'bg-lime-soft text-lime' : 'text-muted'}`}>
         {v6 ? <UserRound aria-hidden className="size-5 rounded-full" /> : <Settings aria-hidden className="size-5" />}
       </Link><InstallButton icon /><NotificationBell />
     </div></div>}
-    <div className="mx-auto max-w-lg space-y-stack px-page-x pt-stack" aria-live="polite">
+    {(!online || message) && <div className="mx-auto max-w-lg space-y-stack px-page-x pt-stack" aria-live="polite">
       {!online && <p role="status" className="glass rounded-card p-card text-sm">
         {t('youReOfflineYourLogsAre')}
       </p>}
@@ -88,16 +89,16 @@ export function PlayerShell({ children, unassignedAction }: { children?: ReactNo
             {t('messageYourCoachOnWhatsApp')}
           </a>}
       </div>}
-    </div>
+    </div>}
     {training && captain.status === 'loading' ? <LoadingState variant="cards" /> :
       training && captain.status === 'error' ? <ErrorState message={t('couldnTLoadYourCoach')} retryLabel={t('tryAgain')} onRetry={() => void captain.retry()} /> :
       training && blocked ? <WaitingRoom frozen={Boolean(captain.data?.frozenAt)} /> :
       captain.data?.startFormsPending && gateApplies(pathname) ? <StartGateBoundary key={pathname} captain={captain.data.fullName}>{children}</StartGateBoundary> : children}
     </div>
-    {showsNav(pathname) && <InstallSheet />}
+    {navigation && <InstallSheet />}
     {showsFeedback(pathname, v6) && <FeedbackButton role="player" />}
-    {process.env.NODE_ENV === 'development' && showsNav(pathname) && <KoPreview role="player" />}
-    {showsNav(pathname) && (v6 ? <PlayerTabs rest={restMood} pathname={pathname} locale={locale} style={style} label={t('navigation')} /> :
+    {process.env.NODE_ENV === 'development' && navigation && <KoPreview role="player" />}
+    {navigation && (v6 ? <PlayerTabs rest={restMood} pathname={pathname} locale={locale} style={style} label={t('navigation')} /> :
       <BottomNav aria-label={t('navigation')} items={playerNav(pathname, locale)} />)}
     </div>
   </MyCaptainContext.Provider>;

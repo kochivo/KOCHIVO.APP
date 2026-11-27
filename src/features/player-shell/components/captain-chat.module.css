@@ -8,7 +8,7 @@ body:has(.focus) :global([data-floating-fab]) {
   padding-block-end: max(var(--safe-bottom), var(--spacing-stack));
 }
 
-:has(> .focus) {
+body:has(.focus) :global(.player-content) {
   --player-content-clearance: 0px;
 }
 

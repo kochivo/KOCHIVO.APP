@@ -35,6 +35,12 @@ it.each(['loading', 'error'] as const)('does not expose player content before th
   state.path = '/player/progress'; state.status = status;
   expect(render()).not.toContain('Private player content');
 });
+it.each(['loading', 'error', 'ready'] as const)('fits the launcher clearance inside the fallback frame: %s', status => {
+  state.status = status;
+  expect(render()).toMatch(/class="(?=[^"]*\bmin-h-dvh\b)[^"]*\bplayer-content\b[^"]*"/);
+  state.path = '/player/workout/day';
+  expect(render()).not.toContain('player-content');
+});
 it('keeps account settings accessible without a coach', () => {
   state.path = '/player/settings';
   expect(render()).toContain('Private player content');

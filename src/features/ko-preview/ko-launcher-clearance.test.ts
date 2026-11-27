@@ -120,19 +120,15 @@ it('never enables the teaser desktop branch for players', () => {
   expect(teaser).toContain('captainPhone ? subscribeViewport : ignoreViewport');
 });
 
-// P1: the shared player clearance is the same token as the captain one, and
-// the player layout — the one place that owns every player page, including
-// the shell states that never render its inner div — applies it once.
 it('keeps the shared player clearance taller than the launcher and applied once', () => {
   const css = readFileSync(new URL('../../app/globals.css', import.meta.url), 'utf8');
   expect(css).toContain('calc(var(--nav-clearance) + 0.5rem + 3.25rem + 3rem + var(--spacing-card-gap))');
   expect(css).toContain('.player-content { padding-block-end: var(--player-content-clearance); }');
   expect(css).toContain('--player-content-clearance: max(var(--page-bottom-clearance), calc(var(--nav-clearance) + 0.5rem + 3.25rem + 3rem + var(--spacing-card-gap)));');
   const layout = readFileSync(new URL('../../app/[locale]/(player)/player/layout.tsx', import.meta.url), 'utf8');
-  expect(layout).toContain('className="player-content"');
-  expect(layout).toContain('/^\\/player\\/(?:workout|onboarding)(?:\\/|$)/');
+  expect(layout).not.toContain('player-content');
   const shell = readFileSync(new URL('../../features/player-shell/components/player-shell.tsx', import.meta.url), 'utf8');
-  expect(shell).not.toContain('pb-[var(--player-content-clearance)]');
+  expect(shell.match(/player-content/g)).toHaveLength(1);
 });
 
 // The desktop branch is client-only (the server snapshot is 'phone', see

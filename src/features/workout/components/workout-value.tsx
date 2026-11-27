@@ -29,11 +29,11 @@ export function WorkoutValue({ kind, value, disabled, invalid, focusInvalid = in
     className={`${inline ? 'size-16' : 'size-14'} bg-line disabled:opacity-40`}>
     {increase ? <Plus aria-hidden className="size-6" /> : <Minus aria-hidden className="size-6" />}
   </IconButton>;
-  return <div className={`glass-strong items-center gap-inline rounded-card border border-line-soft px-stack py-stack ${inline ? 'grid grid-cols-[64px_minmax(0,1fr)_64px]' : 'flex flex-col'}`}>
+  return <div className={`glass-strong min-w-0 items-center gap-inline rounded-control border border-line-soft py-stack ${inline ? 'grid grid-cols-[64px_minmax(0,1fr)_64px] px-stack' : 'flex flex-col'}`}>
     {inline && button(true)}
-    <div className="flex min-w-0 flex-col items-center gap-inline">
+    <div className="flex w-full min-w-0 flex-col items-center gap-inline">
     <label className="relative min-h-12 w-full rounded-lg text-center focus-within:outline-2 focus-within:outline-lime">
-      <span aria-hidden className="font-display text-stat-wide leading-none font-extrabold tabular-nums">{draft ?? formatNumber(value, locale)}</span>
+      <span aria-hidden className="max-w-full font-numeric text-stat leading-none font-extrabold tabular-nums sm:text-stat-wide">{draft ?? formatNumber(value, locale)}</span>
       <input ref={input} aria-label={t(weight ? 'weightKg' : 'reps')} aria-invalid={invalid || typedInvalid} aria-describedby={typedInvalid ? errorId : invalid ? 'set-error' : undefined}
         disabled={disabled} type="text" inputMode={weight ? 'decimal' : 'numeric'} enterKeyHint="done" autoComplete="off"
         value={draft ?? formatNumber(value, locale)} onFocus={event => event.currentTarget.select()} onChange={event => onDraft(event.target.value)}

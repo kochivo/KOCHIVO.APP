@@ -11,7 +11,7 @@ import { SetDots } from './set-dots';
 
 type TableState = Pick<ReturnType<typeof useFocusSession>, 'current' | 'lastSession' | 'doneSets' | 'weight' | 'reps' | 'disabled' | 'edit'>;
 
-export function FocusSetTable({ state, v4 = false }: { state: TableState; v4?: boolean }) {
+export function FocusSetTable({ state }: { state: TableState }) {
   const t = useT(messages);
   const tt = useT(tableMessages);
   const locale = useLocale();
@@ -44,7 +44,7 @@ export function FocusSetTable({ state, v4 = false }: { state: TableState; v4?: b
         <td className="rounded-e-control">{done ? <button type="button" disabled={state.disabled}
           aria-label={t('editSet', { value0: number(set) })} onClick={() => state.edit(done)}
           className="press tone-lime mx-auto grid size-12 place-items-center rounded-control disabled:opacity-50">
-          <Pencil aria-hidden className="size-5" /></button> : v4 && <span aria-hidden className="glass mx-auto grid size-12 place-items-center rounded-control text-muted"><Check className="size-5" /></span>}</td>
+          <Pencil aria-hidden className="size-5" /></button> : null}</td>
       </tr>;
     })}</tbody>
   </table>;

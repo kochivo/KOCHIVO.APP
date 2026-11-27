@@ -78,8 +78,8 @@ export function FocusScreen({ dayId, playerId, onBack }: { dayId: string; player
   if (v6 && state.day && (state.queue.length > 0 || state.finished || state.painSkipped > 0) && !state.programFinished) {
     return <PlayerWorkoutV3 key={`${dayId}:${today}`} state={state} progress={warmupProgress} workout={workout} online={online} onBack={onBack} playerId={playerId ?? plan?.player_id} />;
   }
-  return <Container className={warmupView ? 'mx-auto flex min-h-dvh max-w-lg flex-col gap-stack bg-bg-deep px-page-x pt-[max(22px,env(safe-area-inset-top))]'
-    : 'mx-auto max-w-lg space-y-card-gap px-page-x pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))]'}>
+  return <Container className={warmupView ? 'mx-auto flex min-h-[calc(100dvh-var(--safe-top))] max-w-lg flex-col gap-stack bg-bg-deep px-page-x pt-[max(var(--spacing-card),var(--workout-safe-top,var(--safe-top)))] pb-[max(var(--spacing-stack),var(--safe-bottom))]'
+    : 'mx-auto max-w-lg space-y-card-gap px-page-x pt-[max(var(--spacing-section),var(--workout-safe-top,var(--safe-top)))] pb-[max(var(--spacing-section),var(--safe-bottom))]'}>
     <p role="status" aria-live="polite" aria-atomic="true" className="sr-only">{restAnnouncement(rest.remaining, rest.endsAt !== null, t)}</p>
     {state.pr && <PrBurst key={state.pr.id} pr={state.pr} onDismiss={state.dismissPr} />}
     {warmupView && onBack && <IconButton ref={backButton} aria-label={t('back')} onClick={back}><ArrowRight aria-hidden className="dir-icon" /></IconButton>}

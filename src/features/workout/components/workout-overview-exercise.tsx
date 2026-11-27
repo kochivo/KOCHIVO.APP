@@ -11,7 +11,7 @@ import { ExerciseLightbox } from './exercise-lightbox';
 import { ExerciseHeader } from './exercise-header';
 import { messages as setMessages } from '@/lib/training/messages';
 import { RamadanWorkoutHint } from './ramadan-workout-hint';
-import { Check, Play } from 'lucide-react';
+import { Check, Dumbbell } from 'lucide-react';
 import { messages as v4Messages } from '../v4/messages';
 import styles from './workout-media.module.css';
 
@@ -29,9 +29,9 @@ export function WorkoutOverviewExercise({ exercise, sessionId, playerId, tag, do
   const name = exerciseName(exercise, locale);
   const reps = exercise.reps_max === null ? t('toFailure') : exercise.reps_min === exercise.reps_max
     ? formatNumber(exercise.reps_min, locale) : t('targetRange', { min: formatNumber(exercise.reps_min, locale), max: formatNumber(exercise.reps_max, locale) });
-  return <li aria-busy={!history.ready} className="glass flex items-center gap-card-gap rounded-card p-stack">
+  return <li aria-busy={!history.ready} className="glass flex items-center gap-stack rounded-card border border-line-soft p-stack">
     <div className={`grid size-14 shrink-0 place-items-center overflow-hidden rounded-control ${styles.placeholder}`}>
-      {exercise.media_path ? <ExerciseLightbox src={exerciseMediaUrl(exercise.media_path)} name={name} thumbnail compact /> : <Play aria-hidden className="size-4 text-muted" />}
+      {exercise.media_path ? <ExerciseLightbox src={exerciseMediaUrl(exercise.media_path)} name={name} thumbnail compact /> : <Dumbbell aria-hidden className="size-4 text-muted" />}
     </div>
     <div className="flex min-w-0 flex-1 flex-col gap-inline">
       {(tag || exercise.set_plan?.some(row => row.drop)) && <div className="flex flex-wrap gap-inline text-xs">
@@ -41,7 +41,7 @@ export function WorkoutOverviewExercise({ exercise, sessionId, playerId, tag, do
       <b className="text-md"><bdi>{name}</bdi></b>
       <ExerciseHeader exercise={exercise} last={null} prescriptionOnly />
       <RamadanWorkoutHint sets={exercise.sets} weight={previous?.weight_kg ?? null} />
-      <span className="text-xs text-muted">{t('v3Prescription', { sets: formatNumber(exercise.sets, locale), reps })}
+      <span className="text-xs text-muted"><bdi dir="ltr">{t('v3Prescription', { sets: formatNumber(exercise.sets, locale), reps })}</bdi>
         {previous?.weight_kg != null && t('v3PreviousWeight', { weight: formatNumber(previous.weight_kg, locale) })}</span>
       {failed && <button type="button" className="min-h-12 text-start text-xs text-muted" onClick={() => { setFailed(false); setAttempt(value => value + 1); }}>{t('tryAgain')}</button>}
     </div>

@@ -5,7 +5,6 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { warmupMinutes } from '@/features/programs';
 import { starterText } from '@/lib/starter-text';
 import { formatNumber } from '@/lib/format';
-import { KoPlay } from '@/ui/icons';
 import { ErrorState } from '@/ui/error-state';
 import type { useFocusSession } from '../hooks/use-focus-session';
 import type { useWarmupSession } from '../hooks/use-warmup-session';
@@ -13,22 +12,21 @@ import { messages } from '../messages';
 import { WarmupCard } from './warmup-card';
 import { WorkoutOverviewExercise } from './workout-overview-exercise';
 import { RampLine } from './ramp-line';
-import { Button } from '@/ui/button';
 import { IconButton } from '@/ui/icon-button';
 import { StatStrip } from '@/ui/stat-strip';
 import { messages as v4Messages } from '../v4/messages';
 import { exerciseGroups, supersetLabel, supersetTag } from '@/lib/superset';
 import { messages as setMessages } from '@/lib/training/messages';
 
-export function WorkoutOverview({ state, progress, onStart, onBack, playerId }: {
+export function WorkoutOverview({ state, progress, onBack, playerId }: {
   state: ReturnType<typeof useFocusSession>; progress: ReturnType<typeof useWarmupSession>;
-  onStart: () => void; onBack: () => void; playerId?: string;
+  onBack: () => void; playerId?: string;
 }) {
   const t = useT(messages);
   const st = useT(setMessages);
   const vt = useT(v4Messages);
   const locale = useLocale();
-  const focusHeading = useCallback((heading: HTMLHeadingElement | null) => heading?.focus(), []);
+  const focusHeading = useCallback((heading: HTMLHeadingElement | null) => heading?.focus({ preventScroll: true }), []);
   const day = state.day;
   if (!day) return null;
   const warmup = day.warmup ?? { items: [], ramp: false };
@@ -41,10 +39,7 @@ export function WorkoutOverview({ state, progress, onStart, onBack, playerId }: 
   return <>
     <header className="flex items-center gap-stack">
       <IconButton aria-label={t('back')} onClick={onBack}><ArrowRight aria-hidden className="dir-icon size-5" /></IconButton>
-      <div><h1 ref={focusHeading} tabIndex={-1} className="text-md font-bold">{starterText(day.title, locale)}</h1>
-        <span className="text-xs text-muted">{t('v3Summary', {
-          minutes: t('v3SummaryMinutes', { n: minutes, minutes: formatNumber(minutes, locale) }), count: t('v3SummaryCount', { n: day.exercises.length, count: formatNumber(day.exercises.length, locale) }),
-        })}</span></div>
+      <h1 ref={focusHeading} tabIndex={-1} className="min-w-0 text-title font-bold">{starterText(day.title, locale)}</h1>
     </header>
     <StatStrip className="max-sm:grid-cols-3! [&>div]:px-stack" items={[
       { label: vt('exercises'), value: number(day.exercises.length) },
@@ -69,9 +64,5 @@ export function WorkoutOverview({ state, progress, onStart, onBack, playerId }: 
     </ol>
     {progress.error && <ErrorState message={t('couldntReadTheWorkoutOnYourPhone')} retryLabel={t('tryAgain')} onRetry={state.retry} />}
     {warmup.ramp && state.current && <RampLine day={day} exercise={state.current.exercise} bodyweight={state.bodyweight} last={state.lastSession} />}
-    <div data-action-bar className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-lg bg-gradient-to-b from-bg/0 to-bg to-35% px-page-x pt-card pb-[max(24px,env(safe-area-inset-bottom))]">
-      <Button type="button" size="lg" onClick={onStart} disabled={warmup.items.length > 0 && (progress.loading || progress.error)}
-        block><KoPlay aria-hidden className="size-5" />{t('v3Start')}</Button>
-    </div>
   </>;
 }

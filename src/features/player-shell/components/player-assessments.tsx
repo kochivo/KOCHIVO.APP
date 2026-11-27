@@ -71,7 +71,7 @@ export function PlayerAssessments({ actionable = true, layout = 'list' }: { acti
         </li>)}</ul>}
     </section>
   </div>;
-  if (layout === 'home' && !due.length) return <p className="text-sm text-muted">{t('noAssessments')}</p>;
+  if (layout === 'home' && !due.length) return null;
   return <section aria-label={t('assessments')} className="glass rounded-card border border-line-soft">
     {layout === 'home' && <h2 className="px-page-x pt-card font-bold">{p('assessments')}</h2>}
     {!due.length ? <p className="p-card text-xs text-faint">{t('noAssessments')}</p> :

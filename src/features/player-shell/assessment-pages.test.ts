@@ -72,7 +72,7 @@ it('handles loading and errors and keeps home assessment navigation on the new p
   state.status = 'error';
   expect(render()).toContain('مش قادرين نحمّل التقييمات');
   state.status = 'ready'; state.data = { due: [], past: [] };
-  expect(render('home')).toContain('مفيش تقييمات مطلوبة دلوقتي');
+  expect(render('home')).toBe('');
   state.data.due.push({ id: 'one', due_at: null, forms: { title: 'First' } });
   expect(render('home')).toContain('/ar/player/assessments');
   expect(render('home')).not.toContain('/player/forms/');

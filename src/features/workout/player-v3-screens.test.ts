@@ -4,6 +4,7 @@ import type * as React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { createT } from '@/core/i18n/messages';
+import { Button } from '@/ui/button';
 import type { SnapshotExercise } from '@/core/offline';
 import type { useFocusSession } from './hooks/use-focus-session';
 import type { useWarmupSession } from './hooks/use-warmup-session';
@@ -29,6 +30,7 @@ vi.mock('@/core/i18n/client', () => ({ useLocale: () => 'ar', useT: (messages: P
 vi.mock('@/core/offline', () => ({ useLiveQuery: () => [], localDb: () => ({}) }));
 vi.mock('./hooks/use-last-session', () => ({ useLastSession: () => ({ last: { sets: [{ set_index: 1, weight_kg: 75, reps: 8 }] }, ready: true }) }));
 vi.mock('./components/finish-hero', () => ({ FinishHero: () => null }));
+vi.mock('./components/media-status', () => ({ MediaStatus: () => null }));
 vi.mock('./data/session-feedback', () => ({ rpeValues: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], saveSessionFeedback: control.save }));
 vi.mock('next/dynamic', () => ({ default: () => () => null }));
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push() {} }) }));
@@ -55,7 +57,7 @@ it('shows superset groups and drop chips in the player program overview', () => 
     drop: { count: 2, percent: 20, mode: 'failure' as const, reps: null } }] };
   const second = { ...exercise, id: 'row2', exercise_id: 'row2', superset_group: 1 };
   const html = renderToStaticMarkup(createElement(WorkoutOverview, { state: { ...state,
-    day: { ...state.day, id: 'day', title: 'Day', position: 1, exercises: [first, second] } }, progress, onStart() {}, onBack() {} }));
+    day: { ...state.day, id: 'day', title: 'Day', position: 1, exercises: [first, second] } }, progress, onBack() {} }));
   expect(html).toContain('سوبرست A'); expect(html).toContain('A1'); expect(html).toContain('A2'); expect(html).toContain('دروب سيت');
 });
 function elementsOf(node: ReactNode, type: unknown): ReactElement<Record<string, unknown>>[] {
@@ -71,7 +73,7 @@ function stickyBars(node: ReactNode): ReactElement<BarProps>[] {
   return [...self, ...stickyBars(node.props.children)];
 }
 it('has exactly one lime action on each of the three screens', () => {
-  for (const element of [createElement(WorkoutOverview, { state, progress, onStart() {}, onBack() {} }),
+  for (const element of [createElement(PlayerWorkoutV3, { state, progress, online: true }),
     createElement(WorkoutSet, { state }), createElement(SessionFeedback, { sessionId: 's', hasFeedback: false })]) {
     control.index = 0;
     expect(primaryCount(renderToStaticMarkup(element))).toBe(1);
@@ -102,7 +104,7 @@ it('keeps the existing 2.5kg and 1 rep steps with 56px controls', () => {
   expect(renderToStaticMarkup(createElement(WorkoutValue, { kind: 'weight', value: 75, disabled: false, invalid: false, onDraft() {}, onChange: weight }))).toContain('size-14');
 });
 it('binds the overview prescription and previous weight to the program and history', () => {
-  const html = renderToStaticMarkup(createElement(WorkoutOverview, { state, progress, onStart() {}, onBack() {} }));
+  const html = renderToStaticMarkup(createElement(WorkoutOverview, { state, progress, onBack() {} }));
   expect(html).toContain('بنش بريس'); expect(html).toContain('4 × 6–8');
   expect(html).toContain('المرة اللي فاتت 75 كجم');
 });
@@ -162,7 +164,8 @@ it('reopens a session loaded after mounting without replacing its original clock
   control.values = [false, undefined];
   const resumed = { ...state, session: { started_at: start } } as ReturnType<typeof useFocusSession>;
   const panel = PlayerWorkoutV3({ state: resumed, progress, online: true });
-  const onStart = elementsOf(panel, WorkoutOverview)[0]?.props.onStart;
+  const action = elementsOf(panel, Button).find(element => Array.isArray(element.props.children) && element.props.children.includes('كمّل التمرين'));
+  const onStart = action?.props.onClick;
   if (typeof onStart !== 'function') throw new Error('Start control missing');
   onStart();
   const update: unknown = control.setters[1]?.mock.calls[0]?.[0];
@@ -197,7 +200,7 @@ it('keeps the weight/reps steppers and the finish button in one sticky action ba
     expect(bars).toHaveLength(1);
     const bar = bars[0];
     expect(bar?.props.className).toContain('sticky');
-    expect(bar?.props.className).toContain('bottom-page-y');
+    expect(bar?.props.className).toContain('var(--safe-bottom)');
     expect(elementsOf(bar, WorkoutValue).map(element => element.props.kind)).toEqual(['weight', 'reps']);
     expect(renderToStaticMarkup(bar as ReactElement)).toContain(label);
   }

@@ -447,8 +447,7 @@ html[data-keyboard='open'] dialog:modal { inset-block-end: var(--keyboard-inset)
 .toast-stack { inset-inline: 0; bottom: calc(10.5rem + var(--safe-bottom)); }
 /* Includes the launcher, its tooltip and a gap above the fixed navigation. */
 .captain-content { padding-block-end: var(--captain-content-clearance); }
-/* Same shared clearance for player pages: the launcher floats over every
-   player screen, so the layout — not each screen — reserves room for it. */
+/* The shell includes launcher clearance in its viewport minimum. */
 .player-content { padding-block-end: var(--player-content-clearance); }
 @media (min-width: 1024px) {
   .captain-content { --captain-content-clearance: calc(1.5rem + 3.25rem + 3rem + var(--spacing-card-gap)); }

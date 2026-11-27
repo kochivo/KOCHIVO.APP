@@ -49,7 +49,7 @@ export function PlayerSupplements() {
   if (!data || data.playerId !== playerId || !playerId || (loading && !data.supplements.length)) return error
     ? <div role="alert"><p>{t('error')}</p>{captainWorkspaceEnabled() ? <Button variant="secondary" className="min-h-12 px-page-x" onClick={retry}>{t('retry')}</Button> : <button className="min-h-12 px-page-x" onClick={retry}>{t('retry')}</button>}</div>
     : <p role="status">{t('loading')}</p>;
-  if (!data.supplements.length && !error) return v6 ? <p className="text-sm text-muted">{t('empty')}</p> : null;
+  if (!data.supplements.length && !error) return null;
   const toggle = async (id: string, now: number) => {
     setPending(current => [...current, id]);
     setDay(localDate(new Date(now), timezone));

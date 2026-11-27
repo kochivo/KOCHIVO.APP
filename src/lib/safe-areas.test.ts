@@ -32,9 +32,11 @@ describe('viewport safe areas', () => {
     } else expect(source(path)).toContain('var(--safe-top)');
   });
 
-  it('leaves workout padding with the focus screen', () => {
+  it('applies the top inset once in the player shell and preserves it for standalone workouts', () => {
     const shell = source('features/player-shell/components/player-shell.tsx');
-    expect(shell).toContain('className={workout ? undefined');
-    expect(source('features/workout/components/focus-screen.tsx')).toContain('env(safe-area-inset-top)');
+    expect(shell).toContain('pt-[var(--safe-top)] [--workout-safe-top:0px]');
+    for (const screen of ['focus-screen', 'player-workout-v3']) {
+      expect(source(`features/workout/components/${screen}.tsx`)).toContain('var(--workout-safe-top,var(--safe-top))');
+    }
   });
 });

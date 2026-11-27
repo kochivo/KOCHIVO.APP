@@ -34,7 +34,6 @@ import { supersetTag } from '@/lib/superset';
 import { PainButton } from './pain-button';
 import { PainLoadHint } from './pain-load-hint';
 import { PainCarried } from './pain-carried';
-import styles from './workout-media.module.css';
 const ExerciseVideo = dynamic(() => import('./exercise-video').then(module => module.ExerciseVideo));
 
 const FormCheckButton = dynamic(() => import('./form-check-button').then(module => module.FormCheckButton), { ssr: false });
@@ -62,35 +61,32 @@ export function WorkoutSet({ state, v4 = false }: { state: ReturnType<typeof use
   const target = current.exercise.set_plan ? { ...current.exercise, ...targetForSet(current.exercise, current.setIndex - 1) } : current.exercise;
   const number = (value: number) => formatNumber(value, locale);
   const targetReps = target.reps_max === null ? t('toFailure') : target.reps_min === target.reps_max ?
-    number(target.reps_min) : t('targetRange', { min: number(target.reps_min), max: number(target.reps_max) });
+    number(target.reps_min) : `\u2066${t('targetRange', { min: number(target.reps_min), max: number(target.reps_max) })}\u2069`;
+  const hasVideo = Boolean(parseExerciseVideo(current.exercise.video_url));
   const dropping = (current.dropIndex ?? 0) > 0;
   const nextMember = state.next && state.next.exercise.id !== current.exercise.id && current.exercise.superset_group !== null &&
     state.next.exercise.superset_group === current.exercise.superset_group && current.restAfter === 0;
   return <>
     <div className={v4 ? 'flex min-h-0 flex-1 flex-col gap-stack' : 'flex flex-col gap-card-gap'}>
       <SupersetCue state={state} />
-      {!dropping && <div className={v4 ? '[&_.aspect-video]:max-h-40 empty:hidden' : undefined}>{(parseExerciseVideo(current.exercise.video_url) ? <div className="space-y-stack">
+      {!dropping && (hasVideo || current.exercise.media_path) && <div className={v4 ? '[&_.aspect-video]:max-h-32' : undefined}>{hasVideo ? <div className="space-y-stack">
         {showGif && current.exercise.media_path ? <ExerciseLightbox src={exerciseMediaUrl(current.exercise.media_path)} name={name} focus /> :
           <ExerciseVideo key={current.exercise.video_url} url={current.exercise.video_url} name={name} />}
         {current.exercise.media_path && <Button variant="secondary" aria-pressed={showGif} onClick={() => setGifExercise(showGif ? null : exerciseId)}
           className="flex min-h-12 w-full items-center gap-inline text-sm">{t('gifToggle')}<ChevronDown aria-hidden className={`ms-auto size-4 transition-transform ${showGif ? 'rotate-180' : ''}`} /></Button>}
-      </div> : current.exercise.media_path ? <ExerciseLightbox src={exerciseMediaUrl(current.exercise.media_path)} name={name} focus /> :
-        v4 && <div className={`grid aspect-video place-items-center rounded-card ${styles.placeholder}`} aria-hidden />)}</div>}
+      </div> : current.exercise.media_path && <ExerciseLightbox src={exerciseMediaUrl(current.exercise.media_path)} name={name} focus />}</div>}
       <div className="flex flex-col gap-inline">
-        <h1 ref={focusHeading} tabIndex={-1} style={{ fontFamily: 'inherit', fontWeight: 900 }} className={v4 ? 'flex items-end justify-between gap-stack text-h' : 'text-2xl leading-normal'}>
-          <bdi>{name}</bdi>{v4 && <bdi aria-hidden className="engraved shrink-0 text-stat-wide">{formatNumber(current.setIndex, locale)}</bdi>}
-        </h1>
+        <h1 ref={focusHeading} tabIndex={-1} className="break-words text-h font-extrabold"><bdi>{name}</bdi></h1>
         <p className="text-row text-muted">{t('v3Set', { current: number(current.setIndex), total: number(current.exercise.sets) })}
           {v4 && <> · {vt('targetReps', { reps: targetReps })}{current.restAfter > 0 && <> · {st('rest', { seconds: number(current.restAfter) })}</>}</>}
           {current.exercise.notes && t('v3Coach', { note: current.exercise.notes })}</p>
-        {v4 ? <SetDots exercise={current.exercise} currentIndex={current.setIndex} doneSets={state.doneSets}
-          onEdit={state.edit} disabled={blocked} compact /> : <ProgressBar thin value={current.setIndex} max={current.exercise.sets}
+        {!v4 && <ProgressBar thin value={current.setIndex} max={current.exercise.sets}
           aria-label={t('v3Set', { current: formatNumber(current.setIndex, locale), total: formatNumber(current.exercise.sets, locale) })} />}
       </div>
       {!v4 && <PainButton state={state} />}
       <PainCarried state={state} />
       <PainLoadHint hint={current.exercise.pain_hint} today={state.today} weight={state.weight} onSkip={() => void state.skipExercise(current.exercise.id)} />
-      <FocusSetTable state={state} v4={v4} />
+      {!v4 && <FocusSetTable state={state} />}
       {targetForSet(current.exercise, current.setIndex - 1).drop && <span className="self-start rounded-full bg-warn-soft px-stack py-inline text-xs text-warn">{st('drop')}</span>}
       <DropProgress state={state} />
       {!dropping && <WorkoutHint last={state.performance} history={history ?? []} weight={state.weight} reps={state.reps} />}
@@ -99,23 +95,9 @@ export function WorkoutSet({ state, v4 = false }: { state: ReturnType<typeof use
       {/* Rest sits in the free space above the bottom button so the whole timer stays on screen. */}
       {!v4 && state.rest.remaining > 0 && <RestPanel remaining={state.rest.remaining} total={state.rest.total} sound={state.rest.sound} onToggleSound={state.rest.toggleSound}
         flashing={state.rest.flashing} onExtend={state.rest.extend} onSkip={state.rest.skip} />}
-      <SupersetCue state={state} next />
-      <details className="glass rounded-card p-card">
-        <summary className="flex min-h-12 cursor-pointer items-center text-muted">{t('v3Details')}</summary>
-        <div className="space-y-stack">
-          <ExerciseHeader exercise={target} last={state.lastSession} detailsOnly />
-          {current.exercise.set_plan && <SetRows state={state} secondary />}
-          {!current.exercise.set_plan && <button type="button" aria-pressed={state.bodyweight} disabled={blocked} onClick={() => state.setBodyweight(!state.bodyweight)}
-            className="min-h-12 rounded-full border border-line-soft px-page-x text-xs text-muted">{t('bodyweight')}</button>}
-        </div>
-      </details>
-      {!dropping && Boolean(current.exercise.alternatives?.length) && <ExerciseAlternatives exercise={current.exercise} disabled={state.disabled} onChoose={state.switchExercise} />}
-      {state.day.warmup?.ramp && <RampLine day={state.day} exercise={current.exercise} bodyweight={state.bodyweight} last={state.lastSession} />}
-      {lastSet && <FormCheckButton exerciseId={lastSet.exercise_id} setLogId={lastSet.id} />}
-      {state.next && <NextUp exercise={state.next.exercise} />}
-      {/* The steppers and the finish button live in one sticky bar at the bottom of the set card,
-          so the player logs the set without scrolling on every set. */}
-      <div data-action-bar={v4 || undefined} className="glass-strong sticky bottom-page-y z-10 space-y-inline rounded-card border border-line-soft p-stack">
+      <div data-action-bar={v4 || undefined} className="glass-strong sticky bottom-[max(var(--spacing-stack),var(--safe-bottom))] z-10 space-y-inline rounded-card border border-line-soft p-stack">
+        {v4 && <SetDots exercise={current.exercise} currentIndex={current.setIndex} doneSets={state.doneSets}
+          onEdit={state.edit} disabled={blocked} compact />}
         <div className={current.exercise.superset_group !== null || dropping ? 'grid gap-stack' : 'grid grid-cols-2 gap-stack'}>
           <WorkoutValue key={`${exerciseId}:${current.setIndex}:${current.dropIndex ?? 0}:weight`} inline={current.exercise.superset_group !== null || dropping} kind="weight" value={state.weight} disabled={blocked || state.bodyweight}
             invalid={state.invalid?.result === 'weight' || state.invalid?.result === 'both'} draft={state.bodyweight ? undefined : state.typedValues?.weight} onDraft={text => state.setTypedValue('weight', text)} onChange={state.setWeight} />
@@ -127,12 +109,29 @@ export function WorkoutSet({ state, v4 = false }: { state: ReturnType<typeof use
           variant={state.painCarried?.length ? 'secondary' : 'primary'} block={false} className={v4 ?
             'flex min-h-14 w-full items-center justify-center gap-inline text-md font-bold disabled:opacity-50' :
             'flex min-h-[68px] w-full items-center justify-center gap-stack text-xl font-black disabled:opacity-50'}>
-          <KoTraining aria-hidden className="size-6" />{dropping ? st('finishDrop') : nextMember && state.next ? st('finishMember', {
+          <KoTraining aria-hidden className="size-6 shrink-0 text-current! [&_*]:text-current!" />{dropping ? st('finishDrop') : nextMember && state.next ? st('finishMember', {
             current: supersetTag(state.day.exercises, current.exercise) ?? '', next: supersetTag(state.day.exercises, state.next.exercise) ?? '',
           }) : v4 ? vt('doneSet', { set: number(current.setIndex) }) :
             t(state.progress === state.queue.length ? 'v3CompleteWorkout' : 'v3CompleteSet')}
         </Button>
       </div>
+      <SupersetCue state={state} next />
+      <details className="glass group rounded-card border border-line-soft px-card">
+        <summary className="flex min-h-12 cursor-pointer items-center justify-between gap-inline text-sm text-muted">
+          {t('v3Details')}<ChevronDown aria-hidden className="size-4 shrink-0 group-open:rotate-180" />
+        </summary>
+        <div className="space-y-stack pb-card">
+          <ExerciseHeader exercise={target} last={state.lastSession} detailsOnly />
+          {current.exercise.set_plan && <SetRows state={state} secondary />}
+          {!current.exercise.set_plan && <Button variant="secondary" aria-pressed={state.bodyweight} disabled={blocked} onClick={() => state.setBodyweight(!state.bodyweight)}>
+            {t('bodyweight')}
+          </Button>}
+        </div>
+      </details>
+      {!dropping && Boolean(current.exercise.alternatives?.length) && <ExerciseAlternatives exercise={current.exercise} disabled={state.disabled} onChoose={state.switchExercise} />}
+      {state.day.warmup?.ramp && <RampLine day={state.day} exercise={current.exercise} bodyweight={state.bodyweight} last={state.lastSession} />}
+      {lastSet && <FormCheckButton exerciseId={lastSet.exercise_id} setLogId={lastSet.id} />}
+      {state.next && state.next.exercise.id !== current.exercise.id && !nextMember && <NextUp exercise={state.next.exercise} />}
     </div>
   </>;
 }
