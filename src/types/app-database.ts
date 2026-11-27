@@ -116,6 +116,9 @@ type ProfileRow = Public['Tables']['profiles']['Row'];
 type ProfileLinks = Pick<ProfileRow, 'bio' | 'location' | 'avatar_path'> & { social: Social };
 type PainRow = { [K in keyof PainReportRow]: PainReportRow[K] };
 type FunctionPatches = {
+  admin_find_import_captain: { Args: { p_email: string }; Returns: { id: string; full_name: string; email: string }[] };
+  admin_import_plan: { Args: { p_id: string; p_captain: string; p_kind: string; p_title: string; p_plan: Json }; Returns: string };
+  captain_plan_source_id: { Args: { p_plan: string; p_kind: string }; Returns: string | null };
   inbox_previews: {
     Args: never;
     Returns: { player_id: string; id: string | null; kind: 'text' | 'voice' | null;
@@ -202,6 +205,10 @@ export type AppDatabase = Omit<Database, 'public'> & {
         Insert: PainRow & { player_id?: string }; Update: never; Relationships: [];
       };
       pain_load_hints: { Row: { [K in keyof PainLoadHint]: PainLoadHint[K] }; Insert: never; Update: never; Relationships: [] };
+      imported_plan_sources: {
+        Row: { id: string; captain_id: string; program_id: string | null; nutrition_plan_id: string | null; source: Json };
+        Insert: never; Update: never; Relationships: [];
+      };
       form_checks: Omit<FormChecks, 'Insert'> & {
         // The inbox BEFORE INSERT trigger in 0008 overwrites captain_id.
         Insert: Omit<FormChecks['Insert'], 'captain_id'> & {

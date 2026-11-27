@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    planImport: 'استيراد خطط الأكل والتمارين', importedTemplate: 'استيراد قالب',
     koWaitlist: 'قائمة انتظار KO', koWaitlistCaptains: 'الكباتن المستنيين', koWaitlistPlayers: 'اللاعبين المستنيين',
     approveCaptain: 'وافق على طلب كابتن', rejectCaptain: 'رفض طلب كابتن',
     signOut: 'تسجيل الخروج',
@@ -96,7 +97,11 @@ export const messages = defineMessages({
     'loadingAdmin': "جاري تحميل لوحة الإدارة…",
     'dash': "—",
   },
+  arStd: {
+    planImport: 'استيراد خطط التغذية والتمارين', importedTemplate: 'استيراد قالب',
+  },
   en: {
+    planImport: 'Import nutrition and training plans', importedTemplate: 'Imported template',
     koWaitlist: 'KO waitlist', koWaitlistCaptains: 'Waiting captains', koWaitlistPlayers: 'Waiting players',
     approveCaptain: 'Approved captain', rejectCaptain: 'Rejected captain',
     signOut: 'Sign out',

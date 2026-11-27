@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { RowLink } from '@/ui/row-link';
 import { createT } from '@/core/i18n';
 import type { Locale } from '@/core/i18n';
+import { PlanSourceLink } from '@/features/plan-source/server';
 import { loadPlayerEditor } from '../data/player-editor';
 import { PlayerEditorEntry } from './editor/player-entry';
 import { CalculatorContent } from './calculator-content';
@@ -22,5 +23,8 @@ export async function NutritionWorkspaceEntry({ playerId, locale, view }: { play
     return <section role="alert" className="glass rounded-card p-card"><p>{t('loadFailed')}</p>
       <RowLink href={href} className="glass mt-stack">{t('retry')}</RowLink></section>;
   }
-  return <PlayerEditorEntry data={data} />;
+  return <>
+    {!data.fresh && <Suspense fallback={null}><PlanSourceLink id={data.draft.id} kind="nutrition" locale={locale} /></Suspense>}
+    <PlayerEditorEntry data={data} />
+  </>;
 }

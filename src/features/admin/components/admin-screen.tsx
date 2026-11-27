@@ -15,6 +15,7 @@ import type { AuditRow, CaptainRow, PlanTier } from '../types';
 import type { AdminDashboard, AdminCaptainActivity } from '../dashboard-types';
 import type { PendingCaptain } from './captain-requests';
 import { AdminTopbar } from './admin-topbar';
+import { PlanImportLink } from '../plan-import/plan-import-link';
 const FoodPricesEntry = dynamic(() => import('@/features/meal-plans').then(module => module.FoodPricesEntry));
 import { ActionStrip } from './action-strip';
 import { DashboardKpis } from './dashboard-kpis';
@@ -91,6 +92,7 @@ export function AdminScreen({ captains, audit, plans, search, offset, kpis, requ
   }
   return <main dir={localeDir(locale)} className="mx-auto max-w-[1440px] space-y-section px-page-x py-page-y pt-[max(var(--spacing-page-y),var(--safe-top))] text-start">
     <AdminTopbar search={search} pending={pending || activationPending} onSearch={value => navigate(value, 0)} onExport={exportCsv} />
+    <PlanImportLink />
     {exportError && <p role="alert" className="text-danger">{exportError}</p>}
     {data ? <><ActionStrip actions={data.actions} onRequests={() => { requestsRef.current?.scrollIntoView({ block: 'start' }); requestsRef.current?.focus(); }}
       onFilter={value => { navigate(search, 0, value); tableRef.current?.scrollIntoView({ block: 'start' }); tableRef.current?.focus(); }} />

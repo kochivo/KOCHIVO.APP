@@ -41,7 +41,7 @@ it('patches every live function that inserts or copies program exercise rows', a
   const functions = await db.query<{ signature: string; source: string }>(`select p.oid::regprocedure::text as signature,p.prosrc as source
     from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname in ('public','security_private')
     and p.prosrc ilike '%insert into public.program_exercises%' order by 1`);
-  expect(functions.rows).toHaveLength(5);
+  expect(functions.rows).toHaveLength(6);
   for (const row of functions.rows) {
     expect(row.source, row.signature).toContain('alternatives'); expect(row.source, row.signature).toContain('set_plan');
   }

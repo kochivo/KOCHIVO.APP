@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { unstable_rethrow } from 'next/navigation';
 import { requireAdmin } from './require-admin';
 
-const actionSchema = z.enum(['activate_plan', 'suspend', 'unsuspend', 'approve_captain', 'reject_captain']);
+const actionSchema = z.enum(['activate_plan', 'suspend', 'unsuspend', 'approve_captain', 'reject_captain', 'import_template']);
 const detailsSchema = z.record(z.string(), z.unknown());
 
 export async function fetchAudit() {

@@ -48,7 +48,8 @@ export async function startTraining(playerId: string, templateId?: string): Prom
           cardio: day.cardio?.map(row => ({ ...row, id: uuidv7(), day_id: dayId })) };
       }) };
     const created = await client.from('programs').insert({ id, player_id: playerId, captain_id: auth.data.claims.sub,
-      title: draft.title, status: 'draft', is_template: false, settings: { ...settings, repeatWeekly: draft.repeatWeekly } });
+      title: draft.title, status: 'draft', is_template: false, settings: { ...settings, repeatWeekly: draft.repeatWeekly },
+      source_template_id: templateId ?? null, notes: template?.notes ?? null });
     if (created.error) return { error: t('couldntCreateTheProgramTryAgain') };
     if (draft.days.length) {
       const saved = await saveProgram(draft);

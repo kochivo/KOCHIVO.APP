@@ -18,7 +18,7 @@ export type DraftDay = Pick<Tables<'program_days'>, 'id' | 'program_id' | 'title
   weekday?: number | null; is_rest_day?: boolean; cardio?: CardioRow[]; exercises: DraftExercise[];
 };
 export type ProgramDraft = Pick<Tables<'programs'>, 'id' | 'player_id' | 'title' | 'status'> & {
-  days: DraftDay[]; settings?: Tables<'programs'>['settings']; repeatWeekly?: boolean;
+  days: DraftDay[]; settings?: Tables<'programs'>['settings']; repeatWeekly?: boolean; notes?: string | null;
 };
 export type ProgramRow = Pick<Tables<'programs'>, 'id' | 'player_id' | 'title' | 'status' | 'captain_id' | 'is_template'>;
 export type ExercisePatch = Partial<Pick<DraftExercise, 'sets' | 'reps_min' | 'reps_max' | 'rest_seconds' | 'rir' | 'notes' |

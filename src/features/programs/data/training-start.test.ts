@@ -28,8 +28,8 @@ it('creates an empty draft directly for the player without inserting a fixed wee
   expect(state.insert).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ is_template: false, status: 'draft', player_id: player }));
   expect(state.save).not.toHaveBeenCalled();
 });
-it('copies template rows with fresh identities and never activates the new plan', async () => {
-  state.load.mockResolvedValue({ data: { id: template, title: 'Plan', days: [{ id: 'old-day', position: 1,
+it('copies template rows with fresh identities and retains the workbook reference', async () => {
+  state.load.mockResolvedValue({ data: { id: template, title: 'Plan', notes: 'Four source weeks', days: [{ id: 'old-day', position: 1,
     exercises: [{ id: 'old-exercise', exercise_id: 'library' }], cardio: [{ id: 'old-cardio' }] }] } });
   const result = await startTraining(player, template);
   const day = result.data?.days[0];
@@ -38,6 +38,7 @@ it('copies template rows with fresh identities and never activates the new plan'
   expect(day?.exercises[0]?.id).not.toBe('old-exercise');
   expect(day?.cardio?.[0]?.day_id).toBe(day?.id);
   expect(result.data?.status).toBe('draft');
+  expect(state.insert).toHaveBeenCalledWith(expect.objectContaining({ source_template_id: template, notes: 'Four source weeks' }));
   expect(state.save).toHaveBeenCalledWith(result.data);
   expect(state.eq).toHaveBeenCalledWith('is_template', true);
 });
